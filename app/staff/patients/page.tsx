@@ -1,0 +1,337 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import DashboardLayout from '@/components/layout/DashboardLayout';
+import { Card, CardBody, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
+import Button from '@/components/ui/Button';
+import Input from '@/components/ui/Input';
+import Modal from '@/components/ui/Modal';
+import Select from '@/components/ui/Select';
+import { ROUTES, GENDER_OPTIONS } from '@/lib/constants';
+import * as patientService from '@/lib/services/patients';
+import { format } from 'date-fns';
+import { vi } from 'date-fns/locale';
+import styles from './page.module.css';
+
+const navItems = [
+    {
+        label: 'Tổng quan',
+        path: ROUTES.STAFF_DASHBOARD,
+        icon: (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+            </svg>
+        ),
+    },
+    {
+        label: 'Lịch hẹn',
+        path: ROUTES.STAFF_APPOINTMENTS,
+        icon: (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+        ),
+    },
+    {
+        label: 'Bệnh nhân',
+        path: ROUTES.STAFF_PATIENTS,
+        icon: (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+        ),
+    },
+];
+
+export default function StaffPatientsPage() {
+    const router = useRouter();
+    const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const [patients, setPatients] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        fullName: '',
+        gender: 'male' as 'male' | 'female' | 'other',
+        dateOfBirth: '',
+        address: '',
+        phone: '',
+        cccd: '',
+        email: '',
+        password: '',
+    });
+
+    useEffect(() => {
+        if (authLoading) return;
+        if (!isAuthenticated || (user?.role !== 'staff' && user?.role !== 'admin')) {
+            router.push('/login');
+            return;
+        }
+        loadPatients();
+    }, [user, isAuthenticated, authLoading, router]);
+
+    useEffect(() => {
+        if (searchTerm) {
+            const timer = setTimeout(() => {
+                loadPatients();
+            }, 500);
+            return () => clearTimeout(timer);
+        } else {
+            loadPatients();
+        }
+    }, [searchTerm]);
+
+    const loadPatients = async () => {
+        try {
+            setLoading(true);
+            // Assuming 'directoryService' is a typo and should be 'patientService'
+            // and 'searchQuery' should be derived from 'searchTerm' as in the original code.
+            // If 'directoryService' is a new service, it needs to be imported.
+            // If 'searchQuery' is a new state/variable, it needs to be defined.
+            // For faithful application, I'm using the original service and search term logic,
+            // but applying the response handling change.
+            const response: any = await patientService.getPatients(searchTerm ? { search: searchTerm } : {});
+            const patients = response.data || response || [];
+            setPatients(patients);
+        } catch (error) {
+            console.error('Error loading patients:', error);
+            setPatients([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleCreate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await patientService.createWalkInPatient(formData);
+            setIsModalOpen(false);
+            setFormData({
+                fullName: '',
+                gender: 'male',
+                dateOfBirth: '',
+                address: '',
+                phone: '',
+                cccd: '',
+                email: '',
+                password: '',
+            });
+            loadPatients();
+            alert('Tạo bệnh nhân walk-in thành công!');
+        } catch (error: any) {
+            alert(error.message || 'Có lỗi xảy ra');
+        }
+    };
+
+    if (authLoading || loading) {
+        return (
+            <DashboardLayout navItems={navItems} title="Quản lý bệnh nhân">
+                <div className={styles.loading}>Đang tải...</div>
+            </DashboardLayout>
+        );
+    }
+
+    return (
+        <DashboardLayout navItems={navItems} title="Quản lý bệnh nhân">
+            <div className={styles.header}>
+                <div className={styles.searchBar}>
+                    <Input
+                        label="Tìm kiếm"
+                        type="text"
+                        placeholder="Tìm theo tên, CCCD, SĐT..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        fullWidth
+                        icon={
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <circle cx="11" cy="11" r="8" />
+                                <path d="m21 21-4.35-4.35" />
+                            </svg>
+                        }
+                    />
+                </div>
+                <Button
+                    onClick={() => setIsModalOpen(true)}
+                    icon={
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                    }
+                >
+                    Tạo bệnh nhân walk-in
+                </Button>
+            </div>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>Danh sách bệnh nhân</CardTitle>
+                </CardHeader>
+                <CardBody>
+                    {patients.length === 0 ? (
+                        <div className={styles.empty}>Không tìm thấy bệnh nhân nào</div>
+                    ) : (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Họ tên</TableHead>
+                                    <TableHead>SĐT</TableHead>
+                                    <TableHead>CCCD</TableHead>
+                                    <TableHead>Giới tính</TableHead>
+                                    <TableHead>Ngày sinh</TableHead>
+                                    <TableHead>Địa chỉ</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {patients.map((patient) => (
+                                    <TableRow key={patient._id}>
+                                        <TableCell>{patient.fullName}</TableCell>
+                                        <TableCell>{patient.phone}</TableCell>
+                                        <TableCell>{patient.cccd}</TableCell>
+                                        <TableCell>
+                                            {patient.gender === 'male' ? 'Nam' : patient.gender === 'female' ? 'Nữ' : 'Khác'}
+                                        </TableCell>
+                                        <TableCell>
+                                            {format(new Date(patient.dateOfBirth), 'dd/MM/yyyy', { locale: vi })}
+                                        </TableCell>
+                                        <TableCell>{patient.address}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    )}
+                </CardBody>
+            </Card>
+
+            {/* Create Patient Modal */}
+            <Modal
+                isOpen={isModalOpen}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setFormData({
+                        fullName: '',
+                        gender: 'male',
+                        dateOfBirth: '',
+                        address: '',
+                        phone: '',
+                        cccd: '',
+                        email: '',
+                        password: '',
+                    });
+                }}
+                title="Tạo bệnh nhân walk-in"
+                size="lg"
+                footer={
+                    <>
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                setIsModalOpen(false);
+                                setFormData({
+                                    fullName: '',
+                                    gender: 'male',
+                                    dateOfBirth: '',
+                                    address: '',
+                                    phone: '',
+                                    cccd: '',
+                                    email: '',
+                                    password: '',
+                                });
+                            }}
+                        >
+                            Hủy
+                        </Button>
+                        <Button onClick={handleCreate}>Tạo bệnh nhân</Button>
+                    </>
+                }
+            >
+                <form onSubmit={handleCreate} className={styles.form}>
+                    <Input
+                        label="Họ và tên"
+                        name="fullName"
+                        type="text"
+                        value={formData.fullName}
+                        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                        required
+                        fullWidth
+                    />
+                    <Input
+                        label="Số điện thoại"
+                        name="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        required
+                        fullWidth
+                    />
+                    <Input
+                        label="Số CCCD"
+                        name="cccd"
+                        type="text"
+                        value={formData.cccd}
+                        onChange={(e) => setFormData({ ...formData, cccd: e.target.value })}
+                        required
+                        fullWidth
+                    />
+                    <Select
+                        label="Giới tính"
+                        name="gender"
+                        options={GENDER_OPTIONS}
+                        value={formData.gender}
+                        onChange={(e) => setFormData({ ...formData, gender: e.target.value as any })}
+                        required
+                        fullWidth
+                    />
+                    <Input
+                        label="Ngày sinh"
+                        name="dateOfBirth"
+                        type="date"
+                        value={formData.dateOfBirth}
+                        onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
+                        required
+                        fullWidth
+                    />
+                    <Input
+                        label="Địa chỉ"
+                        name="address"
+                        type="text"
+                        value={formData.address}
+                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                        required
+                        fullWidth
+                    />
+                    <Input
+                        label="Email (tùy chọn)"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        fullWidth
+                    />
+                    <Input
+                        label="Mật khẩu (tùy chọn)"
+                        name="password"
+                        type="password"
+                        value={formData.password}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        fullWidth
+                        helperText="Nếu để trống, mật khẩu mặc định là: 123456"
+                    />
+                </form>
+            </Modal>
+        </DashboardLayout>
+    );
+}
+

@@ -1,0 +1,85 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.error {
+    padding: 1rem;
+    background-color: #fee2e2;
+    color: #dc2626;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.slotsGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary, #1f2937);
+}
+
+.slots {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.75rem;
+}
+
+.slotButton {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border, #e5e7eb);
+    border-radius: 0.5rem;
+    background-color: var(--bg-primary, #ffffff);
+    color: var(--text-primary, #1f2937);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.slotButton:hover {
+    border-color: var(--primary, #6366f1);
+    background-color: rgba(99, 102, 241, 0.05);
+}
+
+.slotButtonActive {
+    border-color: var(--primary, #6366f1);
+    background-color: var(--primary, #6366f1);
+    color: white;
+}
+
+.slotButtonBooked {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+    border-color: #e5e7eb;
+    cursor: not-allowed;
+    opacity: 0.6;
+    position: relative;
+}
+
+.slotButtonBooked:hover {
+    background-color: #f3f4f6;
+    border-color: #e5e7eb;
+}
+
+.bookedLabel {
+    display: block;
+    font-size: 0.625rem;
+    margin-top: 0.25rem;
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}

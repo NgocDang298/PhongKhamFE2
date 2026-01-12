@@ -1,0 +1,7 @@
+.loading,
+.empty {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-secondary, #6b7280);
+}
+
