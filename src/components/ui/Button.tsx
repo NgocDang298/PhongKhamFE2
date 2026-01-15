@@ -3,7 +3,13 @@ import { IconLoader2 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
+  variant?:
+    | "primary"
+    | "secondary"
+    | "outline"
+    | "ghost"
+    | "danger"
+    | "destructive";
   size?: "sm" | "md" | "lg";
   loading?: boolean;
   icon?: ReactNode;
@@ -22,7 +28,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    "inline-flex items-center justify-center h-11 gap-2 font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+    "inline-flex items-center text-sm justify-center h-11 gap-2 font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
 
   const variantStyles = {
     primary:
@@ -34,6 +40,8 @@ export default function Button({
     ghost: "text-gray-700 hover:bg-gray-100 focus:ring-gray-500",
     danger:
       "bg-danger-500 text-white hover:bg-danger-600 focus:ring-danger-500 shadow-sm hover:shadow-md",
+    destructive:
+      "bg-red-100 border border-red-500 text-red-500 hover:text-white hover:bg-red-500 focus:ring-red-500 shadow-sm hover:shadow-md",
   };
 
   const sizeStyles = {

@@ -54,19 +54,25 @@ export default function DashboardLayout({
                 `}
       >
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div
+          className={`flex items-center p-4 border-b border-gray-200 ${
+            sidebarOpen ? "justify-between" : "justify-center"
+          }`}
+        >
           <div
             className={`flex items-center gap-3 ${
               !sidebarOpen && "justify-center"
             }`}
           >
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-white">
-              <IconLayoutDashboard size={24} />
-            </div>
             {sidebarOpen && (
-              <span className="text-lg font-bold text-gray-900">
-                Clinic System
-              </span>
+              <>
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-white">
+                  <IconLayoutDashboard size={24} />
+                </div>
+                <span className="text-lg font-bold text-gray-900">
+                  Clinic System
+                </span>
+              </>
             )}
           </div>
           <button
@@ -139,7 +145,7 @@ export default function DashboardLayout({
 
           {/* Logout Button */}
           <Button
-            variant="ghost"
+            variant="destructive"
             size="sm"
             onClick={handleLogout}
             icon={<IconLogout size={16} />}
@@ -163,7 +169,7 @@ export default function DashboardLayout({
         </header>
 
         {/* Content */}
-        <div className="flex-1 overflow-auto p-8">{children}</div>
+        <div className="flex-1 overflow-auto p-4">{children}</div>
       </main>
     </div>
   );
