@@ -1,140 +1,158 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
-import Button from '@/components/ui/Button';
-import Input from '@/components/ui/Input';
-import { Card, CardBody, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
-import styles from './login.module.css';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/Card";
+import {
+  IconActivity,
+  IconIdBadge2,
+  IconLock,
+  IconAlertCircle,
+} from "@tabler/icons-react";
 
 export default function LoginPage() {
-    const router = useRouter();
-    const { login } = useAuth();
-    const [formData, setFormData] = useState({
-        cccd: '',
-        password: '',
+  const router = useRouter();
+  const { login } = useAuth();
+  const [formData, setFormData] = useState({
+    cccd: "",
+    password: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      await login(formData);
+      // Redirect is handled by AuthContext
+    } catch (err: any) {
+      setError(err.message || "Đăng nhập thất bại");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
     });
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
+  };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
-        setLoading(true);
+  return (
+    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden">
+      {/* Background Image with Overlay */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="/images/login/background.jpg"
+          alt="Background"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-indigo-900/40"></div>
+      </div>
 
-        try {
-            await login(formData);
-            // Redirect is handled by AuthContext
-        } catch (err: any) {
-            setError(err.message || 'Đăng nhập thất bại');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
-    };
-
-    return (
-        <div className={styles.container}>
-            <div className={styles.background}>
-                <div className={styles.gradientOrb1}></div>
-                <div className={styles.gradientOrb2}></div>
-                <div className={styles.gradientOrb3}></div>
+      {/* Login Card */}
+      <div className="relative w-full max-w-md">
+        <Card className="glass backdrop-blur-xl border-white/20 shadow-2xl">
+          <CardHeader>
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="flex items-center justify-center w-20 h-20 rounded-full bg-indigo-50 backdrop-blur-sm">
+                <IconActivity
+                  size={32}
+                  className="text-primary"
+                  strokeWidth={2.5}
+                />
+              </div>
+              <div>
+                <CardTitle className="text-black text-3xl">Đăng Nhập</CardTitle>
+                <CardDescription>
+                  Chào mừng bạn đến với Hệ thống Quản lý Phòng khám
+                </CardDescription>
+              </div>
             </div>
+          </CardHeader>
 
-            <div className={styles.content}>
-                <Card className={styles.card} glass>
-                    <CardHeader>
-                        <div className={styles.logo}>
-                            <div className={styles.logoIcon}>
-                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                                </svg>
-                            </div>
-                            <CardTitle>Đăng Nhập</CardTitle>
-                            <CardDescription>
-                                Chào mừng bạn đến với Hệ thống Quản lý Phòng khám
-                            </CardDescription>
-                        </div>
-                    </CardHeader>
+          <CardBody>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {error && (
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-danger-50 border border-danger-200 text-danger-700">
+                  <IconAlertCircle size={20} />
+                  <span className="text-sm">{error}</span>
+                </div>
+              )}
 
-                    <CardBody>
-                        <form onSubmit={handleSubmit} className={styles.form}>
-                            {error && (
-                                <div className={styles.error}>
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <circle cx="12" cy="12" r="10" />
-                                        <line x1="12" y1="8" x2="12" y2="12" />
-                                        <line x1="12" y1="16" x2="12.01" y2="16" />
-                                    </svg>
-                                    {error}
-                                </div>
-                            )}
+              <Input
+                label="Số CCCD"
+                name="cccd"
+                type="text"
+                placeholder="Nhập số CCCD (12 số)"
+                value={formData.cccd}
+                onChange={handleChange}
+                required
+                fullWidth
+                icon={<IconIdBadge2 size={20} className="text-gray-700" />}
+                className="bg-white/90 backdrop-blur-sm"
+              />
 
-                            <Input
-                                label="Số CCCD"
-                                name="cccd"
-                                type="text"
-                                placeholder="Nhập số CCCD (12 số)"
-                                value={formData.cccd}
-                                onChange={handleChange}
-                                required
-                                fullWidth
-                                icon={
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <rect x="3" y="4" width="18" height="16" rx="2" />
-                                        <line x1="7" y1="8" x2="17" y2="8" />
-                                        <line x1="7" y1="12" x2="17" y2="12" />
-                                        <line x1="7" y1="16" x2="13" y2="16" />
-                                    </svg>
-                                }
-                            />
+              <Input
+                label="Mật khẩu"
+                name="password"
+                type="password"
+                placeholder="Nhập mật khẩu"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                fullWidth
+                icon={<IconLock size={20} className="text-gray-700" />}
+                className="bg-white/90 backdrop-blur-sm"
+              />
 
-                            <Input
-                                label="Mật khẩu"
-                                name="password"
-                                type="password"
-                                placeholder="Nhập mật khẩu"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required
-                                fullWidth
-                                icon={
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                                    </svg>
-                                }
-                            />
+              <Button
+                type="submit"
+                fullWidth
+                loading={loading}
+                className="bg-primary hover:bg-primary/90"
+              >
+                Đăng nhập
+              </Button>
 
-                            <Button type="submit" fullWidth loading={loading} size="lg">
-                                Đăng nhập
-                            </Button>
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-700 font-semibold">
+                    hoặc
+                  </span>
+                </div>
+              </div>
 
-                            <div className={styles.divider}>
-                                <span>hoặc</span>
-                            </div>
+              <Link href="/register" className="block">
+                <Button type="button" variant="outline" fullWidth>
+                  Tạo tài khoản mới
+                </Button>
+              </Link>
+            </form>
+          </CardBody>
+        </Card>
 
-                            <Link href="/register" className={styles.registerLink}>
-                                <Button type="button" variant="outline" fullWidth>
-                                    Tạo tài khoản mới
-                                </Button>
-                            </Link>
-                        </form>
-                    </CardBody>
-                </Card>
-
-                <p className={styles.footer}>
-                    © 2024 Clinic Management System. All rights reserved.
-                </p>
-            </div>
-        </div>
-    );
+        <p className="text-center mt-8 text-white/80 text-sm">
+          © 2024 Clinic Management System. All rights reserved.
+        </p>
+      </div>
+    </div>
+  );
 }

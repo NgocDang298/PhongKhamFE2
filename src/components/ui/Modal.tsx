@@ -1,67 +1,83 @@
-import React, { ReactNode, useEffect } from 'react';
-import styles from './Modal.module.css';
-import { cn } from '@/lib/utils';
-import Button from './Button';
+import React, { ReactNode, useEffect } from "react";
+import { IconX } from "@tabler/icons-react";
+import { cn } from "@/lib/utils";
 
 interface ModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    title?: string;
-    children: ReactNode;
-    size?: 'sm' | 'md' | 'lg' | 'xl';
-    showCloseButton?: boolean;
-    footer?: ReactNode;
+  isOpen: boolean;
+  onClose: () => void;
+  title?: string;
+  children: ReactNode;
+  size?: "sm" | "md" | "lg" | "xl";
+  showCloseButton?: boolean;
+  footer?: ReactNode;
 }
 
 export default function Modal({
-    isOpen,
-    onClose,
-    title,
-    children,
-    size = 'md',
-    showCloseButton = true,
-    footer,
+  isOpen,
+  onClose,
+  title,
+  children,
+  size = "md",
+  showCloseButton = true,
+  footer,
 }: ModalProps) {
-    useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'unset';
-        }
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
-    }, [isOpen]);
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
 
-    if (!isOpen) return null;
+  if (!isOpen) return null;
 
-    return (
-        <div className={styles.overlay} onClick={onClose}>
-            <div
-                className={cn(styles.modal, styles[size])}
-                onClick={(e) => e.stopPropagation()}
-            >
-                {(title || showCloseButton) && (
-                    <div className={styles.header}>
-                        {title && <h2 className={styles.title}>{title}</h2>}
-                        {showCloseButton && (
-                            <button
-                                className={styles.closeButton}
-                                onClick={onClose}
-                                aria-label="Close"
-                            >
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <line x1="18" y1="6" x2="6" y2="18" />
-                                    <line x1="6" y1="6" x2="18" y2="18" />
-                                </svg>
-                            </button>
-                        )}
-                    </div>
-                )}
-                <div className={styles.body}>{children}</div>
-                {footer && <div className={styles.footer}>{footer}</div>}
-            </div>
+  const sizeClasses = {
+    sm: "max-w-md",
+    md: "max-w-lg",
+    lg: "max-w-2xl",
+    xl: "max-w-4xl",
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fadeIn"
+      onClick={onClose}
+    >
+      <div
+        className={cn(
+          "w-full bg-white rounded-xl shadow-2xl animate-slideInUp",
+          sizeClasses[size]
+        )}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {(title || showCloseButton) && (
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+            {title && (
+              <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+            )}
+            {showCloseButton && (
+              <button
+                className="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                onClick={onClose}
+                aria-label="Close"
+              >
+                <IconX size={20} />
+              </button>
+            )}
+          </div>
+        )}
+        <div className="px-6 py-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+          {children}
         </div>
-    );
+        {footer && (
+          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-xl">
+            {footer}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
-

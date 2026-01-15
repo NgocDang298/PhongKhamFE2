@@ -1,45 +1,43 @@
-import React from 'react';
-import styles from './Badge.module.css';
-import { cn } from '@/lib/utils';
-import type { AppointmentStatus, ExaminationStatus, TestRequestStatus, InvoiceStatus } from '@/types';
-
-type BadgeVariant = 'default' | 'success' | 'warning' | 'error' | 'info';
+import React from "react";
+import { cn } from "@/lib/utils";
 
 interface BadgeProps {
-    children: React.ReactNode;
-    variant?: BadgeVariant;
-    status?: AppointmentStatus | ExaminationStatus | TestRequestStatus | InvoiceStatus;
-    className?: string;
+  children: React.ReactNode;
+  variant?: "primary" | "success" | "warning" | "danger" | "gray";
+  size?: "sm" | "md" | "lg";
+  className?: string;
 }
 
-function getVariantFromStatus(
-    status: AppointmentStatus | ExaminationStatus | TestRequestStatus | InvoiceStatus
-): BadgeVariant {
-    const statusMap: Record<string, BadgeVariant> = {
-        // Appointment
-        pending: 'warning',
-        confirmed: 'success',
-        cancelled: 'error',
-        completed: 'info',
-        // Examination
-        processing: 'info',
-        done: 'success',
-        // Test Request
-        waiting: 'warning',
-        // Invoice
-        paid: 'success',
-        unpaid: 'error',
-    };
+export default function Badge({
+  children,
+  variant = "primary",
+  size = "md",
+  className,
+}: BadgeProps) {
+  const variants = {
+    primary: "bg-primary/10 text-primary border-primary/20",
+    success: "bg-success-100 text-success-700 border-success-200",
+    warning: "bg-warning-100 text-warning-700 border-warning-200",
+    danger: "bg-danger-100 text-danger-700 border-danger-200",
+    gray: "bg-gray-100 text-gray-700 border-gray-200",
+  };
 
-    return statusMap[status] || 'default';
-}
+  const sizes = {
+    sm: "px-2 py-0.5 text-xs",
+    md: "px-2.5 py-1 text-sm",
+    lg: "px-3 py-1.5 text-base",
+  };
 
-export default function Badge({ children, variant, status, className }: BadgeProps) {
-    const badgeVariant = status ? getVariantFromStatus(status) : variant || 'default';
-
-    return (
-        <span className={cn(styles.badge, styles[badgeVariant], className)}>
-            {children}
-        </span>
-    );
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center font-medium rounded-full border",
+        variants[variant],
+        sizes[size],
+        className
+      )}
+    >
+      {children}
+    </span>
+  );
 }

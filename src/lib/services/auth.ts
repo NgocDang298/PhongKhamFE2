@@ -46,6 +46,10 @@ export function removeToken(): void {
     localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
 }
 
+export function removeCurrentUser(): void {
+    localStorage.removeItem(STORAGE_KEYS.USER_DATA);
+}
+
 // ============= User Session =============
 
 export function getCurrentUser(): User | null {

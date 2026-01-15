@@ -5,9 +5,11 @@ export type UserRole = 'patient' | 'doctor' | 'staff' | 'lab_nurse' | 'admin';
 
 export interface User {
   _id: string;
-  email: string;
+  email?: string;
   cccd: string;
   role: UserRole;
+  fullName?: string;
+  phone?: string;
   createdAt?: string;
 }
 
@@ -15,7 +17,7 @@ export interface AuthResponse {
   status: boolean;
   token: string;
   user: User & {
-    fullName: string;
+    fullName?: string;
   };
 }
 
@@ -312,6 +314,7 @@ export interface ProfileData {
   stats?: {
     totalAppointments?: number;
     totalExaminations?: number;
+    upcomingAppointments?: number;
   };
 }
 

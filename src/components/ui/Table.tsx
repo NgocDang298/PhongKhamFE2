@@ -1,68 +1,87 @@
-import React, { ReactNode } from 'react';
-import styles from './Table.module.css';
-import { cn } from '@/lib/utils';
+import React, { ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 interface TableProps {
-    children: ReactNode;
-    className?: string;
+  children: ReactNode;
+  className?: string;
 }
 
 export function Table({ children, className }: TableProps) {
-    return (
-        <div className={styles.tableWrapper}>
-            <table className={cn(styles.table, className)}>{children}</table>
-        </div>
-    );
+  return (
+    <div className="w-full overflow-x-auto rounded-lg border border-gray-200">
+      <table className={cn("w-full border-collapse", className)}>
+        {children}
+      </table>
+    </div>
+  );
 }
 
 interface TableHeaderProps {
-    children: ReactNode;
+  children: ReactNode;
 }
 
 export function TableHeader({ children }: TableHeaderProps) {
-    return <thead className={styles.header}>{children}</thead>;
+  return (
+    <thead className="bg-gray-50 border-b border-gray-200">{children}</thead>
+  );
 }
 
 interface TableBodyProps {
-    children: ReactNode;
+  children: ReactNode;
 }
 
 export function TableBody({ children }: TableBodyProps) {
-    return <tbody className={styles.body}>{children}</tbody>;
+  return <tbody className="divide-y divide-gray-200">{children}</tbody>;
 }
 
 interface TableRowProps {
-    children: ReactNode;
-    className?: string;
-    onClick?: () => void;
+  children: ReactNode;
+  className?: string;
+  onClick?: () => void;
 }
 
 export function TableRow({ children, className, onClick }: TableRowProps) {
-    return (
-        <tr
-            className={cn(styles.row, onClick && styles.clickable, className)}
-            onClick={onClick}
-        >
-            {children}
-        </tr>
-    );
+  return (
+    <tr
+      className={cn(
+        "transition-colors",
+        onClick && "cursor-pointer hover:bg-gray-50",
+        className
+      )}
+      onClick={onClick}
+    >
+      {children}
+    </tr>
+  );
 }
 
 interface TableHeadProps {
-    children: ReactNode;
-    className?: string;
+  children: ReactNode;
+  className?: string;
 }
 
 export function TableHead({ children, className }: TableHeadProps) {
-    return <th className={cn(styles.head, className)}>{children}</th>;
+  return (
+    <th
+      className={cn(
+        "px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider",
+        className
+      )}
+    >
+      {children}
+    </th>
+  );
 }
 
 interface TableCellProps {
-    children: ReactNode;
-    className?: string;
+  children: ReactNode;
+  className?: string;
 }
 
 export function TableCell({ children, className }: TableCellProps) {
-    return <td className={cn(styles.cell, className)}>{children}</td>;
+  return (
+    <td className={cn("px-6 py-4 text-sm text-gray-900", className)}>
+      {children}
+    </td>
+  );
 }
-
