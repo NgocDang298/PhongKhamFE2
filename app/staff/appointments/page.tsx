@@ -28,7 +28,6 @@ import {
   IconCalendar,
   IconPlus,
   IconTable,
-  IconAlertCircle,
 } from "@tabler/icons-react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";

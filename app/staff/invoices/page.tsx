@@ -199,8 +199,16 @@ export default function StaffInvoicesPage() {
       toast.warn("Vui lòng chọn ca khám và thêm ít nhất một dịch vụ");
       return;
     }
+
+    const hasEmptyReference = createFormData.items.some(
+      (item) => !item.referenceId || item.referenceId.trim() === ""
+    );
+    if (hasEmptyReference) {
+      toast.warn("Vui lòng chọn dịch vụ/xét nghiệm cho tất cả các mục");
+      return;
+    }
+
     try {
-      // Remove patientId and keep what CreateInvoiceRequest expects
       const { patientId, ...data } = createFormData;
       await invoiceService.createInvoice(data);
       setIsCreateModalOpen(false);
@@ -218,6 +226,16 @@ export default function StaffInvoicesPage() {
       toast.warn("Vui lòng thêm ít nhất một dịch vụ");
       return;
     }
+
+    // Validate that all items have a valid referenceId
+    const hasEmptyReference = updateFormData.items.some(
+      (item) => !item.referenceId || item.referenceId.trim() === ""
+    );
+    if (hasEmptyReference) {
+      toast.warn("Vui lòng chọn dịch vụ/xét nghiệm cho tất cả các mục");
+      return;
+    }
+
     try {
       await invoiceService.updateInvoice(selectedInvoice._id, updateFormData);
       setIsUpdateModalOpen(false);
