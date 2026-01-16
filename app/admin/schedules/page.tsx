@@ -21,62 +21,33 @@ import { ROUTES, DAYS_OF_WEEK, DAY_LABELS } from "@/lib/constants";
 import * as workScheduleService from "@/lib/services/workSchedules";
 import * as directoryService from "@/lib/services/directory";
 import type { WorkSchedule, Doctor, LabNurse } from "@/types";
+import {
+  IconLayoutGrid,
+  IconUsers,
+  IconClock,
+  IconTrendingUp,
+  IconPlus,
+  IconChevronRight,
+  IconAlertCircle,
+  IconX,
+  IconCalendar,
+} from "@tabler/icons-react";
 
 const navItems = [
   {
     label: "Tổng quan",
     path: ROUTES.ADMIN_DASHBOARD,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <rect x="3" y="3" width="7" height="7" />
-        <rect x="14" y="3" width="7" height="7" />
-        <rect x="14" y="14" width="7" height="7" />
-        <rect x="3" y="14" width="7" height="7" />
-      </svg>
-    ),
+    icon: <IconLayoutGrid size={20} />,
   },
   {
     label: "Quản lý tài khoản",
     path: ROUTES.ADMIN_USERS,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-      </svg>
-    ),
+    icon: <IconUsers size={20} />,
   },
   {
     label: "Lịch làm việc",
     path: ROUTES.ADMIN_SCHEDULES,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <polyline points="12 6 12 12 16 14" />
-      </svg>
-    ),
+    icon: <IconClock size={20} />,
   },
 ];
 
@@ -453,37 +424,13 @@ export default function AdminSchedulesPage() {
           <Button
             variant="outline"
             onClick={() => setIsQuickCreateOpen(true)}
-            icon={
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-                <polyline points="17 6 23 6 23 12" />
-              </svg>
-            }
+            icon={<IconTrendingUp size={16} />}
           >
             Tạo nhanh
           </Button>
           <Button
             onClick={() => handleOpenModal()}
-            icon={
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-            }
+            icon={<IconPlus size={16} />}
           >
             Tạo lịch đơn lẻ
           </Button>
@@ -493,7 +440,7 @@ export default function AdminSchedulesPage() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Danh sách bác sĩ và y tá */}
         <Card className="lg:col-span-1">
-          <CardHeader>
+          <CardHeader icon={<IconUsers size={20} />}>
             <CardTitle>Danh sách nhân viên</CardTitle>
           </CardHeader>
           <CardBody>
@@ -532,16 +479,7 @@ export default function AdminSchedulesPage() {
                           {doctor.specialty}
                         </div>
                       </div>
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <polyline points="9 18 15 12 9 6" />
-                      </svg>
+                      <IconChevronRight size={20} />
                     </button>
                   ))
                 )}
@@ -574,16 +512,7 @@ export default function AdminSchedulesPage() {
                           {nurse.fullName}
                         </div>
                       </div>
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <polyline points="9 18 15 12 9 6" />
-                      </svg>
+                      <IconChevronRight size={20} />
                     </button>
                   ))
                 )}
@@ -594,7 +523,7 @@ export default function AdminSchedulesPage() {
 
         {/* Lịch làm việc của người được chọn */}
         <Card className="lg:col-span-3">
-          <CardHeader>
+          <CardHeader icon={<IconCalendar size={20} />}>
             <CardTitle>
               {selectedPerson
                 ? `Lịch làm việc - ${selectedPerson.name}`
@@ -686,18 +615,7 @@ export default function AdminSchedulesPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
             <div className="flex items-center gap-2 p-4 mb-4 text-red-800 bg-red-50 border border-red-200 rounded-lg text-sm">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
+              <IconAlertCircle size={20} />
               {error}
             </div>
           )}
@@ -826,18 +744,7 @@ export default function AdminSchedulesPage() {
         <div className="space-y-6">
           {error && (
             <div className="flex items-center gap-2 p-4 mb-4 text-red-800 bg-red-50 border border-red-200 rounded-lg text-sm">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
+              <IconAlertCircle size={20} />
               {error}
             </div>
           )}
@@ -948,19 +855,7 @@ export default function AdminSchedulesPage() {
                       variant="danger"
                       size="sm"
                       onClick={() => removeShift(index)}
-                      icon={
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <line x1="18" y1="6" x2="6" y2="18" />
-                          <line x1="6" y1="6" x2="18" y2="18" />
-                        </svg>
-                      }
+                      icon={<IconX size={16} />}
                     >
                       Xóa
                     </Button>

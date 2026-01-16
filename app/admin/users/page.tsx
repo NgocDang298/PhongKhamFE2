@@ -23,62 +23,31 @@ import { ROUTES, GENDER_OPTIONS } from "@/lib/constants";
 import * as authLib from "@/lib/services/auth";
 import * as directoryService from "@/lib/services/directory";
 import type { UserRole, Doctor, Staff, LabNurse, Patient } from "@/types";
+import {
+  IconLayoutGrid,
+  IconUsers,
+  IconClock,
+  IconPlus,
+  IconRefresh,
+  IconEye,
+  IconAlertCircle,
+} from "@tabler/icons-react";
 
 const navItems = [
   {
     label: "Tổng quan",
     path: ROUTES.ADMIN_DASHBOARD,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <rect x="3" y="3" width="7" height="7" />
-        <rect x="14" y="3" width="7" height="7" />
-        <rect x="14" y="14" width="7" height="7" />
-        <rect x="3" y="14" width="7" height="7" />
-      </svg>
-    ),
+    icon: <IconLayoutGrid size={20} />,
   },
   {
     label: "Quản lý tài khoản",
     path: ROUTES.ADMIN_USERS,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-      </svg>
-    ),
+    icon: <IconUsers size={20} />,
   },
   {
     label: "Lịch làm việc",
     path: ROUTES.ADMIN_SCHEDULES,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <polyline points="12 6 12 12 16 14" />
-      </svg>
-    ),
+    icon: <IconClock size={20} />,
   },
 ];
 
@@ -327,26 +296,14 @@ export default function AdminUsersPage() {
       <div className="flex justify-end mb-4">
         <Button
           onClick={() => setIsModalOpen(true)}
-          icon={
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-          }
+          icon={<IconPlus size={16} />}
         >
           Tạo tài khoản mới
         </Button>
       </div>
 
       <Card>
-        <CardHeader>
+        <CardHeader icon={<IconUsers size={20} />}>
           <CardTitle>Danh sách tài khoản</CardTitle>
         </CardHeader>
         <CardBody>
@@ -357,18 +314,7 @@ export default function AdminUsersPage() {
             </div>
           ) : fetchError ? (
             <div className="flex items-center gap-2 p-4 mb-4 text-red-800 bg-red-50 border border-red-200 rounded-lg text-sm">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
+              <IconAlertCircle size={20} />
               {fetchError}
               <Button onClick={fetchUsers} variant="outline" size="sm">
                 Thử lại
@@ -377,7 +323,10 @@ export default function AdminUsersPage() {
           ) : users.length === 0 ? (
             <div className="text-center py-12 text-gray-500">
               <p>Chưa có tài khoản nào trong hệ thống.</p>
-              <p>Hãy tạo tài khoản mới bằng nút "Tạo tài khoản mới" ở trên.</p>
+              <p>
+                Hãy tạo tài khoản mới bằng nút "Tạo tài khoản Chi tiết lịch hẹn
+                mới" ở trên.
+              </p>
             </div>
           ) : (
             <>
@@ -391,20 +340,7 @@ export default function AdminUsersPage() {
                   onClick={fetchUsers}
                   variant="outline"
                   size="sm"
-                  icon={
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <polyline points="23 4 23 10 17 10" />
-                      <polyline points="1 20 1 14 7 14" />
-                      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-                    </svg>
-                  }
+                  icon={<IconRefresh size={16} />}
                 >
                   Làm mới
                 </Button>
@@ -465,19 +401,7 @@ export default function AdminUsersPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleViewUser(user)}
-                          icon={
-                            <svg
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                            >
-                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                              <circle cx="12" cy="12" r="3" />
-                            </svg>
-                          }
+                          icon={<IconEye size={16} />}
                         >
                           Xem
                         </Button>
@@ -678,18 +602,7 @@ export default function AdminUsersPage() {
         >
           {error && (
             <div className="md:col-span-2 flex items-center gap-2 p-4 mb-4 text-red-800 bg-red-50 border border-red-200 rounded-lg text-sm">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
+              <IconAlertCircle size={20} />
               {error}
             </div>
           )}

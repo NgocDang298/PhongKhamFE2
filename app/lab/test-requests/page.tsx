@@ -20,60 +20,27 @@ import * as testRequestService from "@/lib/services/testRequests";
 import * as directoryService from "@/lib/services/directory";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
+import {
+  IconLayoutGrid,
+  IconFileText,
+  IconCircleCheck,
+} from "@tabler/icons-react";
 
 const navItems = [
   {
     label: "Tổng quan",
     path: ROUTES.LAB_DASHBOARD,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <rect x="3" y="3" width="7" height="7" />
-        <rect x="14" y="3" width="7" height="7" />
-        <rect x="14" y="14" width="7" height="7" />
-        <rect x="3" y="14" width="7" height="7" />
-      </svg>
-    ),
+    icon: <IconLayoutGrid size={20} />,
   },
   {
     label: "Yêu cầu xét nghiệm",
     path: ROUTES.LAB_TEST_REQUESTS,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-        <polyline points="14 2 14 8 20 8" />
-      </svg>
-    ),
+    icon: <IconFileText size={20} />,
   },
   {
     label: "Kết quả xét nghiệm",
     path: ROUTES.LAB_TEST_RESULTS,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <polyline points="9 11 12 14 22 4" />
-        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-      </svg>
-    ),
+    icon: <IconCircleCheck size={20} />,
   },
 ];
 

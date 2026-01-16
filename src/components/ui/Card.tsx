@@ -27,11 +27,18 @@ export function Card({ children, className, glass, hover }: CardProps) {
 interface CardHeaderProps {
   children: ReactNode;
   className?: string;
+  icon?: ReactNode;
 }
 
-export function CardHeader({ children, className }: CardHeaderProps) {
+export function CardHeader({ children, className, icon }: CardHeaderProps) {
   return (
-    <div className={cn("px-6 py-5 border-b border-gray-200", className)}>
+    <div
+      className={cn(
+        "p-4 border-b border-gray-200 flex items-center gap-2",
+        className
+      )}
+    >
+      {icon && <div className="text-primary">{icon}</div>}
       {children}
     </div>
   );

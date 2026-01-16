@@ -164,7 +164,7 @@ export default function DashboardLayout({
                 `}
       >
         {/* Header */}
-        <header className="bg-white border-b border-gray-200 px-8 py-6">
+        <header className="bg-white flex items-center border-b border-gray-200 px-8 py-4 h-[73px]">
           <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
         </header>
 
