@@ -1,4 +1,4 @@
-import { get, post, put } from '../api';
+import { get, post, put, del } from '../api';
 import type { ApiResponse, Appointment, TimeSlot, CreateAppointmentRequest } from '@/types';
 
 // 2.1. Tạo Lịch Hẹn
@@ -63,6 +63,16 @@ export async function getDoctorAvailableSlots(params: {
 export async function createDoctorAppointment(data: CreateAppointmentRequest & { doctorId: string }): Promise<ApiResponse<Appointment>> {
     return post('/appointments/doctors', data);
 }
+
+// 2.12. Tạo Lịch Hẹn Tự Động (Hệ thống chọn bác sĩ)
+export async function autoAssignAppointment(data: {
+    appointmentDate: string;
+    note?: string;
+    patientId?: string; // Optional - for staff/admin to book for other patients
+}): Promise<ApiResponse<Appointment>> {
+    return post('/appointments/auto-assign', data);
+}
+
 
 // Helper: Get all slots with booking status
 export async function getAllSlotsWithStatus(params: {

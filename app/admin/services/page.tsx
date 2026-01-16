@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "react-toastify";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/Card";
 import {
@@ -119,9 +120,10 @@ export default function AdminServicesPage() {
         description: "",
         isActive: true,
       });
+      toast.success("Tạo dịch vụ thành công!");
       loadServices();
     } catch (error: any) {
-      alert(error.message || "Có lỗi xảy ra");
+      toast.error(error.message || "Có lỗi xảy ra khi tạo dịch vụ");
     }
   };
 
@@ -145,9 +147,10 @@ export default function AdminServicesPage() {
         description: "",
         isActive: true,
       });
+      toast.success("Cập nhật dịch vụ thành công!");
       loadServices();
     } catch (error: any) {
-      alert(error.message || "Có lỗi xảy ra");
+      toast.error(error.message || "Có lỗi xảy ra khi cập nhật");
     }
   };
 
@@ -157,9 +160,10 @@ export default function AdminServicesPage() {
     }
     try {
       await serviceService.deleteService(id);
+      toast.success("Đã xóa dịch vụ thành công");
       loadServices();
     } catch (error: any) {
-      alert(error.message || "Có lỗi xảy ra");
+      toast.error(error.message || "Có lỗi xảy ra khi xóa dịch vụ");
     }
   };
 

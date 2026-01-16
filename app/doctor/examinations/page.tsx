@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "react-toastify";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/Card";
 import {
@@ -109,50 +110,47 @@ export default function DoctorExaminationsPage() {
 
       // Handle response structure - API interceptor already unwraps response.data
       // Response could be: { examinations: [], total: number } or direct array or { data: { examinations: [] } }
+      let examinationsRes: any = examsRes;
       let examinationsData: any[] = [];
-      if (Array.isArray(examsRes)) {
-        examinationsData = examsRes;
+      if (Array.isArray(examinationsRes)) {
+        examinationsData = examinationsRes;
       } else if (
-        examsRes?.examinations &&
-        Array.isArray(examsRes.examinations)
+        examinationsRes?.examinations &&
+        Array.isArray(examinationsRes.examinations)
       ) {
-        examinationsData = examsRes.examinations;
-      } else if (examsRes?.data) {
-        if (Array.isArray(examsRes.data)) {
-          examinationsData = examsRes.data;
+        examinationsData = examinationsRes.examinations;
+      } else if (examinationsRes?.data) {
+        if (Array.isArray(examinationsRes.data)) {
+          examinationsData = examinationsRes.data;
         } else if (
-          examsRes.data?.examinations &&
-          Array.isArray(examsRes.data.examinations)
+          examinationsRes.data?.examinations &&
+          Array.isArray(examinationsRes.data.examinations)
         ) {
-          examinationsData = examsRes.data.examinations;
+          examinationsData = examinationsRes.data.examinations;
         }
       }
 
-      console.log("Processed examinations data:", examinationsData);
-      console.log("Examinations count:", examinationsData.length);
-
+      let appointmentsResult: any = appointmentsRes;
       let appointmentsData: any[] = [];
-      if (Array.isArray(appointmentsRes)) {
-        appointmentsData = appointmentsRes;
+      if (Array.isArray(appointmentsResult)) {
+        appointmentsData = appointmentsResult;
       } else if (
-        appointmentsRes?.appointments &&
-        Array.isArray(appointmentsRes.appointments)
+        appointmentsResult?.appointments &&
+        Array.isArray(appointmentsResult.appointments)
       ) {
-        appointmentsData = appointmentsRes.appointments;
-      } else if (appointmentsRes?.data) {
-        if (Array.isArray(appointmentsRes.data)) {
-          appointmentsData = appointmentsRes.data;
-        } else if (appointmentsRes.data?.appointments) {
-          appointmentsData = appointmentsRes.data.appointments;
+        appointmentsData = appointmentsResult.appointments;
+      } else if (appointmentsResult?.data) {
+        if (Array.isArray(appointmentsResult.data)) {
+          appointmentsData = appointmentsResult.data;
+        } else if (appointmentsResult.data?.appointments) {
+          appointmentsData = appointmentsResult.data.appointments;
         }
       }
 
       setExaminations(examinationsData);
       setAppointments(appointmentsData);
 
-      // Load services (optional data - may fail due to permissions)
       if (isAuthenticated) {
-        // Load Examination Services
         try {
           const servicesRes = await serviceService.getServices({
             serviceType: "examination",
@@ -259,9 +257,10 @@ export default function DoctorExaminationsPage() {
       await examinationService.startExamination(dataToSubmit);
       setIsStartModalOpen(false);
       setStartFormData({ appointmentId: "", serviceId: "" });
+      toast.success("Đã bắt đầu ca khám thành công!");
       loadData();
     } catch (error: any) {
-      alert(error.message || "Có lỗi xảy ra");
+      toast.error(error.message || "Có lỗi xảy ra khi bắt đầu ca khám");
     }
   };
 
@@ -281,9 +280,10 @@ export default function DoctorExaminationsPage() {
         doctorNote: "",
         resultSummary: "",
       });
+      toast.success("Cập nhật thông tin ca khám thành công!");
       loadData();
     } catch (error: any) {
-      alert(error.message || "Có lỗi xảy ra");
+      toast.error(error.message || "Có lỗi xảy ra khi cập nhật");
     }
   };
 
@@ -302,9 +302,10 @@ export default function DoctorExaminationsPage() {
         doctorNote: "",
         resultSummary: "",
       });
+      toast.success("Đã hoàn thành ca khám!");
       loadData();
     } catch (error: any) {
-      alert(error.message || "Có lỗi xảy ra");
+      toast.error(error.message || "Có lỗi xảy ra khi hoàn thành ca khám");
     }
   };
 
@@ -374,9 +375,9 @@ export default function DoctorExaminationsPage() {
         serviceId: "",
         labNurseId: "",
       });
-      alert("Đã tạo yêu cầu xét nghiệm thành công!");
+      toast.success("Đã tạo yêu cầu xét nghiệm thành công!");
     } catch (error: any) {
-      alert(error.message || "Có lỗi xảy ra khi tạo yêu cầu xét nghiệm");
+      toast.error(error.message || "Có lỗi xảy ra khi tạo yêu cầu xét nghiệm");
     }
   };
 

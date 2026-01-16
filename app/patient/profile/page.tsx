@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "react-toastify";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
@@ -94,9 +95,9 @@ export default function PatientProfilePage() {
       await profileService.updateProfile(formData);
       setIsEditing(false);
       loadProfile();
-      alert("Cập nhật thông tin thành công!");
+      toast.success("Cập nhật thông tin thành công!");
     } catch (error: any) {
-      alert(error.message || "Có lỗi xảy ra");
+      toast.error(error.message || "Có lỗi xảy ra khi cập nhật");
     }
   };
 

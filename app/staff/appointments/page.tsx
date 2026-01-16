@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "react-toastify";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/Card";
 import {
@@ -59,12 +60,18 @@ export default function StaffAppointmentsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isAutoAssignModalOpen, setIsAutoAssignModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
   const [patients, setPatients] = useState<any[]>([]);
   const [doctors, setDoctors] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     patientId: "",
     doctorId: "",
+    appointmentDate: "",
+    note: "",
+  });
+  const [autoAssignFormData, setAutoAssignFormData] = useState({
+    patientId: "",
     appointmentDate: "",
     note: "",
   });
@@ -180,18 +187,20 @@ export default function StaffAppointmentsPage() {
   const handleConfirm = async (id: string) => {
     try {
       await appointmentService.confirmAppointment(id);
+      toast.success("Đã xác nhận lịch hẹn!");
       loadData();
     } catch (error: any) {
-      alert(error.message || "Có lỗi xảy ra");
+      toast.error(error.message || "Có lỗi xảy ra khi xác nhận");
     }
   };
 
   const handleReject = async (id: string, reason?: string) => {
     try {
       await appointmentService.rejectAppointment(id, reason);
+      toast.success("Đã từ chối lịch hẹn");
       loadData();
     } catch (error: any) {
-      alert(error.message || "Có lỗi xảy ra");
+      toast.error(error.message || "Có lỗi xảy ra khi từ chối");
     }
   };
 
@@ -211,9 +220,57 @@ export default function StaffAppointmentsPage() {
         appointmentDate: "",
         note: "",
       });
+      toast.success("Tạo lịch hẹn mới thành công!");
       loadData();
     } catch (error: any) {
-      alert(error.message || "Có lỗi xảy ra");
+      toast.error(error.message || "Có lỗi xảy ra khi tạo lịch hẹn");
+    }
+  };
+
+  const handleAutoAssign = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      // Convert datetime-local to ISO format
+      const appointmentDate = new Date(
+        autoAssignFormData.appointmentDate
+      ).toISOString();
+
+      const response = await appointmentService.autoAssignAppointment({
+        patientId: autoAssignFormData.patientId,
+        appointmentDate: appointmentDate,
+        note: autoAssignFormData.note,
+      });
+
+      // Show success message with doctor info
+      const doctorInfo = response.data?.doctorId;
+      const doctorName =
+        typeof doctorInfo === "object" ? doctorInfo.fullName : "Không xác định";
+      const specialty =
+        typeof doctorInfo === "object" ? doctorInfo.specialty : "";
+
+      toast.success(
+        <div>
+          <p className="font-bold">Đặt lịch thành công!</p>
+          <p className="text-sm">Bác sĩ: {doctorName}</p>
+          {specialty && <p className="text-sm">Chuyên khoa: {specialty}</p>}
+          <p className="text-sm">
+            Trạng thái:{" "}
+            {response.data?.status === "confirmed"
+              ? "Đã xác nhận"
+              : "Chờ xác nhận"}
+          </p>
+        </div>
+      );
+
+      setIsAutoAssignModalOpen(false);
+      setAutoAssignFormData({
+        patientId: "",
+        appointmentDate: "",
+        note: "",
+      });
+      loadData();
+    } catch (error: any) {
+      toast.error(error.message || "Có lỗi xảy ra khi đặt lịch tự động");
     }
   };
 
@@ -273,12 +330,22 @@ export default function StaffAppointmentsPage() {
               </button>
             </div>
           </div>
-          <Button
-            onClick={() => setIsCreateModalOpen(true)}
-            icon={<IconPlus size={16} />}
-          >
-            Tạo lịch hẹn mới
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsAutoAssignModalOpen(true)}
+              icon={<IconPlus size={16} />}
+            >
+              Đặt lịch tự động
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => setIsCreateModalOpen(true)}
+              icon={<IconPlus size={16} />}
+            >
+              Tạo lịch hẹn mới
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -783,6 +850,101 @@ export default function StaffAppointmentsPage() {
             type="text"
             value={formData.note}
             onChange={(e) => setFormData({ ...formData, note: e.target.value })}
+            fullWidth
+          />
+        </form>
+      </Modal>
+
+      {/* Auto-Assign Appointment Modal */}
+      <Modal
+        isOpen={isAutoAssignModalOpen}
+        onClose={() => {
+          setIsAutoAssignModalOpen(false);
+          setAutoAssignFormData({
+            patientId: "",
+            appointmentDate: "",
+            note: "",
+          });
+        }}
+        title="Đặt lịch tự động (Hệ thống chọn bác sĩ)"
+        size="md"
+        footer={
+          <>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsAutoAssignModalOpen(false);
+                setAutoAssignFormData({
+                  patientId: "",
+                  appointmentDate: "",
+                  note: "",
+                });
+              }}
+            >
+              Hủy
+            </Button>
+            <Button onClick={handleAutoAssign}>Đặt lịch</Button>
+          </>
+        }
+      >
+        <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+          <p className="text-sm text-blue-800">
+            <strong>Lưu ý:</strong> Hệ thống sẽ tự động chọn bác sĩ phù hợp nhất
+            dựa trên:
+          </p>
+          <ul className="text-sm text-blue-700 mt-2 ml-4 list-disc">
+            <li>Lịch làm việc của bác sĩ</li>
+            <li>Số lượng lịch hẹn hiện tại</li>
+            <li>Thời gian khám mong muốn</li>
+          </ul>
+        </div>
+
+        <form onSubmit={handleAutoAssign} className="space-y-4">
+          <Select
+            label="Chọn bệnh nhân"
+            name="patientId"
+            options={[
+              { value: "", label: "Chọn bệnh nhân" },
+              ...patients.map((p) => ({
+                value: p._id,
+                label: `${p.fullName} - ${p.phone}`,
+              })),
+            ]}
+            value={autoAssignFormData.patientId}
+            onChange={(e) =>
+              setAutoAssignFormData({
+                ...autoAssignFormData,
+                patientId: e.target.value,
+              })
+            }
+            required
+            fullWidth
+          />
+          <Input
+            label="Ngày giờ hẹn"
+            name="appointmentDate"
+            type="datetime-local"
+            value={autoAssignFormData.appointmentDate}
+            onChange={(e) =>
+              setAutoAssignFormData({
+                ...autoAssignFormData,
+                appointmentDate: e.target.value,
+              })
+            }
+            required
+            fullWidth
+          />
+          <Input
+            label="Ghi chú (tùy chọn)"
+            name="note"
+            type="text"
+            value={autoAssignFormData.note}
+            onChange={(e) =>
+              setAutoAssignFormData({
+                ...autoAssignFormData,
+                note: e.target.value,
+              })
+            }
             fullWidth
           />
         </form>

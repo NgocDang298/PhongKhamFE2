@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "react-toastify";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/Card";
 import {
@@ -335,9 +336,11 @@ export default function AdminSchedulesPage() {
         );
       }
 
-      alert(`Đã tạo thành công ${schedulesToCreate.length} ca làm việc!`);
+      toast.success(
+        `Đã tạo thành công ${schedulesToCreate.length} ca làm việc!`
+      );
     } catch (err: any) {
-      setError(err.message || "Có lỗi xảy ra khi tạo lịch");
+      toast.error(err.message || "Có lỗi xảy ra khi tạo lịch");
     } finally {
       setCreating(false);
     }
@@ -386,11 +389,12 @@ export default function AdminSchedulesPage() {
 
     try {
       await workScheduleService.deleteWorkSchedule(id);
+      toast.success("Đã xóa lịch làm việc thành công");
       if (selectedPerson) {
         loadPersonSchedules(selectedPerson.id, selectedPerson.type);
       }
     } catch (err: any) {
-      alert(err.message || "Có lỗi xảy ra khi xóa");
+      toast.error(err.message || "Có lỗi xảy ra khi xóa");
     }
   };
 
@@ -865,7 +869,7 @@ export default function AdminSchedulesPage() {
             </div>
           </div>
 
-          <div className={styles.preview}>
+          <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl text-primary text-sm shadow-inner">
             <strong>Xem trước:</strong> Sẽ tạo{" "}
             <strong>
               {quickCreateData.selectedDays.length *

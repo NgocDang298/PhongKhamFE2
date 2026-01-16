@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "react-toastify";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
@@ -106,11 +107,10 @@ export default function PatientAppointments() {
     if (!selectedAppointment) return;
     try {
       await appointmentService.cancelAppointment(selectedAppointment._id);
-      setCancelModalOpen(false);
-      setSelectedAppointment(null);
+      toast.success("Đã hủy lịch hẹn thành công");
       loadAppointments();
     } catch (error: any) {
-      alert(error.message || "Có lỗi xảy ra");
+      toast.error(error.message || "Có lỗi xảy ra khi hủy lịch hẹn");
     }
   };
 

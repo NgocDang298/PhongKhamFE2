@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 import { getPatients } from "@/lib/services/patients";
 import { useAuth } from "@/contexts/AuthContext";
 import DashboardLayout from "@/components/layout/DashboardLayout";
@@ -240,9 +241,9 @@ export default function AdminUsersPage() {
       resetForm();
       // Refresh users list
       fetchUsers();
-      alert("Tạo tài khoản thành công!");
+      toast.success("Tạo tài khoản thành công!");
     } catch (err: any) {
-      setError(err.message || "Tạo tài khoản thất bại");
+      toast.error(err.message || "Tạo tài khoản thất bại");
     } finally {
       setLoading(false);
     }

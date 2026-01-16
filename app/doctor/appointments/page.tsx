@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "react-toastify";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/Card";
 import {
@@ -74,22 +75,12 @@ export default function DoctorAppointmentsPage() {
       if (statusFilter) {
         params.status = statusFilter;
       }
-
-      console.log("Loading appointments with params:", params);
-
-      // Doctor doesn't have access to /patients endpoint
-      // The /appointments API already returns populated patient data in patientId field
       const appointmentsResponse = (await appointmentService.getAppointments(
         params
       )) as any;
 
       console.log("Raw appointments response:", appointmentsResponse);
 
-      // Response is already unwrapped by interceptor
-      // Handle different response structures:
-      // 1. { appointments: [], total: number } - paginated response
-      // 2. { data: [...] } - wrapped in data property
-      // 3. [...] - direct array
       let appointmentsData: any[] = [];
       if (Array.isArray(appointmentsResponse)) {
         appointmentsData = appointmentsResponse;
@@ -157,7 +148,7 @@ export default function DoctorAppointmentsPage() {
 
   const handleStartExamination = async () => {
     if (!selectedAppointment || !selectedServiceId) {
-      alert("Vui lòng chọn dịch vụ");
+      toast.warn("Vui lòng chọn dịch vụ");
       return;
     }
 
@@ -188,11 +179,11 @@ export default function DoctorAppointmentsPage() {
       setIsStartExamModalOpen(false);
       setSelectedAppointment(null);
       setSelectedServiceId("");
-      alert("Đã bắt đầu ca khám thành công!");
+      toast.success("Đã bắt đầu ca khám thành công!");
       router.push(ROUTES.DOCTOR_EXAMINATIONS);
     } catch (error: any) {
       console.error("Start examination error:", error);
-      alert(error.message || "Có lỗi xảy ra khi bắt đầu ca khám");
+      toast.error(error.message || "Có lỗi xảy ra khi bắt đầu ca khám");
     }
   };
 

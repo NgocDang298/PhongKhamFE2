@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "react-toastify";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/Card";
 import {
@@ -91,12 +92,6 @@ export default function StaffPatientsPage() {
   const loadPatients = async () => {
     try {
       setLoading(true);
-      // Assuming 'directoryService' is a typo and should be 'patientService'
-      // and 'searchQuery' should be derived from 'searchTerm' as in the original code.
-      // If 'directoryService' is a new service, it needs to be imported.
-      // If 'searchQuery' is a new state/variable, it needs to be defined.
-      // For faithful application, I'm using the original service and search term logic,
-      // but applying the response handling change.
       const response: any = await patientService.getPatients(
         searchTerm ? { search: searchTerm } : {}
       );
@@ -126,9 +121,9 @@ export default function StaffPatientsPage() {
         password: "",
       });
       loadPatients();
-      alert("Tạo bệnh nhân walk-in thành công!");
+      toast.success("Tạo bệnh nhân walk-in thành công!");
     } catch (error: any) {
-      alert(error.message || "Có lỗi xảy ra");
+      toast.error(error.message || "Có lỗi xảy ra khi tạo bệnh nhân");
     }
   };
 
