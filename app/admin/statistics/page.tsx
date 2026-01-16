@@ -151,7 +151,7 @@ export default function AdminStatisticsPage() {
 
   return (
     <DashboardLayout navItems={navItems} title="Thống kê doanh thu">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-4">
         <div style={{ maxWidth: "300px" }}>
           <Select
             label="Chọn kỳ thống kê"

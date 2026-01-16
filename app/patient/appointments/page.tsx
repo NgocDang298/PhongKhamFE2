@@ -19,62 +19,28 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import viLocale from "@fullcalendar/core/locales/vi";
+import {
+  IconLayoutGrid,
+  IconCalendar,
+  IconPlus,
+  IconAlertCircle,
+} from "@tabler/icons-react";
 
 const navItems = [
   {
     label: "Tổng quan",
     path: ROUTES.PATIENT_DASHBOARD,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <rect x="3" y="3" width="7" height="7" />
-        <rect x="14" y="3" width="7" height="7" />
-        <rect x="14" y="14" width="7" height="7" />
-        <rect x="3" y="14" width="7" height="7" />
-      </svg>
-    ),
+    icon: <IconLayoutGrid size={20} />,
   },
   {
     label: "Lịch hẹn",
     path: ROUTES.PATIENT_APPOINTMENTS,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-        <line x1="16" y1="2" x2="16" y2="6" />
-        <line x1="8" y1="2" x2="8" y2="6" />
-        <line x1="3" y1="10" x2="21" y2="10" />
-      </svg>
-    ),
+    icon: <IconCalendar size={20} />,
   },
   {
     label: "Đặt lịch",
     path: ROUTES.PATIENT_BOOK_APPOINTMENT,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <line x1="12" y1="5" x2="12" y2="19" />
-        <line x1="5" y1="12" x2="19" y2="12" />
-      </svg>
-    ),
+    icon: <IconPlus size={20} />,
   },
 ];
 
@@ -151,33 +117,45 @@ export default function PatientAppointments() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "pending":
-        return "#f59e0b";
+        return "#f59e0b"; // Orange
       case "confirmed":
-        return "#10b981";
+        return "#10b981"; // Green
+      case "in-progress":
+        return "#3b82f6"; // Blue
       case "cancelled":
-        return "#ef4444";
+        return "#ef4444"; // Red
+      case "completed":
+        return "#8b5cf6"; // Purple
       default:
-        return "#6b7280";
+        return "#6b7280"; // Gray
     }
   };
 
-  // Transform appointments to FullCalendar events
-  const calendarEvents = appointments.map((apt) => ({
-    id: apt._id,
-    title:
+  const calendarEvents = appointments.map((apt) => {
+    const doctorName =
       typeof apt.doctorId === "object" && apt.doctorId
-        ? `Bác sĩ ${apt.doctorId.fullName}`
-        : "Chưa chọn bác sĩ",
-    start: apt.appointmentDate,
-    end: new Date(
-      new Date(apt.appointmentDate).getTime() + 60 * 60 * 1000
-    ).toISOString(), // 1 hour duration
-    backgroundColor: getStatusColor(apt.status),
-    borderColor: getStatusColor(apt.status),
-    extendedProps: {
-      appointment: apt,
-    },
-  }));
+        ? apt.doctorId.fullName
+        : "Chưa chọn bác sĩ";
+
+    const specialty =
+      typeof apt.doctorId === "object" && apt.doctorId?.specialty
+        ? ` - ${apt.doctorId.specialty}`
+        : "";
+
+    return {
+      id: apt._id,
+      title: `${doctorName}${specialty}`,
+      start: apt.appointmentDate,
+      end: new Date(
+        new Date(apt.appointmentDate).getTime() + 60 * 60 * 1000
+      ).toISOString(), // 1 hour duration
+      backgroundColor: getStatusColor(apt.status),
+      borderColor: getStatusColor(apt.status),
+      extendedProps: {
+        appointment: apt,
+      },
+    };
+  });
 
   const handleEventClick = (clickInfo: any) => {
     const appointment = clickInfo.event.extendedProps.appointment;
@@ -187,7 +165,7 @@ export default function PatientAppointments() {
 
   return (
     <DashboardLayout navItems={navItems} title="Lịch hẹn của tôi">
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
         <div style={{ maxWidth: "300px" }}>
           <Select
             label="Lọc theo trạng thái"
@@ -195,6 +173,8 @@ export default function PatientAppointments() {
               { value: "", label: "Tất cả" },
               { value: "pending", label: "Chờ xác nhận" },
               { value: "confirmed", label: "Đã xác nhận" },
+              { value: "in-progress", label: "Đang khám" },
+              { value: "completed", label: "Hoàn thành" },
               { value: "cancelled", label: "Đã hủy" },
             ]}
             value={statusFilter}
@@ -204,19 +184,7 @@ export default function PatientAppointments() {
         </div>
         <Button
           onClick={() => router.push(ROUTES.PATIENT_BOOK_APPOINTMENT)}
-          icon={
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-          }
+          icon={<IconPlus size={16} />}
         >
           Đặt lịch mới
         </Button>
@@ -234,18 +202,7 @@ export default function PatientAppointments() {
           ) : error ? (
             <div className="flex flex-col items-center justify-center py-12 gap-4">
               <div className="flex items-center gap-2 text-red-600 bg-red-50 p-4 rounded-lg border border-red-100">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="8" x2="12" y2="12" />
-                  <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
+                <IconAlertCircle size={20} />
                 {error}
               </div>
               <Button onClick={loadAppointments} variant="outline">
@@ -383,6 +340,12 @@ export default function PatientAppointments() {
                   ? selectedAppointment.doctorId.fullName
                   : "Chưa chọn bác sĩ"}
               </div>
+              {typeof selectedAppointment.doctorId === "object" &&
+                selectedAppointment.doctorId?.specialty && (
+                  <div className="text-sm text-gray-600 mt-1">
+                    Chuyên khoa: {selectedAppointment.doctorId.specialty}
+                  </div>
+                )}
             </div>
 
             {selectedAppointment.note && (

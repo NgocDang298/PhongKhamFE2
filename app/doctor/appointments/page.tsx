@@ -258,7 +258,7 @@ export default function DoctorAppointmentsPage() {
 
   return (
     <DashboardLayout navItems={navItems} title="Lịch hẹn của tôi">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-4">
         <div style={{ maxWidth: "300px" }}>
           <Select
             label="Lọc theo trạng thái"

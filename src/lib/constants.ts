@@ -24,6 +24,7 @@ export const ROLE_LABELS = {
 export const APPOINTMENT_STATUS = {
     PENDING: 'pending',
     CONFIRMED: 'confirmed',
+    IN_PROGRESS: 'in-progress',
     CANCELLED: 'cancelled',
     COMPLETED: 'completed',
 } as const;
@@ -31,6 +32,7 @@ export const APPOINTMENT_STATUS = {
 export const APPOINTMENT_STATUS_LABELS = {
     pending: 'Chờ xác nhận',
     confirmed: 'Đã xác nhận',
+    'in-progress': 'Đang khám',
     cancelled: 'Đã hủy',
     completed: 'Hoàn thành',
 } as const;
@@ -38,8 +40,9 @@ export const APPOINTMENT_STATUS_LABELS = {
 export const APPOINTMENT_STATUS_COLORS = {
     pending: '#f59e0b',
     confirmed: '#10b981',
+    'in-progress': '#3b82f6',
     cancelled: '#ef4444',
-    completed: '#6366f1',
+    completed: '#8b5cf6',
 } as const;
 
 export const EXAMINATION_STATUS = {

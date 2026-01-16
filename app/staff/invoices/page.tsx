@@ -169,7 +169,7 @@ export default function StaffInvoicesPage() {
 
   return (
     <DashboardLayout navItems={navItems} title="Quản lý hóa đơn">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-4">
         <div style={{ maxWidth: "300px" }}>
           <Select
             label="Lọc theo trạng thái"

@@ -324,7 +324,7 @@ export default function AdminUsersPage() {
 
   return (
     <DashboardLayout navItems={navItems} title="Quản lý tài khoản">
-      <div className="flex justify-end mb-6">
+      <div className="flex justify-end mb-4">
         <Button
           onClick={() => setIsModalOpen(true)}
           icon={

@@ -129,7 +129,7 @@ export default function MedicalProfilePage() {
         </CardHeader>
         <CardBody>
           {isRequired && (
-            <div className="flex items-center gap-3 p-4 mb-6 text-amber-800 bg-amber-50 border border-amber-200 rounded-lg">
+            <div className="flex items-center gap-3 p-4 mb-4 text-amber-800 bg-amber-50 border border-amber-200 rounded-lg">
               <svg
                 width="20"
                 height="20"
@@ -150,7 +150,7 @@ export default function MedicalProfilePage() {
 
           <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
             {error && (
-              <div className="flex items-center gap-2 p-4 mb-6 text-red-800 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center gap-2 p-4 mb-4 text-red-800 bg-red-50 border border-red-200 rounded-lg">
                 <svg
                   width="20"
                   height="20"

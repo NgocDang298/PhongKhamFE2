@@ -441,7 +441,7 @@ export default function DoctorExaminationsPage() {
 
   return (
     <DashboardLayout navItems={navItems} title="Ca khám">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 text-gray-600">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 text-gray-600">
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <div style={{ maxWidth: "300px" }}>
             <Select

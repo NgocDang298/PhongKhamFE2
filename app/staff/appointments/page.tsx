@@ -205,7 +205,7 @@ export default function StaffAppointmentsPage() {
 
   return (
     <DashboardLayout navItems={navItems} title="Quản lý lịch hẹn">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-4">
         <div className="flex flex-col md:flex-row gap-4 w-full md:items-end md:justify-between">
           <div style={{ maxWidth: "300px" }}>
             <Select

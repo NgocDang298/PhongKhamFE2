@@ -448,7 +448,7 @@ export default function AdminSchedulesPage() {
 
   return (
     <DashboardLayout navItems={navItems} title="Quản lý lịch làm việc">
-      <div className="flex justify-end mb-6">
+      <div className="flex justify-end mb-4">
         <div className="flex gap-4">
           <Button
             variant="outline"

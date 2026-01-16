@@ -179,7 +179,7 @@ export default function StaffPatientsPage() {
 
   return (
     <DashboardLayout navItems={navItems} title="Quản lý bệnh nhân">
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
         <div className="w-full md:max-w-md">
           <Input
             label="Tìm kiếm"

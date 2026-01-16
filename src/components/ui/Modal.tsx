@@ -54,7 +54,7 @@ export default function Modal({
         onClick={(e) => e.stopPropagation()}
       >
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <div className="flex items-center justify-between p-4 border-b border-gray-200">
             {title && (
               <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
             )}
@@ -69,11 +69,11 @@ export default function Modal({
             )}
           </div>
         )}
-        <div className="px-6 py-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+        <div className="p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
           {children}
         </div>
         {footer && (
-          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-xl">
+          <div className="p-4 border-t border-gray-200 bg-gray-50 rounded-b-xl">
             {footer}
           </div>
         )}
