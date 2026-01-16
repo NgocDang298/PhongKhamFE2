@@ -278,7 +278,7 @@ export default function PatientInvoicesPage() {
                         <TableCell>
                           {typeof item.serviceId === "object" && item.serviceId
                             ? item.serviceId.name
-                            : item.serviceName || "N/A"}
+                            : item.serviceName || "Không xác định"}
                         </TableCell>
                         <TableCell>{item.quantity || 1}</TableCell>
                         <TableCell>{formatCurrency(item.price)}</TableCell>

@@ -175,9 +175,9 @@ export default function LabTestResultsPage() {
                               .patientId === "object"
                             ? (result.testRequestId as any).examId.patientId
                                 .fullName
-                            : "N/A"
-                          : "N/A"
-                        : "N/A"}
+                            : "Không xác định"
+                          : "Không xác định"
+                        : "Không xác định"}
                     </TableCell>
                     <TableCell>
                       {typeof result.testRequestId === "object" &&
@@ -185,7 +185,7 @@ export default function LabTestResultsPage() {
                         ? typeof result.testRequestId.testType === "object"
                           ? result.testRequestId.testType.name
                           : result.testRequestId.testType
-                        : "N/A"}
+                        : "Không xác định"}
                     </TableCell>
                     <TableCell>
                       {format(
@@ -255,15 +255,15 @@ export default function LabTestResultsPage() {
                   ? typeof (selectedRequest.examId as any).patientId ===
                     "object"
                     ? (selectedRequest.examId as any).patientId.fullName
-                    : "N/A"
-                  : "N/A"}
+                    : "Không xác định"
+                  : "Không xác định"}
               </div>
               <div>
                 <strong>Loại xét nghiệm:</strong>{" "}
                 {typeof selectedRequest.testType === "object" &&
                 selectedRequest.testType
                   ? selectedRequest.testType.name
-                  : selectedRequest.testType || "N/A"}
+                  : selectedRequest.testType || "Không xác định"}
               </div>
             </div>
             <Textarea

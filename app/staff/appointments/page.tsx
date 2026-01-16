@@ -22,45 +22,30 @@ import * as appointmentService from "@/lib/services/appointments";
 import * as patientService from "@/lib/services/patients";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
+import {
+  IconLayoutGrid,
+  IconCalendar,
+  IconPlus,
+  IconTable,
+  IconAlertCircle,
+} from "@tabler/icons-react";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import listPlugin from "@fullcalendar/list";
+import viLocale from "@fullcalendar/core/locales/vi";
 
 const navItems = [
   {
     label: "Tổng quan",
     path: ROUTES.STAFF_DASHBOARD,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <rect x="3" y="3" width="7" height="7" />
-        <rect x="14" y="3" width="7" height="7" />
-        <rect x="14" y="14" width="7" height="7" />
-        <rect x="3" y="14" width="7" height="7" />
-      </svg>
-    ),
+    icon: <IconLayoutGrid size={20} />,
   },
   {
     label: "Lịch hẹn",
     path: ROUTES.STAFF_APPOINTMENTS,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-        <line x1="16" y1="2" x2="16" y2="6" />
-        <line x1="8" y1="2" x2="8" y2="6" />
-        <line x1="3" y1="10" x2="21" y2="10" />
-      </svg>
-    ),
+    icon: <IconCalendar size={20} />,
   },
 ];
 
@@ -70,7 +55,9 @@ export default function StaffAppointmentsPage() {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("");
+  const [viewMode, setViewMode] = useState<"calendar" | "table">("calendar");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
   const [patients, setPatients] = useState<any[]>([]);
@@ -140,6 +127,56 @@ export default function StaffAppointmentsPage() {
     }
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "#f59e0b";
+      case "confirmed":
+        return "#10b981";
+      case "in-progress":
+        return "#3b82f6";
+      case "cancelled":
+        return "#ef4444";
+      case "completed":
+        return "#8b5cf6";
+      default:
+        return "#6b7280";
+    }
+  };
+
+  const calendarEvents = appointments.map((apt) => {
+    const patientName =
+      typeof apt.patientId === "object" && apt.patientId
+        ? apt.patientId.fullName
+        : patients.find((p) => p._id === apt.patientId)?.fullName ||
+          "Không xác định";
+
+    const doctorName =
+      typeof apt.doctorId === "object" && apt.doctorId
+        ? apt.doctorId.fullName
+        : doctors.find((d) => d._id === apt.doctorId)?.fullName || "Chưa chọn";
+
+    return {
+      id: apt._id,
+      title: `${patientName} - BS: ${doctorName}`,
+      start: apt.appointmentDate,
+      end: new Date(
+        new Date(apt.appointmentDate).getTime() + 60 * 60 * 1000
+      ).toISOString(), // 1 hour duration
+      backgroundColor: getStatusColor(apt.status),
+      borderColor: getStatusColor(apt.status),
+      extendedProps: {
+        appointment: apt,
+      },
+    };
+  });
+
+  const handleEventClick = (clickInfo: any) => {
+    const appointment = clickInfo.event.extendedProps.appointment;
+    setSelectedAppointment(appointment);
+    setIsDetailModalOpen(true);
+  };
+
   const handleConfirm = async (id: string) => {
     try {
       await appointmentService.confirmAppointment(id);
@@ -180,19 +217,6 @@ export default function StaffAppointmentsPage() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "#f59e0b";
-      case "confirmed":
-        return "#10b981";
-      case "cancelled":
-        return "#ef4444";
-      default:
-        return "#6b7280";
-    }
-  };
-
   if (authLoading || loading) {
     return (
       <DashboardLayout navItems={navItems} title="Quản lý lịch hẹn">
@@ -207,35 +231,51 @@ export default function StaffAppointmentsPage() {
     <DashboardLayout navItems={navItems} title="Quản lý lịch hẹn">
       <div className="flex justify-between items-center mb-4">
         <div className="flex flex-col md:flex-row gap-4 w-full md:items-end md:justify-between">
-          <div style={{ maxWidth: "300px" }}>
-            <Select
-              label="Lọc theo trạng thái"
-              options={[
-                { value: "", label: "Tất cả" },
-                { value: "pending", label: "Chờ xác nhận" },
-                { value: "confirmed", label: "Đã xác nhận" },
-                { value: "cancelled", label: "Đã hủy" },
-              ]}
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              fullWidth
-            />
+          <div className="flex items-center gap-4">
+            <div style={{ maxWidth: "300px" }}>
+              <Select
+                label="Lọc theo trạng thái"
+                options={[
+                  { value: "", label: "Tất cả" },
+                  { value: "pending", label: "Chờ xác nhận" },
+                  { value: "confirmed", label: "Đã xác nhận" },
+                  { value: "in-progress", label: "Đang khám" },
+                  { value: "completed", label: "Hoàn thành" },
+                  { value: "cancelled", label: "Đã hủy" },
+                ]}
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                fullWidth
+              />
+            </div>
+            <div className="flex items-center bg-gray-100 p-1 h-10 rounded-lg mt-6 border">
+              <button
+                onClick={() => setViewMode("calendar")}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                  viewMode === "calendar"
+                    ? "bg-white text-primary shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                <IconCalendar size={18} />
+                Lịch
+              </button>
+              <button
+                onClick={() => setViewMode("table")}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                  viewMode === "table"
+                    ? "bg-white text-primary shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                <IconTable size={18} />
+                Danh sách
+              </button>
+            </div>
           </div>
           <Button
             onClick={() => setIsCreateModalOpen(true)}
-            icon={
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-            }
+            icon={<IconPlus size={16} />}
           >
             Tạo lịch hẹn mới
           </Button>
@@ -243,13 +283,55 @@ export default function StaffAppointmentsPage() {
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Danh sách lịch hẹn</CardTitle>
+        <CardHeader icon={<IconCalendar size={20} />}>
+          <CardTitle>
+            {viewMode === "calendar" ? "Lịch khám bệnh" : "Danh sách lịch hẹn"}
+          </CardTitle>
         </CardHeader>
         <CardBody>
           {appointments.length === 0 ? (
             <div className="text-center py-12 text-gray-500">
               Chưa có lịch hẹn nào
+            </div>
+          ) : viewMode === "calendar" ? (
+            <div className="fullcalendar-wrapper">
+              <FullCalendar
+                plugins={[
+                  dayGridPlugin,
+                  timeGridPlugin,
+                  interactionPlugin,
+                  listPlugin,
+                ]}
+                initialView="dayGridMonth"
+                locale={viLocale}
+                headerToolbar={{
+                  left: "prev,next today",
+                  center: "title",
+                  right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
+                }}
+                buttonText={{
+                  today: "Hôm nay",
+                  month: "Tháng",
+                  week: "Tuần",
+                  day: "Ngày",
+                  list: "Danh sách hồ sơ",
+                }}
+                events={calendarEvents}
+                eventClick={handleEventClick}
+                height="auto"
+                eventTimeFormat={{
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                }}
+                slotLabelFormat={{
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                }}
+                nowIndicator={true}
+                dayMaxEvents={true}
+              />
             </div>
           ) : (
             <Table>
@@ -270,7 +352,7 @@ export default function StaffAppointmentsPage() {
                       {typeof apt.patientId === "object" && apt.patientId
                         ? apt.patientId.fullName
                         : patients.find((p) => p._id === apt.patientId)
-                            ?.fullName || "N/A"}
+                            ?.fullName || "Không xác định"}
                     </TableCell>
                     <TableCell>
                       {typeof apt.doctorId === "object" && apt.doctorId
@@ -333,6 +415,97 @@ export default function StaffAppointmentsPage() {
         </CardBody>
       </Card>
 
+      <style jsx global>{`
+        .fullcalendar-wrapper {
+          --fc-border-color: #e5e7eb;
+          --fc-button-bg-color: #6366f1;
+          --fc-button-border-color: #6366f1;
+          --fc-button-hover-bg-color: #4f46e5;
+          --fc-button-hover-border-color: #4f46e5;
+          --fc-button-active-bg-color: #4338ca;
+          --fc-button-active-border-color: #4338ca;
+          --fc-today-bg-color: rgba(99, 102, 241, 0.1);
+        }
+
+        .fc {
+          font-family: inherit;
+        }
+
+        .fc .fc-button {
+          padding: 0.5rem 1rem;
+          font-size: 0.875rem;
+          font-weight: 500;
+          text-transform: capitalize;
+          border-radius: 0.5rem;
+          box-shadow: none;
+        }
+
+        .fc .fc-button:focus {
+          box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .fc .fc-toolbar-title {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #111827;
+        }
+
+        .fc .fc-col-header-cell {
+          padding: 0.75rem 0;
+          font-weight: 600;
+          font-size: 0.875rem;
+          color: #6b7280;
+          text-transform: uppercase;
+          background-color: #f9fafb;
+        }
+
+        .fc .fc-daygrid-day-number {
+          padding: 0.5rem;
+          font-weight: 500;
+          color: #374151;
+        }
+
+        .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+          background-color: #6366f1;
+          color: white;
+          border-radius: 50%;
+          width: 2rem;
+          height: 2rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .fc .fc-event {
+          border-radius: 0.375rem;
+          padding: 0.25rem 0.4rem;
+          font-size: 0.8125rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+          border: none;
+        }
+
+        .fc .fc-event:hover {
+          opacity: 0.9;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .fc .fc-list-event:hover td {
+          background-color: #f3f4f6;
+        }
+
+        .fc-theme-standard td,
+        .fc-theme-standard th {
+          border-color: #e5e7eb;
+        }
+
+        .fc-theme-standard .fc-scrollgrid {
+          border-color: #e5e7eb;
+        }
+      `}</style>
+
       {/* Reject Modal */}
       <Modal
         isOpen={isModalOpen}
@@ -383,7 +556,7 @@ export default function StaffAppointmentsPage() {
               selectedAppointment.patientId
                 ? selectedAppointment.patientId.fullName
                 : patients.find((p) => p._id === selectedAppointment.patientId)
-                    ?.fullName || "N/A"}
+                    ?.fullName || "Không xác định"}
             </div>
             <div>
               <strong>Ngày giờ:</strong>{" "}
@@ -393,6 +566,137 @@ export default function StaffAppointmentsPage() {
                 { locale: vi }
               )}
             </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Detail Modal */}
+      <Modal
+        isOpen={isDetailModalOpen}
+        onClose={() => {
+          setIsDetailModalOpen(false);
+          setSelectedAppointment(null);
+        }}
+        title="Chi tiết lịch hẹn"
+        size="md"
+        footer={
+          <div className="flex justify-between w-full">
+            <div className="flex gap-2">
+              {selectedAppointment?.status === "pending" && (
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      handleConfirm(selectedAppointment._id);
+                      setIsDetailModalOpen(false);
+                    }}
+                  >
+                    Xác nhận
+                  </Button>
+                  <Button
+                    variant="danger"
+                    onClick={() => {
+                      setIsDetailModalOpen(false);
+                      setIsModalOpen(true);
+                    }}
+                  >
+                    Từ chối
+                  </Button>
+                </>
+              )}
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsDetailModalOpen(false);
+                setSelectedAppointment(null);
+              }}
+            >
+              Đóng
+            </Button>
+          </div>
+        }
+      >
+        {selectedAppointment && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-gray-500 block mb-1">
+                  Ngày giờ
+                </label>
+                <div className="font-medium">
+                  {format(
+                    new Date(selectedAppointment.appointmentDate),
+                    "dd/MM/yyyy HH:mm",
+                    { locale: vi }
+                  )}
+                </div>
+              </div>
+              <div>
+                <label className="text-sm text-gray-500 block mb-1">
+                  Trạng thái
+                </label>
+                <span
+                  className="px-3 py-1 text-xs font-medium rounded-full inline-block"
+                  style={{
+                    backgroundColor:
+                      getStatusColor(selectedAppointment.status) + "20",
+                    color: getStatusColor(selectedAppointment.status),
+                  }}
+                >
+                  {
+                    APPOINTMENT_STATUS_LABELS[
+                      selectedAppointment.status as keyof typeof APPOINTMENT_STATUS_LABELS
+                    ]
+                  }
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-500 block mb-1">
+                Bệnh nhân
+              </label>
+              <div className="font-medium">
+                {typeof selectedAppointment.patientId === "object" &&
+                selectedAppointment.patientId
+                  ? selectedAppointment.patientId.fullName
+                  : patients.find(
+                      (p) => p._id === selectedAppointment.patientId
+                    )?.fullName || "Không xác định"}
+              </div>
+              <div className="text-sm text-gray-600 mt-1">
+                SĐT:{" "}
+                {typeof selectedAppointment.patientId === "object" &&
+                selectedAppointment.patientId
+                  ? selectedAppointment.patientId.phone
+                  : patients.find(
+                      (p) => p._id === selectedAppointment.patientId
+                    )?.phone || "-"}
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-500 block mb-1">Bác sĩ</label>
+              <div className="font-medium">
+                {typeof selectedAppointment.doctorId === "object" &&
+                selectedAppointment.doctorId
+                  ? selectedAppointment.doctorId.fullName
+                  : doctors.find((d) => d._id === selectedAppointment.doctorId)
+                      ?.fullName || "Chưa chọn"}
+              </div>
+            </div>
+
+            {selectedAppointment.note && (
+              <div>
+                <label className="text-sm text-gray-500 block mb-1">
+                  Ghi chú
+                </label>
+                <div className="p-3 bg-gray-50 rounded-lg text-gray-700 border border-gray-100 italic">
+                  "{selectedAppointment.note}"
+                </div>
+              </div>
+            )}
           </div>
         )}
       </Modal>

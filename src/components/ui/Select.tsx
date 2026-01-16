@@ -49,7 +49,7 @@ export default function Select({
             "bg-white text-gray-900",
             "focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent",
             "disabled:bg-gray-100 disabled:cursor-not-allowed",
-            "cursor-pointer",
+            "cursor-pointer h-10",
             icon && "pl-10",
             error
               ? "border-danger-500 focus:ring-danger-500"

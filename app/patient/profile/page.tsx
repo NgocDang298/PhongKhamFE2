@@ -11,98 +11,39 @@ import { ROUTES } from "@/lib/constants";
 import * as profileService from "@/lib/services/profile";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
+import {
+  IconLayoutGrid,
+  IconCalendar,
+  IconFileText,
+  IconReceipt,
+  IconUser,
+} from "@tabler/icons-react";
 
 const navItems = [
   {
     label: "Tổng quan",
     path: ROUTES.PATIENT_DASHBOARD,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <rect x="3" y="3" width="7" height="7" />
-        <rect x="14" y="3" width="7" height="7" />
-        <rect x="14" y="14" width="7" height="7" />
-        <rect x="3" y="14" width="7" height="7" />
-      </svg>
-    ),
+    icon: <IconLayoutGrid size={20} />,
   },
   {
     label: "Lịch hẹn",
     path: ROUTES.PATIENT_APPOINTMENTS,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-        <line x1="16" y1="2" x2="16" y2="6" />
-        <line x1="8" y1="2" x2="8" y2="6" />
-        <line x1="3" y1="10" x2="21" y2="10" />
-      </svg>
-    ),
+    icon: <IconCalendar size={20} />,
   },
   {
     label: "Lịch sử khám",
     path: ROUTES.PATIENT_MEDICAL_HISTORY,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-        <polyline points="14 2 14 8 20 8" />
-        <line x1="16" y1="13" x2="8" y2="13" />
-        <line x1="16" y1="17" x2="8" y2="17" />
-      </svg>
-    ),
+    icon: <IconFileText size={20} />,
   },
   {
     label: "Hóa đơn",
     path: ROUTES.PATIENT_INVOICES,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-        <polyline points="14 2 14 8 20 8" />
-      </svg>
-    ),
+    icon: <IconReceipt size={20} />,
   },
   {
     label: "Hồ sơ",
     path: ROUTES.PATIENT_PROFILE,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-        <circle cx="12" cy="7" r="4" />
-      </svg>
-    ),
+    icon: <IconUser size={20} />,
   },
 ];
 
@@ -172,7 +113,7 @@ export default function PatientProfilePage() {
   return (
     <DashboardLayout navItems={navItems} title="Hồ sơ của tôi">
       <Card>
-        <CardHeader>
+        <CardHeader icon={<IconUser size={20} />}>
           <CardTitle>Thông tin cá nhân</CardTitle>
         </CardHeader>
         <CardBody>

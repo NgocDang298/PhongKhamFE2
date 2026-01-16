@@ -192,16 +192,16 @@ export default function LabTestRequestsPage() {
                       (request.examId as any).patientId
                         ? typeof (request.examId as any).patientId === "object"
                           ? (request.examId as any).patientId.fullName
-                          : "N/A"
+                          : "Không xác định"
                         : typeof request.patientId === "object" &&
                           request.patientId
                         ? request.patientId.fullName
-                        : "N/A"}
+                        : "Không xác định"}
                     </TableCell>
                     <TableCell>
                       {typeof request.testType === "object" && request.testType
                         ? request.testType.name
-                        : request.testType || "N/A"}
+                        : request.testType || "Không xác định"}
                     </TableCell>
                     <TableCell>
                       {format(

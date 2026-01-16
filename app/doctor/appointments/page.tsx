@@ -264,7 +264,7 @@ export default function DoctorAppointmentsPage() {
                     <TableCell>
                       {typeof apt.patientId === "object" && apt.patientId
                         ? apt.patientId.fullName
-                        : "N/A"}
+                        : "Không xác định"}
                     </TableCell>
                     <TableCell>
                       {format(
@@ -349,7 +349,7 @@ export default function DoctorAppointmentsPage() {
                   {typeof selectedAppointment.patientId === "object" &&
                   selectedAppointment.patientId
                     ? selectedAppointment.patientId.fullName
-                    : "N/A"}
+                    : "Không xác định"}
                 </div>
               </div>
               <div>
@@ -385,7 +385,8 @@ export default function DoctorAppointmentsPage() {
                   </label>
                   <div className="font-medium">
                     {typeof selectedAppointment.confirmedBy === "object"
-                      ? selectedAppointment.confirmedBy.fullName || "N/A"
+                      ? selectedAppointment.confirmedBy.fullName ||
+                        "Không xác định"
                       : "ID: " + selectedAppointment.confirmedBy}
                   </div>
                 </div>
@@ -421,11 +422,12 @@ export default function DoctorAppointmentsPage() {
                     </div>
                     <div>
                       <span className="text-gray-500">Số điện thoại:</span>{" "}
-                      {selectedAppointment.patientId.phoneNumber || "N/A"}
+                      {selectedAppointment.patientId.phoneNumber ||
+                        "Chưa cập nhật"}
                     </div>
                     <div className="col-span-2">
                       <span className="text-gray-500">Địa chỉ:</span>{" "}
-                      {selectedAppointment.patientId.address || "N/A"}
+                      {selectedAppointment.patientId.address || "Chưa cập nhật"}
                     </div>
                   </div>
                 </div>
@@ -469,7 +471,7 @@ export default function DoctorAppointmentsPage() {
               {typeof selectedAppointment.patientId === "object" &&
               selectedAppointment.patientId
                 ? selectedAppointment.patientId.fullName
-                : "N/A"}
+                : "Không xác định"}
             </div>
             <div>
               <strong>Ngày giờ:</strong>{" "}

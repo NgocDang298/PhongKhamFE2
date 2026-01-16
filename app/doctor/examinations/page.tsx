@@ -455,7 +455,7 @@ export default function DoctorExaminationsPage() {
                     <TableCell>
                       {typeof exam.patientId === "object" && exam.patientId
                         ? exam.patientId.fullName
-                        : "N/A"}
+                        : "Không xác định"}
                     </TableCell>
                     <TableCell>
                       {format(new Date(exam.examDate), "dd/MM/yyyy HH:mm", {
@@ -539,7 +539,7 @@ export default function DoctorExaminationsPage() {
                   label: `${
                     typeof apt.patientId === "object" && apt.patientId
                       ? apt.patientId.fullName
-                      : "N/A"
+                      : "Không xác định"
                   } - ${format(
                     new Date(apt.appointmentDate),
                     "dd/MM/yyyy HH:mm",

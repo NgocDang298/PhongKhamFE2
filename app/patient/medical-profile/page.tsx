@@ -11,26 +11,17 @@ import Select from "@/components/ui/Select";
 import Textarea from "@/components/ui/Textarea";
 import { ROUTES, BLOOD_TYPE_OPTIONS } from "@/lib/constants";
 import * as medicalProfileService from "@/lib/services/medicalProfile";
+import {
+  IconLayoutGrid,
+  IconAlertCircle,
+  IconNotes,
+} from "@tabler/icons-react";
 
 const navItems = [
   {
     label: "Tổng quan",
     path: ROUTES.PATIENT_DASHBOARD,
-    icon: (
-      <svg
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        <rect x="3" y="3" width="7" height="7" />
-        <rect x="14" y="3" width="7" height="7" />
-        <rect x="14" y="14" width="7" height="7" />
-        <rect x="3" y="14" width="7" height="7" />
-      </svg>
-    ),
+    icon: <IconLayoutGrid size={20} />,
   },
 ];
 
@@ -122,7 +113,7 @@ export default function MedicalProfilePage() {
   return (
     <DashboardLayout navItems={navItems} title="Hồ sơ y tế">
       <Card>
-        <CardHeader>
+        <CardHeader icon={<IconNotes size={20} />}>
           <CardTitle>
             {isRequired ? "Hoàn thiện hồ sơ y tế" : "Cập nhật hồ sơ y tế"}
           </CardTitle>
@@ -130,18 +121,7 @@ export default function MedicalProfilePage() {
         <CardBody>
           {isRequired && (
             <div className="flex items-center gap-3 p-4 mb-4 text-amber-800 bg-amber-50 border border-amber-200 rounded-lg">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
+              <IconAlertCircle size={20} />
               <p>
                 Vui lòng hoàn thiện hồ sơ y tế để tiếp tục sử dụng hệ thống.
               </p>
@@ -151,18 +131,7 @@ export default function MedicalProfilePage() {
           <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
             {error && (
               <div className="flex items-center gap-2 p-4 mb-4 text-red-800 bg-red-50 border border-red-200 rounded-lg">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <line x1="12" y1="8" x2="12" y2="12" />
-                  <line x1="12" y1="16" x2="12.01" y2="16" />
-                </svg>
+                <IconAlertCircle size={20} />
                 {error}
               </div>
             )}
