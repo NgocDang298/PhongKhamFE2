@@ -22,6 +22,7 @@ import Select from "@/components/ui/Select";
 import Pagination from "@/components/ui/Pagination";
 import * as testResultService from "@/lib/services/testResults";
 import * as testRequestService from "@/lib/services/testRequests";
+import { uploadFiles } from "@/lib/services/upload";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import {
@@ -53,6 +54,7 @@ export default function LabTestResultsPage() {
   const [existingResult, setExistingResult] = useState<any>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]); // URLs from server after upload
 
   // Pagination state
   const [pagination, setPagination] = useState({
@@ -153,22 +155,31 @@ export default function LabTestResultsPage() {
         notes: formData.notes,
       };
 
-      const submitData = new FormData();
-      submitData.append('resultData', JSON.stringify(finalResultData));
-
-      if (!existingResult) {
-        submitData.append('testRequestId', selectedRequest._id);
+      // Upload images first if any
+      let imageUrls: string[] = [];
+      if (selectedFiles.length > 0) {
+        try {
+          const uploadResponse = await uploadFiles(selectedFiles);
+          imageUrls = uploadResponse.data?.urls || [];
+        } catch (uploadError: any) {
+          toast.error("Lỗi khi upload ảnh: " + (uploadError.message || "Vui lòng thử lại"));
+          setLoading(false);
+          return;
+        }
       }
 
-      selectedFiles.forEach(file => {
-        submitData.append('images', file);
-      });
-
       if (existingResult) {
-        await testResultService.updateTestResult(existingResult._id, submitData);
+        await testResultService.updateTestResult(existingResult._id, {
+          resultData: finalResultData,
+          ...(imageUrls.length > 0 && { images: imageUrls }),
+        });
         toast.success("Cập nhật kết quả thành công");
       } else {
-        await testResultService.createTestResult(submitData);
+        await testResultService.createTestResult({
+          testRequestId: selectedRequest._id,
+          resultData: finalResultData,
+          ...(imageUrls.length > 0 && { images: imageUrls }),
+        });
         toast.success("Lưu kết quả thành công");
       }
 
@@ -292,7 +303,7 @@ export default function LabTestResultsPage() {
       completed: "Hoàn thành",
     };
     return (
-      <span className={`px-2 py-0.5 text-xs font-semibold rounded-md border ${badges[status as keyof typeof badges] || 'bg-gray-100 text-gray-600'}`}>
+      <span className={`px-2 py-0.5 text-xs text-nowrap font-semibold rounded-md border ${badges[status as keyof typeof badges] || 'bg-gray-100 text-gray-600'}`}>
         {labels[status as keyof typeof labels] || status}
       </span>
     );
@@ -363,8 +374,8 @@ export default function LabTestResultsPage() {
                   <TableHead className="w-16">STT</TableHead>
                   <TableHead>Bệnh nhân</TableHead>
                   <TableHead>Dịch vụ</TableHead>
-                  <TableHead>Loại XN</TableHead>
-                  <TableHead>Y tá XN</TableHead>
+                  <TableHead>Loại xét nghiệm</TableHead>
+                  <TableHead>Y tá</TableHead>
                   <TableHead>Trạng thái</TableHead>
                   <TableHead>Ngày yêu cầu</TableHead>
                   <TableHead>Thao tác</TableHead>
