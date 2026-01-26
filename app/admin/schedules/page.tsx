@@ -450,7 +450,7 @@ export default function AdminSchedulesPage() {
           <CardBody>
             <div className="space-y-4">
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
                   Bác sĩ
                 </h3>
                 {doctors.length === 0 ? (
@@ -489,7 +489,7 @@ export default function AdminSchedulesPage() {
               </div>
 
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
                   Y tá xét nghiệm
                 </h3>
                 {nurses.length === 0 ? (
@@ -635,7 +635,7 @@ export default function AdminSchedulesPage() {
               fullWidth
               disabled={!!formData.labNurseId}
             />
-            <div className="text-gray-400 text-sm italic">hoặc</div>
+            <div className="text-gray-500 text-sm italic">hoặc</div>
             <Select
               label="Chọn y tá"
               name="labNurseId"
@@ -770,7 +770,7 @@ export default function AdminSchedulesPage() {
               fullWidth
               disabled={!!quickCreateData.labNurseId}
             />
-            <div className="text-gray-400 text-sm italic">hoặc</div>
+            <div className="text-gray-500 text-sm italic">hoặc</div>
             <Select
               label="Chọn y tá"
               name="labNurseId"

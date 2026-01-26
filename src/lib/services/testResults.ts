@@ -2,7 +2,7 @@ import { get, post, put, del } from '../api';
 import type { ApiResponse, TestResult, CreateTestResultRequest } from '@/types';
 
 // 7.1. Tạo Kết Quả Xét Nghiệm
-export async function createTestResult(data: CreateTestResultRequest): Promise<ApiResponse<TestResult>> {
+export async function createTestResult(data: CreateTestResultRequest | FormData): Promise<ApiResponse<TestResult>> {
     return post('/test-results', data);
 }
 
@@ -12,7 +12,7 @@ export async function getTestResultByRequest(testRequestId: string): Promise<Api
 }
 
 // 7.3. Cập Nhật Kết Quả Xét Nghiệm
-export async function updateTestResult(id: string, data: { resultData: Record<string, any> }): Promise<ApiResponse<TestResult>> {
+export async function updateTestResult(id: string, data: { resultData: Record<string, any> } | FormData): Promise<ApiResponse<TestResult>> {
     return put(`/test-results/${id}`, data);
 }
 

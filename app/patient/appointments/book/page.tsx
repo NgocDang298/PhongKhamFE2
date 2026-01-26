@@ -160,7 +160,7 @@ export default function BookAppointmentPage() {
                         ? "!border-primary bg-primary/10 text-primary"
                         : "border-gray-200 text-gray-700 hover:border-primary/50"
                         } ${slot.isBooked
-                          ? "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200"
+                          ? "bg-gray-100 text-gray-500 cursor-not-allowed border-gray-200"
                           : ""
                         }`}
                       onClick={() =>
@@ -170,7 +170,7 @@ export default function BookAppointmentPage() {
                     >
                       {format(new Date(slot.time), "HH:mm")}
                       {slot.isBooked && (
-                        <span className="text-[10px] font-normal">Đã đặt</span>
+                        <span className="text-xs font-normal">Đã đặt</span>
                       )}
                     </button>
                   ))}

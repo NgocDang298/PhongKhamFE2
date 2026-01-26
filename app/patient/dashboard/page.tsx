@@ -173,7 +173,7 @@ export default function PatientDashboard() {
                           {stat.icon}
                         </div>
                         <div>
-                          <div className="text-3xl font-bold text-gray-800">{stat.value}</div>
+                          <div className="text-3xl font-semibold text-gray-800">{stat.value}</div>
                           <div className="text-xs font-medium text-gray-600 uppercase tracking-wider">{stat.label}</div>
                         </div>
                       </div>
@@ -211,9 +211,9 @@ export default function PatientDashboard() {
                           className="flex items-center rounded-lg cursor-pointer justify-between p-5 hover:bg-gray-100 bg-gray-50 transition-colors"
                         >
                           <div className="flex items-center gap-5">
-                            <div className="flex flex-col items-center justify-center w-14 h-14 rounded-2xl bg-gray-50 text-gray-400 border border-gray-200">
+                            <div className="flex flex-col items-center justify-center w-14 h-14 rounded-2xl bg-gray-50 text-gray-500 border border-gray-200">
                               <span className="text-xs font-semibold uppercase">{format(new Date(apt.appointmentDate), "MMM", { locale: vi })}</span>
-                              <span className="text-xl font-bold text-gray-800">{format(new Date(apt.appointmentDate), "dd")}</span>
+                              <span className="text-xl font-semibold text-gray-800">{format(new Date(apt.appointmentDate), "dd")}</span>
                             </div>
                             <div>
                               <div className="font-semibold text-gray-800">

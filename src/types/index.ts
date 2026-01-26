@@ -189,6 +189,8 @@ export interface TestResult {
   testRequestId: TestRequest | string;
   labNurseId: LabNurse | string;
   resultData: Record<string, any>;
+  notes?: string;
+  images?: string[];
   performedAt: string;
   createdAt?: string;
   updatedAt?: string;

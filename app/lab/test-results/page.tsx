@@ -28,6 +28,13 @@ import {
   IconCircleCheck,
   IconFilter,
   IconRefresh,
+  IconPhoto,
+  IconX,
+  IconUserSquareRounded,
+  IconMicroscope,
+  IconNurse,
+  IconClock,
+  IconSend,
 } from "@tabler/icons-react";
 
 import { LAB_NAV_ITEMS } from "@/lib/navigation";
@@ -44,6 +51,8 @@ export default function LabTestResultsPage() {
     notes: "",
   });
   const [existingResult, setExistingResult] = useState<any>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   // Pagination state
   const [pagination, setPagination] = useState({
@@ -129,51 +138,125 @@ export default function LabTestResultsPage() {
   const handleCreateResult = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedRequest) return;
+
+    setLoading(true);
     try {
-      let resultData;
+      let resultDataValue;
       try {
-        resultData = JSON.parse(formData.resultData);
+        resultDataValue = JSON.parse(formData.resultData);
       } catch {
-        resultData = formData.resultData; // If not JSON, treat as a string value
+        resultDataValue = formData.resultData;
       }
-      await testResultService.createTestResult({
-        testRequestId: selectedRequest._id,
-        resultData: {
-          ...(typeof resultData === "object"
-            ? resultData
-            : { value: resultData }),
-          notes: formData.notes,
-        },
+
+      const finalResultData = {
+        ...(typeof resultDataValue === "object" ? resultDataValue : { value: resultDataValue }),
+        notes: formData.notes,
+      };
+
+      const submitData = new FormData();
+      submitData.append('resultData', JSON.stringify(finalResultData));
+
+      if (!existingResult) {
+        submitData.append('testRequestId', selectedRequest._id);
+      }
+
+      selectedFiles.forEach(file => {
+        submitData.append('images', file);
       });
-      setIsModalOpen(false);
-      setSelectedRequest(null);
-      setFormData({ resultData: "", notes: "" });
+
+      if (existingResult) {
+        await testResultService.updateTestResult(existingResult._id, submitData);
+        toast.success("Cập nhật kết quả thành công");
+      } else {
+        await testResultService.createTestResult(submitData);
+        toast.success("Lưu kết quả thành công");
+      }
+
+      handleCloseModal();
       loadData();
     } catch (error: any) {
       toast.error(error.message || "Có lỗi xảy ra khi lưu kết quả");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleOpenModal = async (request: any) => {
-    setSelectedRequest(request);
-    setIsModalOpen(true);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedRequest(null);
+    setExistingResult(null);
+    setFormData({ resultData: "", notes: "" });
+    setSelectedFiles([]);
+    previewUrls.forEach(url => URL.revokeObjectURL(url));
+    setPreviewUrls([]);
+  };
 
-    // Try to load existing result
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setSelectedFiles(prev => [...prev, ...files]);
+
+      const newPreviews = files.map(file => URL.createObjectURL(file));
+      setPreviewUrls(prev => [...prev, ...newPreviews]);
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    URL.revokeObjectURL(previewUrls[index]);
+    setPreviewUrls(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleOpenModal = async (request: any) => {
     try {
-      const result = await testResultService.getTestResultByRequest(request._id);
-      if (result.data) {
-        setExistingResult(result.data);
-        setFormData({
-          resultData: typeof result.data.resultData === 'object'
-            ? JSON.stringify(result.data.resultData, null, 2)
-            : result.data.resultData || "",
-          notes: result.data.resultData?.notes || "",
-        });
+      setLoading(true);
+      const requestRes = await testRequestService.getTestRequest(request._id);
+      const detailedRequest = requestRes.data;
+
+      setSelectedRequest(detailedRequest);
+      setIsModalOpen(true);
+
+      try {
+        const resultRes = await testResultService.getTestResultByRequest(request._id);
+        if (resultRes.data) {
+          const resultData = resultRes.data.resultData;
+          setExistingResult(resultRes.data);
+
+          let displayData = "";
+          if (resultData) {
+            if (typeof resultData === 'object') {
+              // If it's a simple {value: ...} object, just show the value
+              if (resultData.value && Object.keys(resultData).length <= 2) {
+                displayData = resultData.value;
+              } else {
+                // Otherwise format as key-value pairs for readability
+                displayData = Object.entries(resultData)
+                  .filter(([key]) => key !== 'notes')
+                  .map(([key, val]) => `${key}: ${val}`)
+                  .join('\n');
+              }
+            } else {
+              displayData = resultData;
+            }
+          }
+
+          setFormData({
+            resultData: displayData,
+            notes: resultData?.notes || resultRes.data.notes || "",
+          });
+        } else {
+          setExistingResult(null);
+          setFormData({ resultData: "", notes: "" });
+        }
+      } catch (error) {
+        setExistingResult(null);
+        setFormData({ resultData: "", notes: "" });
       }
     } catch (error) {
-      // No existing result, keep form empty
-      setExistingResult(null);
-      setFormData({ resultData: "", notes: "" });
+      console.error("Error loading test request details:", error);
+      toast.error("Không thể tải thông tin chi tiết yêu cầu");
+    } finally {
+      if (!isModalOpen) setLoading(false);
     }
   };
 
@@ -192,7 +275,7 @@ export default function LabTestResultsPage() {
   };
 
   const getServiceName = (request: any) => {
-    return request.serviceId?.name || "N/A";
+    return request.serviceId?.name || "Chưa có dịch vụ";
   };
 
   const totalPages = Math.ceil(pagination.total / pagination.limit);
@@ -341,102 +424,174 @@ export default function LabTestResultsPage() {
       {/* Create/Update Result Modal */}
       <Modal
         isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setSelectedRequest(null);
-          setFormData({ resultData: "", notes: "" });
-        }}
-        title="Nhập kết quả xét nghiệm"
+        onClose={handleCloseModal}
+        title={existingResult ? "Chi tiết kết quả xét nghiệm" : "Nhập kết quả xét nghiệm mới"}
         size="lg"
         footer={
           <>
             <Button
               variant="outline"
-              onClick={() => {
-                setIsModalOpen(false);
-                setSelectedRequest(null);
-                setFormData({ resultData: "", notes: "" });
-              }}
+              onClick={handleCloseModal}
+              icon={<IconX size={18} />}
             >
               Hủy
             </Button>
-            <Button onClick={handleCreateResult}>Lưu kết quả</Button>
+            <Button
+              loading={loading}
+              onClick={handleCreateResult}
+              icon={<IconSend size={18} />}
+            >
+              {existingResult ? "Cập nhật kết quả" : "Gửi kết quả"}
+            </Button>
           </>
         }
       >
         {selectedRequest && (
           <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
+            {/* Patient & Service Summary Card */}
+            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Bệnh nhân</span>
-                <div className="font-bold text-gray-800">{getPatientName(selectedRequest)}</div>
+                <span className="text-xs font-semibold text-primary uppercase tracking-widest flex items-center gap-1.5">
+                  <IconUserSquareRounded size={14} />
+                  Bệnh nhân
+                </span>
+                <div className="font-semibold text-gray-800 text-sm">{getPatientName(selectedRequest)}</div>
                 <div className="text-xs text-gray-500">
                   NS: {selectedRequest.examId?.patientId?.dateOfBirth ? format(new Date(selectedRequest.examId.patientId.dateOfBirth), "dd/MM/yyyy") : "-"}
                 </div>
               </div>
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Dịch vụ</span>
-                <div className="font-bold text-primary">{getServiceName(selectedRequest)}</div>
-                <div className="text-xs text-gray-500 italic">Loại: {selectedRequest.testType || "N/A"}</div>
+                <span className="text-xs font-semibold text-primary uppercase tracking-widest flex items-center gap-1.5">
+                  <IconMicroscope size={14} />
+                  Dịch vụ xét nghiệm
+                </span>
+                <div className="font-semibold text-primary">{getServiceName(selectedRequest)}</div>
+                <div className="text-sm text-gray-500 italic">(Nhóm: {selectedRequest.testType})</div>
               </div>
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Người thực hiện</span>
-                <div className="font-bold text-gray-800">{selectedRequest.labNurseId?.fullName || "Chưa xác định"}</div>
+                <span className="text-xs font-semibold text-primary uppercase tracking-widest flex items-center gap-1.5">
+                  <IconNurse size={14} />
+                  Người thực hiện
+                </span>
+                <div className="font-semibold text-gray-800 text-sm">{selectedRequest.labNurseId?.fullName || "Chưa xác định"}</div>
               </div>
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Ngày yêu cầu</span>
-                <div className="font-bold text-gray-800">{format(new Date(selectedRequest.requestedAt), "dd/MM/yyyy HH:mm")}</div>
+                <span className="text-xs font-semibold text-primary uppercase tracking-widest flex items-center gap-1.5">
+                  <IconClock size={14} />
+                  Thời gian yêu cầu
+                </span>
+                <div className="font-semibold text-gray-800 text-sm">{format(new Date(selectedRequest.requestedAt || selectedRequest.createdAt), "dd/MM/yyyy HH:mm")}</div>
               </div>
             </div>
 
-            {selectedRequest.status === 'completed' && existingResult ? (
-              <>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-primary">Kết quả chi tiết</label>
-                  <div className="p-4 bg-white border border-gray-200 rounded-xl min-h-[100px] text-gray-800 whitespace-pre-wrap">
-                    {formData.resultData || "Chưa có dữ liệu kết quả"}
+            <div className="space-y-6">
+              {existingResult && selectedRequest.status === 'completed' ? (
+                /* VIEW MODE: Professional Medical Report Style */
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <label className="text-sm font-semibold text-primary flex items-center gap-2">
+                      <IconCircleCheck size={18} />
+                      NỘI DUNG KẾT QUẢ XÉT NGHIỆM
+                    </label>
+                    <div className="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm min-h-[140px] text-gray-800 leading-relaxed whitespace-pre-wrap text-base font-medium">
+                      {formData.resultData || "Chưa có nội dung kết quả."}
+                    </div>
                   </div>
-                </div>
 
-                <Textarea
-                  label="Ghi chú"
-                  name="notes"
-                  value={formData.notes}
-                  onChange={(e) =>
-                    setFormData({ ...formData, notes: e.target.value })
-                  }
-                  fullWidth
-                  disabled
-                  rows={3}
-                />
-              </>
-            ) : (
-              <form onSubmit={handleCreateResult} className="space-y-4">
-                <Textarea
-                  label="Kết quả xét nghiệm (JSON hoặc văn bản)"
-                  name="resultData"
-                  value={formData.resultData}
-                  onChange={(e) =>
-                    setFormData({ ...formData, resultData: e.target.value })
-                  }
-                  required
-                  fullWidth
-                  rows={6}
-                  placeholder='{"value": "123", "unit": "mg/dL"} hoặc ghi chú văn bản'
-                  helperText="Nhập kết quả dưới dạng JSON hoặc văn bản tự do"
-                />
-                <Textarea
-                  label="Ghi chú thêm"
-                  name="notes"
-                  value={formData.notes}
-                  onChange={(e) =>
-                    setFormData({ ...formData, notes: e.target.value })
-                  }
-                  fullWidth
-                  rows={3}
-                />
-              </form>
-            )}
+                  {formData.notes && (
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold text-gray-400 uppercase tracking-widest px-1">Ghi chú lâm sàng</label>
+                      <div className="p-4 bg-gray-50 border border-dashed border-gray-300 rounded-xl text-gray-600 text-sm italic">
+                        {formData.notes}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* EDIT/CREATE MODE: User Friendly Input */
+                <form onSubmit={handleCreateResult} className="space-y-5">
+                  <div className="space-y-1">
+                    <Textarea
+                      label="Nội dung kết quả / Chỉ số đo được"
+                      name="resultData"
+                      value={formData.resultData}
+                      onChange={(e) =>
+                        setFormData({ ...formData, resultData: e.target.value })
+                      }
+                      required
+                      fullWidth
+                      rows={2}
+                      placeholder="VD: Hemoglobin: 14.5 g/dL, Hồng cầu: 4.8 triệu/mm3..."
+                      className="text-base"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Textarea
+                      label="Ghi chú thêm từ y tá"
+                      name="notes"
+                      value={formData.notes}
+                      onChange={(e) =>
+                        setFormData({ ...formData, notes: e.target.value })
+                      }
+                      fullWidth
+                      rows={2}
+                      placeholder="Mẫu bệnh phẩm đạt yêu cầu, không có bất thường về kỹ thuật..."
+                    />
+                  </div>
+                </form>
+              )}
+
+              {/* IMAGE GALLERY SECTION (Visual Evidence) */}
+              <div className="space-y-3 pt-4 border-t border-gray-100">
+                <label className="text-sm font-semibold text-primary flex items-center gap-2">
+                  <IconPhoto size={18} />
+                  HÌNH ẢNH MINH CHỨNG (NẾU CÓ)
+                </label>
+
+                <div className="flex flex-wrap gap-4">
+                  {/* Current Images from Backend */}
+                  {existingResult?.images?.map((img: string, idx: number) => (
+                    <div key={`existing-${idx}`} className="group relative w-28 h-28 rounded-xl overflow-hidden border border-gray-200 bg-white shadow-sm">
+                      <img src={img} alt="Result" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <span className="text-[10px] text-white font-semibold uppercase tracking-tighter">Ảnh cũ</span>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* New Selected Files Previews */}
+                  {previewUrls.map((url, idx) => (
+                    <div key={`new-${idx}`} className="relative w-28 h-28 rounded-xl overflow-hidden border-2 border-primary shadow-sm">
+                      <img src={url} alt="Preview" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => removeFile(idx)}
+                        className="absolute top-1.5 right-1.5 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                      >
+                        <IconX size={14} />
+                      </button>
+                    </div>
+                  ))}
+
+                  {selectedRequest.status !== 'completed' && (
+                    <label className="w-28 h-28 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-all text-gray-400 hover:text-primary shadow-sm bg-gray-50/50">
+                      <IconPhoto size={28} />
+                      <span className="text-[10px] font-semibold mt-1 uppercase">Thêm ảnh</span>
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleFileChange}
+                      />
+                    </label>
+                  )}
+                </div>
+                {selectedRequest.status !== 'completed' && (
+                  <p className="text-[10px] text-gray-500 italic px-1">Định dạng hỗ trợ: JPG, PNG, WEBP. Tối đa 5MB/tập tin.</p>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </Modal>

@@ -260,7 +260,7 @@ export default function PatientProfilePage() {
                 </div>
                 <div className="flex justify-between items-center py-2">
                   <span className="text-gray-500 font-medium">Vai trò người dùng</span>
-                  <span className="px-3 py-1 bg-primary/10 text-primary text-sm font-bold rounded-full uppercase tracking-wider">{userAccount?.role}</span>
+                  <span className="px-3 py-1 bg-primary/10 text-primary text-sm font-semibold rounded-full uppercase tracking-wider">{userAccount?.role}</span>
                 </div>
               </div>
             </CardBody>
@@ -271,26 +271,26 @@ export default function PatientProfilePage() {
         <div className="lg:col-span-4 space-y-6">
           <Card className="border border-gray-200 shadow-sm">
             <CardBody className="p-4">
-              <div className="flex items-center gap-4 text-gray-800 mb-4 border-b border-gray-100 pb-4">
+              <div className="flex items-center gap-4 text-gray-800 mb-4 border-b border-gray-200 pb-4">
                 <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
                   <IconActivity size={24} />
                 </div>
                 <div>
-                  <h5 className="font-bold">Chỉ số hoạt động</h5>
+                  <h5 className="font-semibold">Chỉ số hoạt động</h5>
                   <p className="text-sm text-gray-500 mt-1">Theo dõi hoạt động khám chữa bệnh.</p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100/50">
-                  <div className="text-2xl font-bold text-gray-800 mb-1">{stats?.totalAppointments || 0}</div>
-                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Tổng lịch hẹn</div>
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-200/50">
+                  <div className="text-2xl font-semibold text-gray-800 mb-1">{stats?.totalAppointments || 0}</div>
+                  <div className="text-xs font-semibold text-primary uppercase tracking-widest leading-none">Tổng lịch hẹn</div>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100/50">
-                  <div className="text-2xl font-bold text-gray-800 mb-1">{stats?.totalExaminations || 0}</div>
-                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">Ca khám bệnh</div>
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-200/50">
+                  <div className="text-2xl font-semibold text-gray-800 mb-1">{stats?.totalExaminations || 0}</div>
+                  <div className="text-xs font-semibold text-primary uppercase tracking-widest leading-none">Ca khám bệnh</div>
                 </div>
               </div>
-              <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-sm">
+              <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between text-sm">
                 <span className="text-gray-500">Ngày tham gia:</span>
                 <span className="font-semibold text-gray-800 uppercase text-sm">{profile?.registerDate ? format(new Date(profile.registerDate), "dd/MM/yyyy") : "-"}</span>
               </div>
@@ -304,7 +304,7 @@ export default function PatientProfilePage() {
                   <IconStethoscope size={24} />
                 </div>
                 <div>
-                  <h5 className="font-bold">Hồ sơ y tế</h5>
+                  <h5 className="font-semibold">Hồ sơ y tế</h5>
                   <p className="text-sm text-gray-500 mt-1">Xem đầy đủ bệnh sử và hồ sơ y tế của bạn.</p>
                 </div>
               </div>

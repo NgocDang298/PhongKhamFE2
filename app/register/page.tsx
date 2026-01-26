@@ -163,7 +163,7 @@ export default function RegisterPage() {
                   >
                     <span className="text-3xl">{role.icon}</span>
                     <span className="flex-1 text-left">{role.label}</span>
-                    <IconChevronRight className="text-gray-400 group-hover:text-primary transition-colors" />
+                    <IconChevronRight className="text-gray-500 group-hover:text-primary transition-colors" />
                   </button>
                 ))}
                 <Link href="/login" className="mt-4">

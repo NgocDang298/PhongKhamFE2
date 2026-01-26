@@ -68,7 +68,10 @@ export async function get<T>(url: string, params?: any): Promise<T> {
 
 // Generic POST request
 export async function post<T>(url: string, data?: any): Promise<T> {
-    return api.post(url, data);
+    const config = data instanceof FormData
+        ? { headers: { 'Content-Type': 'multipart/form-data' } }
+        : {};
+    return api.post(url, data, config);
 }
 
 // Generic PUT request

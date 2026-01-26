@@ -312,7 +312,7 @@ export default function DashboardLayout({
         <header className="bg-white flex items-center border-b border-gray-200 px-8 py-4 h-[73px]">
           <nav className="flex items-center space-x-2 overflow-x-auto no-scrollbar">
             <div
-              className="p-1.5 rounded-md hover:bg-gray-100 text-gray-400 cursor-pointer transition-colors"
+              className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500 cursor-pointer transition-colors"
               onClick={() => router.push(ROUTES.PATIENT_DASHBOARD)}
             >
               <IconHome size={18} />

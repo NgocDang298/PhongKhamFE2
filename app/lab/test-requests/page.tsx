@@ -16,33 +16,22 @@ import {
 } from "@/components/ui/Table";
 import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
-import { ROUTES, TEST_REQUEST_STATUS_LABELS } from "@/lib/constants";
 import * as testRequestService from "@/lib/services/testRequests";
-import * as directoryService from "@/lib/services/directory";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import {
-  IconLayoutGrid,
   IconFileText,
-  IconCircleCheck,
 } from "@tabler/icons-react";
 
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.LAB_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Yêu cầu xét nghiệm",
-    path: ROUTES.LAB_TEST_REQUESTS,
-    icon: <IconFileText size={20} />,
-  },
-  {
-    label: "Kết quả xét nghiệm",
-    path: ROUTES.LAB_TEST_RESULTS,
-    icon: <IconCircleCheck size={20} />,
-  },
+import { LAB_NAV_ITEMS } from "@/lib/navigation";
+import Pagination from "@/components/ui/Pagination";
+import Modal from "@/components/ui/Modal";
+
+const statusOptions = [
+  { value: "", label: "Tất cả trạng thái" },
+  { value: "waiting", label: "Chờ xử lý" },
+  { value: "processing", label: "Đang xử lý" },
+  { value: "completed", label: "Hoàn thành" },
 ];
 
 export default function LabTestRequestsPage() {
@@ -50,7 +39,17 @@ export default function LabTestRequestsPage() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [testRequests, setTestRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("waiting");
+  const [selectedRequest, setSelectedRequest] = useState<any>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+
+  // Pagination state
+  const [pagination, setPagination] = useState({
+    total: 0,
+    limit: 20,
+    skip: 0,
+    currentPage: 1,
+  });
 
   useEffect(() => {
     if (authLoading) return;
@@ -64,47 +63,54 @@ export default function LabTestRequestsPage() {
   const loadTestRequests = async () => {
     try {
       setLoading(true);
-      const params: any = {};
+      const params: any = {
+        limit: pagination.limit,
+        skip: pagination.skip,
+      };
 
       if (statusFilter) {
         params.status = statusFilter;
       }
 
-      // Find LabNurse profile ID corresponding to current User ID
-      if (user?._id) {
-        try {
-          const labNursesRes = await directoryService.getNurses();
-          const labNurses = Array.isArray(labNursesRes)
-            ? labNursesRes
-            : (labNursesRes as any).data || [];
-
-          const myProfile = labNurses.find((nurse: any) => {
-            const nurseUserId =
-              typeof nurse.userId === "object"
-                ? nurse.userId._id
-                : nurse.userId;
-            return nurseUserId === user._id;
-          });
-
-          if (myProfile) {
-            params.labNurseId = myProfile._id;
-          }
-        } catch (err) {
-          console.warn("Could not load lab nurse profile:", err);
-        }
-      }
-
       const response: any = await testRequestService.getTestRequests(params);
-      const testRequests =
-        response.data?.testRequests ||
-        response.testRequests ||
-        response.data ||
-        response ||
-        [];
-      setTestRequests(testRequests);
+      setTestRequests(response.data?.testRequests || []);
+      setPagination(prev => ({
+        ...prev,
+        total: response.data?.total || 0
+      }));
     } catch (error) {
       console.error("Error loading test requests:", error);
-      setTestRequests([]);
+      toast.error("Không thể tải danh sách yêu cầu");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPagination(prev => ({
+      ...prev,
+      currentPage: newPage,
+      skip: (newPage - 1) * prev.limit,
+    }));
+  };
+
+  const handlePageSizeChange = (newSize: number) => {
+    setPagination(prev => ({
+      ...prev,
+      limit: newSize,
+      skip: 0,
+      currentPage: 1,
+    }));
+  };
+
+  const handleViewDetail = async (id: string) => {
+    try {
+      setLoading(true);
+      const res = await testRequestService.getTestRequest(id);
+      setSelectedRequest(res.data);
+      setIsDetailModalOpen(true);
+    } catch (error) {
+      toast.error("Không thể tải chi tiết yêu cầu");
     } finally {
       setLoading(false);
     }
@@ -122,22 +128,27 @@ export default function LabTestRequestsPage() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "waiting":
-        return "#f59e0b";
-      case "processing":
-        return "#3b82f6";
-      case "completed":
-        return "#10b981";
-      default:
-        return "#6b7280";
-    }
+  const getStatusBadge = (status: string) => {
+    const badges = {
+      waiting: "bg-yellow-100 text-yellow-700 border-yellow-200",
+      processing: "bg-blue-100 text-blue-700 border-blue-200",
+      completed: "bg-green-100 text-green-700 border-green-200",
+    };
+    const labels = {
+      waiting: "Chờ xử lý",
+      processing: "Đang xử lý",
+      completed: "Hoàn thành",
+    };
+    return (
+      <span className={`px-2 py-0.5 text-xs font-semibold rounded-md border ${badges[status as keyof typeof badges] || 'bg-gray-100 text-gray-600'}`}>
+        {labels[status as keyof typeof labels] || status}
+      </span>
+    );
   };
 
   if (authLoading || loading) {
     return (
-      <DashboardLayout navItems={navItems} title="Yêu cầu xét nghiệm">
+      <DashboardLayout navItems={LAB_NAV_ITEMS} title="Yêu cầu xét nghiệm">
         <div className="flex items-center justify-center h-64 text-gray-500">
           Đang tải...
         </div>
@@ -146,17 +157,12 @@ export default function LabTestRequestsPage() {
   }
 
   return (
-    <DashboardLayout navItems={navItems} title="Yêu cầu xét nghiệm">
-      <div className="flex justify-between items-center mb-4">
-        <div style={{ maxWidth: "300px" }}>
+    <DashboardLayout navItems={LAB_NAV_ITEMS} title="Yêu cầu xét nghiệm">
+      <div className="mb-6 flex justify-between items-end gap-4">
+        <div className="w-full max-w-xs">
           <Select
             label="Lọc theo trạng thái"
-            options={[
-              { value: "", label: "Tất cả" },
-              { value: "waiting", label: "Chờ xử lý" },
-              { value: "processing", label: "Đang xử lý" },
-              { value: "completed", label: "Hoàn thành" },
-            ]}
+            options={statusOptions}
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             fullWidth
@@ -165,8 +171,8 @@ export default function LabTestRequestsPage() {
       </div>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Danh sách yêu cầu xét nghiệm</CardTitle>
+        <CardHeader icon={<IconFileText size={20} />}>
+          <CardTitle>Danh sách yêu cầu xét nghiệm ({pagination.total})</CardTitle>
         </CardHeader>
         <CardBody>
           {testRequests.length === 0 ? (
@@ -177,65 +183,46 @@ export default function LabTestRequestsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-16">STT</TableHead>
                   <TableHead>Bệnh nhân</TableHead>
-                  <TableHead>Loại xét nghiệm</TableHead>
+                  <TableHead>Dịch vụ</TableHead>
                   <TableHead>Ngày yêu cầu</TableHead>
                   <TableHead>Trạng thái</TableHead>
                   <TableHead>Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {testRequests.map((request) => (
+                {testRequests.map((request, index) => (
                   <TableRow key={request._id}>
-                    <TableCell>
-                      {request.examId &&
-                      typeof request.examId === "object" &&
-                      (request.examId as any).patientId
-                        ? typeof (request.examId as any).patientId === "object"
-                          ? (request.examId as any).patientId.fullName
-                          : "Không xác định"
-                        : typeof request.patientId === "object" &&
-                          request.patientId
-                        ? request.patientId.fullName
-                        : "Không xác định"}
+                    <TableCell className="text-gray-500 font-medium">
+                      {pagination.skip + index + 1}
+                    </TableCell>
+                    <TableCell className="font-medium text-gray-800">
+                      {request.examId?.patientId?.fullName || "Không xác định"}
                     </TableCell>
                     <TableCell>
-                      {typeof request.testType === "object" && request.testType
-                        ? request.testType.name
-                        : request.testType || "Không xác định"}
+                      {request.serviceId?.name || request.testType || "Không xác định"}
                     </TableCell>
                     <TableCell>
-                      {format(
-                        new Date(request.createdAt || ""),
-                        "dd/MM/yyyy HH:mm",
-                        { locale: vi }
-                      )}
+                      {format(new Date(request.createdAt), "dd/MM/yyyy HH:mm", { locale: vi })}
                     </TableCell>
                     <TableCell>
-                      <span
-                        className="px-2 py-1 text-xs font-medium rounded-full"
-                        style={{
-                          backgroundColor:
-                            getStatusColor(request.status) + "20",
-                          color: getStatusColor(request.status),
-                        }}
-                      >
-                        {
-                          TEST_REQUEST_STATUS_LABELS[
-                            request.status as keyof typeof TEST_REQUEST_STATUS_LABELS
-                          ]
-                        }
-                      </span>
+                      {getStatusBadge(request.status)}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleViewDetail(request._id)}
+                        >
+                          Chi tiết
+                        </Button>
                         {request.status === "waiting" && (
                           <Button
-                            variant="outline"
+                            variant="primary"
                             size="sm"
-                            onClick={() =>
-                              handleUpdateStatus(request._id, "processing")
-                            }
+                            onClick={() => handleUpdateStatus(request._id, "processing")}
                           >
                             Bắt đầu
                           </Button>
@@ -244,9 +231,7 @@ export default function LabTestRequestsPage() {
                           <Button
                             variant="primary"
                             size="sm"
-                            onClick={() =>
-                              handleUpdateStatus(request._id, "completed")
-                            }
+                            onClick={() => handleUpdateStatus(request._id, "completed")}
                           >
                             Hoàn thành
                           </Button>
@@ -258,8 +243,66 @@ export default function LabTestRequestsPage() {
               </TableBody>
             </Table>
           )}
+
+          <Pagination
+            total={pagination.total}
+            limit={pagination.limit}
+            skip={pagination.skip}
+            onPageChange={handlePageChange}
+            onLimitChange={handlePageSizeChange}
+          />
         </CardBody>
       </Card>
+
+      {/* Detail Modal */}
+      <Modal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        title="Chi tiết yêu cầu xét nghiệm"
+        size="lg"
+      >
+        {selectedRequest && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <div className="space-y-1">
+                <span className="text-xs font-semibold text-primary uppercase tracking-widest">Bệnh nhân</span>
+                <div className="font-semibold text-gray-800">{selectedRequest.examId?.patientId?.fullName}</div>
+                <div className="text-xs text-gray-500">SĐT: {selectedRequest.examId?.patientId?.phone || "-"}</div>
+                <div className="text-xs text-gray-500">Ngày sinh: {selectedRequest.examId?.patientId?.dateOfBirth ? format(new Date(selectedRequest.examId.patientId.dateOfBirth), "dd/MM/yyyy") : "-"}</div>
+              </div>
+              <div className="space-y-1">
+                <span className="text-xs font-semibold text-primary uppercase tracking-widest">Bác sĩ chỉ định</span>
+                <div className="font-semibold text-gray-800">{selectedRequest.examId?.doctorId?.fullName || "N/A"}</div>
+                <div className="text-xs text-secondary font-medium">{selectedRequest.examId?.doctorId?.specialty}</div>
+              </div>
+              <div className="space-y-1">
+                <span className="text-xs font-semibold text-primary uppercase tracking-widest">Dịch vụ xét nghiệm</span>
+                <div className="font-semibold text-primary text-xs">{selectedRequest.serviceId?.name}</div>
+                <p className="text-xs text-gray-500">{selectedRequest.serviceId?.description}</p>
+              </div>
+              <div className="space-y-1">
+                <span className="text-xs font-semibold text-primary uppercase tracking-widest">Loại / Ghi chú</span>
+                <div className="font-semibold text-gray-800">{selectedRequest.testType || "-"}</div>
+              </div>
+              <div className="space-y-1">
+                <span className="text-xs font-semibold text-primary uppercase tracking-widest">Trạng thái</span>
+                <div>{getStatusBadge(selectedRequest.status)}</div>
+              </div>
+              <div className="space-y-1">
+                <span className="text-xs font-semibold text-primary uppercase tracking-widest">Thời gian tạo</span>
+                <div className="text-sm font-medium text-gray-700">{format(new Date(selectedRequest.createdAt), "dd/MM/yyyy HH:mm")}</div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+              <Button variant="outline" onClick={() => setIsDetailModalOpen(false)}>Đóng</Button>
+              {selectedRequest.status === "waiting" && (
+                <Button onClick={() => { handleUpdateStatus(selectedRequest._id, "processing"); setIsDetailModalOpen(false); }}>Bắt đầu xét nghiệm</Button>
+              )}
+            </div>
+          </div>
+        )}
+      </Modal>
     </DashboardLayout>
   );
 }
