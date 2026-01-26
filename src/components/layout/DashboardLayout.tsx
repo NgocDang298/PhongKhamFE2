@@ -8,7 +8,7 @@ import {
   IconLayoutDashboard,
   IconMenu2,
   IconLogout,
-  IconUser,
+  IconUserSquareRounded,
   IconChevronDown,
 } from "@tabler/icons-react";
 import Button from "@/components/ui/Button";
@@ -91,7 +91,7 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-[#EFF0F7]">
       {/* Sidebar */}
       <aside
         className={`
@@ -215,7 +215,7 @@ export default function DashboardLayout({
           >
             <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary font-semibold">
               {user?.fullName?.charAt(0) || user?.email?.charAt(0) || (
-                <IconUser size={20} />
+                <IconUserSquareRounded size={20} />
               )}
             </div>
             {sidebarOpen && (

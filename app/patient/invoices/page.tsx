@@ -228,7 +228,7 @@ export default function PatientInvoicesPage() {
               </div>
             </div>
             {selectedInvoice.items && selectedInvoice.items.length > 0 && (
-              <div className="mt-6">
+              <div className="mt-4">
                 <h4 className="text-lg font-semibold mb-4 text-gray-800">
                   Chi tiết dịch vụ
                 </h4>
@@ -260,7 +260,7 @@ export default function PatientInvoicesPage() {
                 </Table>
               </div>
             )}
-            <div className="flex justify-end p-4 text-xl font-semibold bg-gray-50 rounded-lg mt-6">
+            <div className="flex justify-end p-4 text-xl font-semibold bg-gray-50 rounded-lg mt-4">
               <strong>
                 Tổng cộng: {formatCurrency(selectedInvoice.totalAmount)}
               </strong>

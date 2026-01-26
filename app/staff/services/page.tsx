@@ -19,7 +19,7 @@ import { formatCurrency } from "@/lib/utils";
 import {
   IconLayoutGrid,
   IconCalendar,
-  IconUsers,
+  IconUserSquareRoundeds,
   IconReceipt,
   IconSettings,
 } from "@tabler/icons-react";
@@ -38,7 +38,7 @@ const navItems = [
   {
     label: "Bệnh nhân",
     path: ROUTES.STAFF_PATIENTS,
-    icon: <IconUsers size={20} />,
+    icon: <IconUserSquareRoundeds size={20} />,
   },
   {
     label: "Hóa đơn",
@@ -123,7 +123,7 @@ export default function StaffServicesPage() {
                     <TableCell>
                       {
                         SERVICE_TYPE_LABELS[
-                          service.serviceType as keyof typeof SERVICE_TYPE_LABELS
+                        service.serviceType as keyof typeof SERVICE_TYPE_LABELS
                         ]
                       }
                     </TableCell>

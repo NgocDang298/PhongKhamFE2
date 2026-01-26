@@ -4,12 +4,12 @@ import { cn } from "@/lib/utils";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?:
-    | "primary"
-    | "secondary"
-    | "outline"
-    | "ghost"
-    | "danger"
-    | "destructive";
+  | "primary"
+  | "secondary"
+  | "outline"
+  | "ghost"
+  | "danger"
+  | "destructive";
   size?: "sm" | "md" | "lg";
   loading?: boolean;
   icon?: ReactNode;
@@ -41,7 +41,7 @@ export default function Button({
     danger:
       "bg-danger-500 text-white hover:bg-danger-600 focus:ring-danger-500 shadow-sm hover:shadow-md",
     destructive:
-      "bg-red-100 border border-red-500 text-red-500 hover:text-white hover:bg-red-500 focus:ring-red-500 shadow-sm hover:shadow-md",
+      "bg-red-50 border border-red-500 text-red-500 hover:text-white hover:bg-red-500 focus:ring-red-500 shadow-sm hover:shadow-md",
   };
 
   const sizeStyles = {

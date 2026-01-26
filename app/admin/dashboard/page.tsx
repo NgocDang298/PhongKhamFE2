@@ -12,7 +12,7 @@ import * as serviceService from "@/lib/services/services";
 import { formatCurrency } from "@/lib/utils";
 import {
   IconLayoutGrid,
-  IconUsers,
+  IconUserSquareRoundeds,
   IconSettings,
   IconCalendar,
   IconChartBar,
@@ -30,7 +30,7 @@ const navItems = [
   {
     label: "Quản lý tài khoản",
     path: ROUTES.ADMIN_USERS,
-    icon: <IconUsers size={20} />,
+    icon: <IconUserSquareRoundeds size={20} />,
   },
   {
     label: "Quản lý dịch vụ",

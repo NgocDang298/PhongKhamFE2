@@ -5,7 +5,7 @@
 ### Navigation Icons
 
 - **Layout/Grid** (Tổng quan): `IconLayoutGrid`
-- **Users** (Quản lý tài khoản): `IconUsers`
+- **Users** (Quản lý tài khoản): `IconUserSquareRoundeds`
 - **Settings/Service** (Quản lý dịch vụ): `IconSettings`
 - **Calendar** (Lịch hẹn/Lịch làm việc): `IconCalendar`
 - **Chart/Statistics** (Thống kê): `IconChartBar`

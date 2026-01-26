@@ -25,7 +25,7 @@ import { vi } from "date-fns/locale";
 import {
   IconLayoutGrid,
   IconCalendar,
-  IconUsers,
+  IconUserSquareRoundeds,
   IconSearch,
   IconPlus,
 } from "@tabler/icons-react";
@@ -44,7 +44,7 @@ const navItems = [
   {
     label: "Bệnh nhân",
     path: ROUTES.STAFF_PATIENTS,
-    icon: <IconUsers size={20} />,
+    icon: <IconUserSquareRoundeds size={20} />,
   },
 ];
 
@@ -160,7 +160,7 @@ export default function StaffPatientsPage() {
       </div>
 
       <Card>
-        <CardHeader icon={<IconUsers size={20} />}>
+        <CardHeader icon={<IconUserSquareRoundeds size={20} />}>
           <CardTitle>Danh sách bệnh nhân</CardTitle>
         </CardHeader>
         <CardBody>
@@ -190,8 +190,8 @@ export default function StaffPatientsPage() {
                       {patient.gender === "male"
                         ? "Nam"
                         : patient.gender === "female"
-                        ? "Nữ"
-                        : "Khác"}
+                          ? "Nữ"
+                          : "Khác"}
                     </TableCell>
                     <TableCell>
                       {format(new Date(patient.dateOfBirth), "dd/MM/yyyy", {

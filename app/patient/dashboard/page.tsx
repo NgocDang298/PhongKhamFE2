@@ -22,7 +22,7 @@ import {
   IconBell,
   IconCalendarPlus,
   IconReceipt,
-  IconUser,
+  IconUserSquareRounded,
   IconFileText,
 } from "@tabler/icons-react";
 
@@ -108,7 +108,7 @@ export default function PatientDashboard() {
     { label: "Đặt lịch mới", icon: <IconCalendarPlus />, path: ROUTES.PATIENT_BOOK_APPOINTMENT, color: "bg-primary" },
     { label: "Xem hồ sơ", icon: <IconFileText />, path: ROUTES.PATIENT_MEDICAL_PROFILE, color: "bg-secondary" },
     { label: "Xem hóa đơn", icon: <IconReceipt />, path: ROUTES.PATIENT_INVOICES, color: "bg-tertiary" },
-    { label: "Tài khoản", icon: <IconUser />, path: ROUTES.PATIENT_PROFILE, color: "bg-quaternary" },
+    { label: "Tài khoản", icon: <IconUserSquareRounded />, path: ROUTES.PATIENT_PROFILE, color: "bg-quaternary" },
   ];
 
   const HEALTH_TIPS = [
@@ -133,10 +133,10 @@ export default function PatientDashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Main Column - Left (8 cols) */}
-          <div className="lg:col-span-8 space-y-8">
+          <div className="lg:col-span-8 space-y-6">
             {/* Quick Actions Hub */}
             <section className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-              <h3 className="text-xl border-b border-b-gray-200 pb-4 font-semibold text-primary mb-4 flex items-center gap-2">
+              <h3 className="text-lg border-b border-b-gray-200 pb-4 font-semibold text-primary mb-4 flex items-center gap-2">
                 <IconBolt size={20} />
                 <span>Thao tác nhanh</span>
               </h3>
@@ -179,7 +179,7 @@ export default function PatientDashboard() {
             {/* Recent Appointments Feed */}
             <section className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
               <div className="flex items-center mb-4 justify-between border-b border-gray-200 pb-4">
-                <h3 className="text-xl border-b border-b-gray-200 pb-4 font-semibold text-primary mb-4 flex items-center gap-2">
+                <h3 className="text-lg border-b border-b-gray-200 pb-4 font-semibold text-primary mb-4 flex items-center gap-2">
                   <IconCalendar size={20} />
                   <span>Lịch hẹn gần đây</span>
                 </h3>
@@ -233,7 +233,7 @@ export default function PatientDashboard() {
           </div>
 
           {/* Sidebar Column - Right (4 cols) */}
-          <div className="lg:col-span-4 space-y-8">
+          <div className="lg:col-span-4 space-y-6">
 
             {/* Health Tip Widget */}
             <Card className="bg-gradient-to-br from-primary to-bubble text-white border-none shadow-xl overflow-hidden relative">
@@ -242,7 +242,7 @@ export default function PatientDashboard() {
                 <IconHeartRateMonitor className="mb-4 text-white/80" size={40} />
                 <h4 className="text-xl font-semibold mb-3 text-white">Lời khuyên hôm nay</h4>
                 <p className="text-white/90 leading-relaxed font-medium italic">"{randomTip}"</p>
-                <div className="mt-6 pt-6 border-t border-white/20 flex items-center justify-between">
+                <div className="mt-4 pt-4 border-t border-white/20 flex items-center justify-between">
                   <span className="text-xs font-semibold uppercase tracking-widest text-white/60">Health Insight</span>
                   <div className="flex -space-x-2">
                     {[1, 2, 3].map(i => <div key={i} className="w-6 h-6 rounded-full bg-white/20 border-2 border-primary"></div>)}
@@ -253,7 +253,7 @@ export default function PatientDashboard() {
 
             {/* Notifications / Alerts Section */}
             <section className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-              <h3 className="text-xl border-b border-b-gray-200 pb-4 font-semibold text-primary mb-4 flex items-center gap-2">
+              <h3 className="text-lg border-b border-b-gray-200 pb-4 font-semibold text-primary mb-4 flex items-center gap-2">
                 <IconBell size={20} />
                 <span>Thông báo mới</span>
               </h3>

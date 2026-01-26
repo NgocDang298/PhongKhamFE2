@@ -12,8 +12,8 @@ const iconMappings = [
   // Users
   {
     pattern: /<svg[^>]*>\s*<path d="M17 21v-2 a4 4 0 0 0-4-4H5 a4 4 0 0 0-4 4v2"[^>]*\/>\s*<circle cx="9" cy="7" r="4"[^>]*\/>\s*<path d="M23 21v-2 a4 4 0 0 0-3-3\.87"[^>]*\/>\s*<path d="M16 3\.13 a4 4 0 0 1 0 7\.75"[^>]*\/>\s*<\/svg>/gs,
-    replacement: '<IconUsers size={20} />',
-    import: 'IconUsers'
+    replacement: '<IconUserSquareRoundeds size={20} />',
+    import: 'IconUserSquareRoundeds'
   },
   // Calendar
   {

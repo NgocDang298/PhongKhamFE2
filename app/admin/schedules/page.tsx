@@ -24,7 +24,7 @@ import * as directoryService from "@/lib/services/directory";
 import type { WorkSchedule, Doctor, LabNurse } from "@/types";
 import {
   IconLayoutGrid,
-  IconUsers,
+  IconUserSquareRoundeds,
   IconClock,
   IconTrendingUp,
   IconPlus,
@@ -43,7 +43,7 @@ const navItems = [
   {
     label: "Quản lý tài khoản",
     path: ROUTES.ADMIN_USERS,
-    icon: <IconUsers size={20} />,
+    icon: <IconUserSquareRoundeds size={20} />,
   },
   {
     label: "Lịch làm việc",
@@ -444,7 +444,7 @@ export default function AdminSchedulesPage() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         {/* Danh sách bác sĩ và y tá */}
         <Card className="lg:col-span-1">
-          <CardHeader icon={<IconUsers size={20} />}>
+          <CardHeader icon={<IconUserSquareRoundeds size={20} />}>
             <CardTitle>Danh sách nhân viên</CardTitle>
           </CardHeader>
           <CardBody>

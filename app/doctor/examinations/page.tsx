@@ -475,7 +475,7 @@ export default function DoctorExaminationsPage() {
                       >
                         {
                           EXAMINATION_STATUS_LABELS[
-                            exam.status as keyof typeof EXAMINATION_STATUS_LABELS
+                          exam.status as keyof typeof EXAMINATION_STATUS_LABELS
                           ]
                         }
                       </span>
@@ -537,15 +537,14 @@ export default function DoctorExaminationsPage() {
                 })
                 .map((apt) => ({
                   value: apt._id,
-                  label: `${
-                    typeof apt.patientId === "object" && apt.patientId
+                  label: `${typeof apt.patientId === "object" && apt.patientId
                       ? apt.patientId.fullName
                       : "Không xác định"
-                  } - ${format(
-                    new Date(apt.appointmentDate),
-                    "dd/MM/yyyy HH:mm",
-                    { locale: vi }
-                  )}`,
+                    } - ${format(
+                      new Date(apt.appointmentDate),
+                      "dd/MM/yyyy HH:mm",
+                      { locale: vi }
+                    )}`,
                 })),
             ]}
             value={startFormData.appointmentId}
@@ -685,7 +684,7 @@ export default function DoctorExaminationsPage() {
             rows={2}
           />
 
-          <div className="mt-6 border-t pt-4">
+          <div className="mt-4 border-t pt-4">
             <div className="flex justify-between items-center mb-4">
               <h3 className="font-medium text-lg">Yêu cầu xét nghiệm</h3>
               {selectedExamination?.status === "processing" && (
@@ -738,8 +737,8 @@ export default function DoctorExaminationsPage() {
                         {req.status === "waiting"
                           ? "Chờ xử lý"
                           : req.status === "processing"
-                          ? "Đang thực hiện"
-                          : "Hoàn thành"}
+                            ? "Đang thực hiện"
+                            : "Hoàn thành"}
                       </span>
                     </div>
                   );

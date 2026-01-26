@@ -12,6 +12,9 @@ export async function updateProfile(data: {
     phone?: string;
     address?: string;
     email?: string;
+    emergencyPhone?: string;
+    gender?: string;
+    dateOfBirth?: string;
 }): Promise<ApiResponse<ProfileData>> {
     return put('/profile/me', data);
 }

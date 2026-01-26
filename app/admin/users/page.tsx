@@ -26,7 +26,7 @@ import * as directoryService from "@/lib/services/directory";
 import type { UserRole, Doctor, Staff, LabNurse, Patient } from "@/types";
 import {
   IconLayoutGrid,
-  IconUsers,
+  IconUserSquareRoundeds,
   IconClock,
   IconPlus,
   IconRefresh,
@@ -43,7 +43,7 @@ const navItems = [
   {
     label: "Quản lý tài khoản",
     path: ROUTES.ADMIN_USERS,
-    icon: <IconUsers size={20} />,
+    icon: <IconUserSquareRoundeds size={20} />,
   },
   {
     label: "Lịch làm việc",
@@ -304,7 +304,7 @@ export default function AdminUsersPage() {
       </div>
 
       <Card>
-        <CardHeader icon={<IconUsers size={20} />}>
+        <CardHeader icon={<IconUserSquareRoundeds size={20} />}>
           <CardTitle>Danh sách tài khoản</CardTitle>
         </CardHeader>
         <CardBody>
@@ -424,7 +424,7 @@ export default function AdminUsersPage() {
         }
       >
         {selectedUser && (
-          <div className="space-y-8">
+          <div className="space-y-6">
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
                 Thông tin chung

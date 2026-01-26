@@ -29,7 +29,7 @@ import { vi } from "date-fns/locale";
 import {
   IconLayoutGrid,
   IconCalendar,
-  IconUsers,
+  IconUserSquareRoundeds,
   IconReceipt,
   IconPlus,
   IconTrash,
@@ -51,7 +51,7 @@ const navItems = [
   {
     label: "Bệnh nhân",
     path: ROUTES.STAFF_PATIENTS,
-    icon: <IconUsers size={20} />,
+    icon: <IconUserSquareRoundeds size={20} />,
   },
   {
     label: "Hóa đơn",

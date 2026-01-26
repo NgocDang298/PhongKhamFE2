@@ -432,7 +432,7 @@ export default function PatientAppointments() {
           font-size: 0.875rem;
           color: #6b7280;
           text-transform: uppercase;
-          background-color: #f9fafb;
+          background-color: #EFF0F7;
         }
 
         .fc .fc-daygrid-day-number {

@@ -13,7 +13,7 @@ import * as invoiceService from "@/lib/services/invoices";
 import {
   IconLayoutGrid,
   IconCalendar,
-  IconUsers,
+  IconUserSquareRoundeds,
   IconFileText,
   IconSettings,
 } from "@tabler/icons-react";
@@ -32,7 +32,7 @@ const navItems = [
   {
     label: "Bệnh nhân",
     path: ROUTES.STAFF_PATIENTS,
-    icon: <IconUsers size={20} />,
+    icon: <IconUserSquareRoundeds size={20} />,
   },
   {
     label: "Hóa đơn",
@@ -138,7 +138,7 @@ export default function StaffDashboard() {
                   color: "#6366f1",
                 }}
               >
-                <IconUsers size={20} />
+                <IconUserSquareRoundeds size={20} />
               </div>
               <div>
                 <div className="text-3xl font-semibold text-gray-800">
@@ -194,7 +194,7 @@ export default function StaffDashboard() {
                 onClick={() => router.push(ROUTES.STAFF_PATIENTS)}
                 variant="outline"
                 fullWidth
-                icon={<IconUsers size={20} />}
+                icon={<IconUserSquareRoundeds size={20} />}
               >
                 Quản lý bệnh nhân
               </Button>

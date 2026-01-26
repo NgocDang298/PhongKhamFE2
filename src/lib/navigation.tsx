@@ -4,7 +4,7 @@ import {
     IconCalendar,
     IconStethoscope,
     IconReceipt,
-    IconUser,
+    IconUserSquareRounded,
 } from "@tabler/icons-react";
 import { ROUTES } from "./constants";
 
@@ -51,6 +51,6 @@ export const PATIENT_NAV_ITEMS: NavItem[] = [
     {
         label: "Thông tin cá nhân",
         path: ROUTES.PATIENT_PROFILE,
-        icon: <IconUser size={20} />,
+        icon: <IconUserSquareRounded size={20} />,
     },
 ];

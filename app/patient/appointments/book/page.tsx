@@ -186,7 +186,7 @@ export default function BookAppointmentPage() {
               fullWidth
             />
 
-            <div className="flex gap-4 pt-6">
+            <div className="flex gap-4 pt-4">
               <Button
                 type="button"
                 variant="outline"

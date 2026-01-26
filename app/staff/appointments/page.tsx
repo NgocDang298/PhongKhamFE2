@@ -304,7 +304,7 @@ export default function StaffAppointmentsPage() {
                 fullWidth
               />
             </div>
-            <div className="flex items-center bg-gray-100 p-1 h-10 rounded-lg mt-6 border">
+            <div className="flex items-center bg-gray-100 p-1 h-10 rounded-lg mt-4 border">
               <button
                 onClick={() => setViewMode("calendar")}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === "calendar"
@@ -520,7 +520,7 @@ export default function StaffAppointmentsPage() {
           font-size: 0.875rem;
           color: #6b7280;
           text-transform: uppercase;
-          background-color: #f9fafb;
+          background-color: #EFF0F7;
         }
 
         .fc .fc-daygrid-day-number {
