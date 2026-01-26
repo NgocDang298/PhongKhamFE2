@@ -13,3 +13,9 @@ text-primary cho màu title
                 <IconBell size={20} />
                 <span>Thông báo mới</span>
               </h3>
+4. 
+ <CardHeader icon={<IconNotes size={20} />}>
+          <CardTitle>
+            {isRequired ? "Hoàn thiện hồ sơ y tế" : "Cập nhật hồ sơ y tế"}
+          </CardTitle>
+        </CardHeader>

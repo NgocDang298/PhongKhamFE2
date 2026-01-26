@@ -13,7 +13,7 @@ import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import {
   IconLayoutGrid,
-  IconUserSquareRoundeds,
+  IconUserSquareRounded,
   IconSettings,
   IconCalendar,
   IconChartBar,
@@ -28,7 +28,7 @@ const navItems = [
   {
     label: "Quản lý tài khoản",
     path: ROUTES.ADMIN_USERS,
-    icon: <IconUserSquareRoundeds size={20} />,
+    icon: <IconUserSquareRounded size={20} />,
   },
   {
     label: "Quản lý dịch vụ",

@@ -28,7 +28,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       <div className={cn("flex flex-col gap-1.5", fullWidth && "w-full")}>
         {label && (
           <label
-            className="text-sm font-medium text-gray-700"
+            className="text-sm font-semibold text-primary"
             htmlFor={props.id}
           >
             {label}
@@ -70,7 +70,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         </div>
         {error && <span className="text-sm text-danger-500">{error}</span>}
         {helperText && !error && (
-          <span className="text-sm text-gray-500">{helperText}</span>
+          <span className="text-sm text-gray-500 italic">({helperText})</span>
         )}
       </div>
     );

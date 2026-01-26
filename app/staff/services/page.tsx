@@ -19,7 +19,7 @@ import { formatCurrency } from "@/lib/utils";
 import {
   IconLayoutGrid,
   IconCalendar,
-  IconUserSquareRoundeds,
+  IconUserSquareRounded,
   IconReceipt,
   IconSettings,
 } from "@tabler/icons-react";
@@ -38,7 +38,7 @@ const navItems = [
   {
     label: "Bệnh nhân",
     path: ROUTES.STAFF_PATIENTS,
-    icon: <IconUserSquareRoundeds size={20} />,
+    icon: <IconUserSquareRounded size={20} />,
   },
   {
     label: "Hóa đơn",

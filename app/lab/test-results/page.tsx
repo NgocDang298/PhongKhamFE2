@@ -16,42 +16,20 @@ import {
 } from "@/components/ui/Table";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
-import Input from "@/components/ui/Input";
 import Textarea from "@/components/ui/Textarea";
-import { ROUTES } from "@/lib/constants";
 import * as testResultService from "@/lib/services/testResults";
 import * as testRequestService from "@/lib/services/testRequests";
-import * as directoryService from "@/lib/services/directory";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import {
-  IconLayoutGrid,
-  IconFileText,
   IconCircleCheck,
 } from "@tabler/icons-react";
 
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.LAB_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Yêu cầu xét nghiệm",
-    path: ROUTES.LAB_TEST_REQUESTS,
-    icon: <IconFileText size={20} />,
-  },
-  {
-    label: "Kết quả xét nghiệm",
-    path: ROUTES.LAB_TEST_RESULTS,
-    icon: <IconCircleCheck size={20} />,
-  },
-];
+import { LAB_NAV_ITEMS } from "@/lib/navigation";
 
 export default function LabTestResultsPage() {
   const router = useRouter();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
-  const [testResults, setTestResults] = useState<any[]>([]);
   const [testRequests, setTestRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -73,27 +51,11 @@ export default function LabTestResultsPage() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [requestsRes, resultsRes] = await Promise.all([
-        testRequestService.getTestRequests({ status: "completed" }),
-        testResultService.getTestResultsByExamination(""),
-      ]);
-      setTestRequests(requestsRes.data?.testRequests || []);
-      // Load results for each request
-      const results = await Promise.all(
-        (requestsRes.data?.testRequests || []).map(async (req: any) => {
-          try {
-            const result = await testResultService.getTestResultByRequest(
-              req._id
-            );
-            return result.data;
-          } catch {
-            return null;
-          }
-        })
-      );
-      setTestResults(results.filter(Boolean));
+      const response = await testRequestService.getTestRequests({ status: "completed" });
+      setTestRequests(response.data?.testRequests || []);
     } catch (error) {
-      console.error("Error loading data:", error);
+      console.error("Error loading test results:", error);
+      toast.error("Không thể tải danh sách kết quả xét nghiệm");
     } finally {
       setLoading(false);
     }
@@ -134,7 +96,7 @@ export default function LabTestResultsPage() {
 
   if (authLoading || loading) {
     return (
-      <DashboardLayout navItems={navItems} title="Kết quả xét nghiệm">
+      <DashboardLayout navItems={LAB_NAV_ITEMS} title="Kết quả xét nghiệm">
         <div className="flex items-center justify-center h-64 text-gray-500">
           Đang tải...
         </div>
@@ -142,73 +104,64 @@ export default function LabTestResultsPage() {
     );
   }
 
+  const getPatientName = (request: any) => {
+    return request.examId?.patientId?.fullName || "Không xác định";
+  };
+
+  const getServiceName = (request: any) => {
+    return request.serviceId?.name || "N/A";
+  };
+
   return (
-    <DashboardLayout navItems={navItems} title="Kết quả xét nghiệm">
+    <DashboardLayout navItems={LAB_NAV_ITEMS} title="Kết quả xét nghiệm">
       <Card>
         <CardHeader icon={<IconCircleCheck size={20} />}>
           <CardTitle>Danh sách kết quả xét nghiệm</CardTitle>
         </CardHeader>
         <CardBody>
-          {testResults.length === 0 ? (
+          {testRequests.length === 0 ? (
             <div className="text-center py-12 text-gray-500">
-              Chưa có kết quả xét nghiệm nào
+              Chưa có kết quả xét nghiệm nào hoàn thành
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Bệnh nhân</TableHead>
+                  <TableHead>Dịch vụ</TableHead>
                   <TableHead>Loại xét nghiệm</TableHead>
+                  <TableHead>Y tá xét nghiệm</TableHead>
                   <TableHead>Ngày hoàn thành</TableHead>
                   <TableHead>Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {testResults.map((result) => (
-                  <TableRow key={result._id}>
-                    <TableCell>
-                      {typeof result.testRequestId === "object" &&
-                      (result.testRequestId as any).examId
-                        ? typeof (result.testRequestId as any).examId ===
-                            "object" &&
-                          (result.testRequestId as any).examId.patientId
-                          ? typeof (result.testRequestId as any).examId
-                              .patientId === "object"
-                            ? (result.testRequestId as any).examId.patientId
-                                .fullName
-                            : "Không xác định"
-                          : "Không xác định"
-                        : "Không xác định"}
+                {testRequests.map((request) => (
+                  <TableRow key={request._id}>
+                    <TableCell className="font-medium text-gray-800">
+                      {getPatientName(request)}
                     </TableCell>
                     <TableCell>
-                      {typeof result.testRequestId === "object" &&
-                      result.testRequestId?.testType
-                        ? typeof result.testRequestId.testType === "object"
-                          ? result.testRequestId.testType.name
-                          : result.testRequestId.testType
-                        : "Không xác định"}
+                      {getServiceName(request)}
                     </TableCell>
                     <TableCell>
-                      {format(
-                        new Date(result.createdAt || ""),
-                        "dd/MM/yyyy HH:mm",
-                        { locale: vi }
-                      )}
+                      <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-md">
+                        {request.testType || "-"}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      {request.labNurseId?.fullName || "-"}
+                    </TableCell>
+                    <TableCell>
+                      {format(new Date(request.updatedAt), "dd/MM/yyyy HH:mm", { locale: vi })}
                     </TableCell>
                     <TableCell>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => {
-                          const request = testRequests.find(
-                            (r) =>
-                              r._id === result.testRequestId?._id ||
-                              r._id === result.testRequestId
-                          );
-                          if (request) handleOpenModal(request);
-                        }}
+                        onClick={() => handleOpenModal(request)}
                       >
-                        Xem/Sửa
+                        Chi tiết
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -246,50 +199,49 @@ export default function LabTestResultsPage() {
         }
       >
         {selectedRequest && (
-          <form onSubmit={handleCreateResult} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg mb-4">
-              <div>
-                <strong>Bệnh nhân:</strong>{" "}
-                {selectedRequest.examId &&
-                typeof selectedRequest.examId === "object" &&
-                (selectedRequest.examId as any).patientId
-                  ? typeof (selectedRequest.examId as any).patientId ===
-                    "object"
-                    ? (selectedRequest.examId as any).patientId.fullName
-                    : "Không xác định"
-                  : "Không xác định"}
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-6 p-4 bg-gray-50 rounded-xl border border-gray-100">
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Bệnh nhân</span>
+                <div className="font-bold text-gray-800">{getPatientName(selectedRequest)}</div>
+                <div className="text-xs text-gray-500">
+                  NS: {selectedRequest.examId?.patientId?.dateOfBirth ? format(new Date(selectedRequest.examId.patientId.dateOfBirth), "dd/MM/yyyy") : "-"}
+                </div>
               </div>
-              <div>
-                <strong>Loại xét nghiệm:</strong>{" "}
-                {typeof selectedRequest.testType === "object" &&
-                selectedRequest.testType
-                  ? selectedRequest.testType.name
-                  : selectedRequest.testType || "Không xác định"}
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Dịch vụ</span>
+                <div className="font-bold text-primary">{getServiceName(selectedRequest)}</div>
+                <div className="text-xs text-gray-500 italic">Loại: {selectedRequest.testType || "N/A"}</div>
+              </div>
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Người thực hiện</span>
+                <div className="font-bold text-gray-800">{selectedRequest.labNurseId?.fullName || "Chưa xác định"}</div>
+              </div>
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Ngày yêu cầu</span>
+                <div className="font-bold text-gray-800">{format(new Date(selectedRequest.requestedAt), "dd/MM/yyyy HH:mm")}</div>
               </div>
             </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-primary">Kết quả chi tiết</label>
+              <div className="p-4 bg-white border border-gray-200 rounded-xl min-h-[100px] text-gray-800 whitespace-pre-wrap">
+                {formData.resultData || "Chưa có dữ liệu kết quả"}
+              </div>
+            </div>
+
             <Textarea
-              label="Kết quả xét nghiệm (JSON hoặc văn bản)"
-              name="resultData"
-              value={formData.resultData}
-              onChange={(e) =>
-                setFormData({ ...formData, resultData: e.target.value })
-              }
-              required
-              fullWidth
-              rows={6}
-              placeholder='{"value": "123", "unit": "mg/dL"} hoặc ghi chú văn bản'
-            />
-            <Textarea
-              label="Ghi chú"
+              label="Ghi chú thêm"
               name="notes"
               value={formData.notes}
               onChange={(e) =>
                 setFormData({ ...formData, notes: e.target.value })
               }
               fullWidth
+              disabled // Keep read-only for history view
               rows={3}
             />
-          </form>
+          </div>
         )}
       </Modal>
     </DashboardLayout>

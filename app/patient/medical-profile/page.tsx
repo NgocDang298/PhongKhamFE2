@@ -13,7 +13,9 @@ import { ROUTES, BLOOD_TYPE_OPTIONS } from "@/lib/constants";
 import * as medicalProfileService from "@/lib/services/medicalProfile";
 import {
   IconAlertCircle,
+  IconDeviceFloppy,
   IconNotes,
+  IconX,
 } from "@tabler/icons-react";
 import { PATIENT_NAV_ITEMS } from "@/lib/navigation";
 
@@ -120,7 +122,7 @@ export default function MedicalProfilePage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
+          <form onSubmit={handleSubmit} className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
             {error && (
               <div className="flex items-center gap-2 p-4 mb-4 text-red-800 bg-red-50 border border-red-200 rounded-lg">
                 <IconAlertCircle size={20} />
@@ -201,27 +203,30 @@ export default function MedicalProfilePage() {
               fullWidth
             />
 
-            <Textarea
-              label="Ghi chú thêm"
-              value={formData.notes}
-              onChange={(e) =>
-                setFormData({ ...formData, notes: e.target.value })
-              }
-              placeholder="Các thông tin y tế khác cần lưu ý..."
-              fullWidth
-            />
+            <div className="md:col-span-2">
+              <Textarea
+                label="Ghi chú thêm"
+                value={formData.notes}
+                onChange={(e) =>
+                  setFormData({ ...formData, notes: e.target.value })
+                }
+                placeholder="Các thông tin y tế khác cần lưu ý..."
+                fullWidth
+              />
+            </div>
 
-            <div className="flex gap-4 pt-4">
+            <div className="md:col-span-2 flex gap-4 justify-end">
               {!isRequired && (
                 <Button
                   type="button"
                   variant="outline"
+                  icon={<IconX size={20} />}
                   onClick={() => router.push(ROUTES.PATIENT_DASHBOARD)}
                 >
                   Hủy
                 </Button>
               )}
-              <Button type="submit" loading={loading} fullWidth={isRequired}>
+              <Button icon={<IconDeviceFloppy size={20} />} type="submit" loading={loading} fullWidth={isRequired}>
                 {isRequired ? "Hoàn thành" : "Lưu hồ sơ"}
               </Button>
             </div>

@@ -71,7 +71,7 @@ export default function LoginPage() {
       <div className="relative w-full max-w-md">
         <Card className="glass backdrop-blur-xl border-white/20 shadow-2xl">
           <CardHeader>
-            <div className="flex flex-col items-center text-center space-y-4">
+            <div className="flex flex-col items-center text-center justify-center space-y-4 w-full">
               <div className="flex items-center justify-center w-20 h-20 rounded-full bg-indigo-50 backdrop-blur-sm">
                 <IconActivity
                   size={32}

@@ -34,6 +34,7 @@ export default function PatientDashboard() {
     upcomingAppointments: 0,
     totalExaminations: 0,
   });
+  const [profile, setProfile] = useState<any>(null);
   const [recentAppointments, setRecentAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [greeting, setGreeting] = useState("");
@@ -64,12 +65,17 @@ export default function PatientDashboard() {
         profileService.getMyAppointments({ limit: 5 }),
       ]);
 
-      if (profileRes.data?.stats) {
-        setStats({
-          totalAppointments: profileRes.data.stats.totalAppointments || 0,
-          totalExaminations: profileRes.data.stats.totalExaminations || 0,
-          upcomingAppointments: profileRes.data.stats.upcomingAppointments || 0,
-        });
+      if (profileRes.data) {
+        if (profileRes.data.stats) {
+          setStats({
+            totalAppointments: profileRes.data.stats.totalAppointments || 0,
+            totalExaminations: profileRes.data.stats.totalExaminations || 0,
+            upcomingAppointments: profileRes.data.stats.upcomingAppointments || 0,
+          });
+        }
+        if (profileRes.data.profile) {
+          setProfile(profileRes.data.profile);
+        }
       }
 
       if (appointmentsRes.data?.appointments) {
@@ -126,7 +132,7 @@ export default function PatientDashboard() {
         {/* Welcome Section */}
         <div className="mb-4">
           <h2 className="text-3xl font-extrabold text-primary leading-tight">
-            {greeting}, <span className="text-gray-800">{user?.fullName || "Bệnh nhân"}</span>!
+            {greeting}, <span className="text-gray-800">{profile?.fullName || user?.fullName || "Bệnh nhân"}</span>!
           </h2>
           <p className="text-gray-500 mt-2 text-lg">Hôm nay bạn cảm thấy thế nào? Hãy theo dõi tình trạng sức khỏe của mình nhé.</p>
         </div>
@@ -168,7 +174,7 @@ export default function PatientDashboard() {
                         </div>
                         <div>
                           <div className="text-3xl font-bold text-gray-800">{stat.value}</div>
-                          <div className="text-xs font-medium text-gray-400 uppercase tracking-wider">{stat.label}</div>
+                          <div className="text-xs font-medium text-gray-600 uppercase tracking-wider">{stat.label}</div>
                         </div>
                       </div>
                     </CardBody>

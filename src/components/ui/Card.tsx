@@ -34,7 +34,7 @@ export function CardHeader({ children, className, icon }: CardHeaderProps) {
   return (
     <div
       className={cn(
-        "p-4 border-b border-gray-200 flex items-center justify-center gap-2",
+        "p-4 border-b border-gray-200 flex items-center w-full gap-2 text-lg text-primary",
         className
       )}
     >
@@ -51,7 +51,7 @@ interface CardTitleProps {
 
 export function CardTitle({ children, className }: CardTitleProps) {
   return (
-    <h3 className={cn("text-lg font-semibold text-gray-800", className)}>
+    <h3 className={cn("text-lg font-semibold text-primary", className)}>
       {children}
     </h3>
   );

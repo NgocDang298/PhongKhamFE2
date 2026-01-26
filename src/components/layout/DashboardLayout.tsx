@@ -10,6 +10,8 @@ import {
   IconLogout,
   IconUserSquareRounded,
   IconChevronDown,
+  IconChevronRight,
+  IconHome,
 } from "@tabler/icons-react";
 import Button from "@/components/ui/Button";
 import { NavItem } from "@/lib/navigation";
@@ -72,7 +74,6 @@ export default function DashboardLayout({
         const hasMoreSpecificSibling = siblings.some(
           (s) => s.path !== path && s.path.length > path.length && pathname.startsWith(s.path)
         );
-        // Nếu có mục cụ thể hơn (ví dụ: /patient/appointments/book), thì mục ngắn hơn không được active
         if (hasMoreSpecificSibling) return false;
       }
       return true;
@@ -89,6 +90,61 @@ export default function DashboardLayout({
     }
     return false;
   };
+
+  const getBreadcrumbs = () => {
+    const segments = pathname.split("/").filter((item) => item !== "");
+    const breadcrumbs = [];
+
+    const pathLabels: Record<string, string> = {
+      patient: "Bệnh nhân",
+      doctor: "Bác sĩ",
+      admin: "Quản trị viên",
+      staff: "Nhân viên",
+      dashboard: "Tổng quan",
+      profile: "Hồ sơ cá nhân",
+      appointments: "Lịch hẹn",
+      book: "Đặt lịch khám",
+      "medical-history": "Hồ sơ y tế",
+      "medical-profile": "Hồ sơ bệnh lý",
+      invoices: "Hóa đơn",
+      examinations: "Ca khám bệnh",
+    };
+
+    let currentPath = "";
+    for (let i = 0; i < segments.length; i++) {
+      currentPath += `/${segments[i]}`;
+
+      // Try to find label from navItems or subNavItems
+      let label = "";
+      const foundItem = filteredNavItems.find(item => item.path === currentPath);
+      if (foundItem) {
+        label = foundItem.label;
+      } else {
+        for (const nav of filteredNavItems) {
+          const foundSub = nav.subNavItems?.find(sub => sub.path === currentPath);
+          if (foundSub) {
+            label = foundSub.label;
+            break;
+          }
+        }
+      }
+
+      // Fallback to mapping or capitalize
+      if (!label) {
+        label = pathLabels[segments[i]] || segments[i].charAt(0).toUpperCase() + segments[i].slice(1);
+      }
+
+      breadcrumbs.push({
+        label,
+        path: currentPath,
+        active: i === segments.length - 1
+      });
+    }
+
+    return breadcrumbs;
+  };
+
+  const breadcrumbs = getBreadcrumbs();
 
   return (
     <div className="flex h-screen bg-[#EFF0F7]">
@@ -252,9 +308,35 @@ export default function DashboardLayout({
                     ${sidebarOpen ? "ml-64" : "ml-20"}
                 `}
       >
-        {/* Header */}
+        {/* Header with Breadcrumbs */}
         <header className="bg-white flex items-center border-b border-gray-200 px-8 py-4 h-[73px]">
-          <h1 className="text-2xl font-semibold text-gray-800">{title}</h1>
+          <nav className="flex items-center space-x-2 overflow-x-auto no-scrollbar">
+            <div
+              className="p-1.5 rounded-md hover:bg-gray-100 text-gray-400 cursor-pointer transition-colors"
+              onClick={() => router.push(ROUTES.PATIENT_DASHBOARD)}
+            >
+              <IconHome size={18} />
+            </div>
+
+            {breadcrumbs.map((crumb, index) => (
+              <React.Fragment key={crumb.path}>
+                <IconChevronRight size={16} className="text-gray-300 shrink-0" />
+                <button
+                  onClick={() => !crumb.active && router.push(crumb.path)}
+                  className={`
+                    whitespace-nowrap text-sm font-medium px-2 py-1 rounded-md transition-all
+                    ${crumb.active
+                      ? "text-primary bg-primary/5 font-semibold"
+                      : "text-gray-500 hover:text-gray-800 hover:bg-gray-50"
+                    }
+                  `}
+                  disabled={crumb.active}
+                >
+                  {crumb.label}
+                </button>
+              </React.Fragment>
+            ))}
+          </nav>
         </header>
 
         {/* Content */}

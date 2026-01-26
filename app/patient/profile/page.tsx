@@ -14,7 +14,6 @@ import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import { PATIENT_NAV_ITEMS } from "@/lib/navigation";
 import {
-  IconUser,
   IconPhone,
   IconMail,
   IconMapPin,
@@ -115,40 +114,11 @@ export default function PatientProfilePage() {
         {/* Main Content - Personal Info */}
         <div className="lg:col-span-8 space-y-6">
           <Card className="border border-gray-200">
-            <CardHeader className="flex border-b border-gray-200 pb-4 items-center justify-between">
-              <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
-                <IconUserSquareRounded size={20} />
-                <span>Thông tin cá nhân</span>
-              </h3>
-              {!isEditing ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsEditing(true)}
-                  icon={<IconEdit size={16} />}
-                >
-                  Chỉnh sửa
-                </Button>
-              ) : (
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setIsEditing(false)}
-                    icon={<IconX size={16} />}
-                  >
-                    Hủy
-                  </Button>
-                  <Button
-                    size="sm"
-                    type="submit"
-                    form="profile-form"
-                    icon={<IconCheck size={16} />}
-                  >
-                    Lưu
-                  </Button>
-                </div>
-              )}
+            <CardHeader
+              icon={<IconUserSquareRounded size={20} />}
+            >
+              <CardTitle>Thông tin cá nhân</CardTitle>
+
             </CardHeader>
             <CardBody>
               <form id="profile-form" onSubmit={handleUpdate} className="space-y-6">
@@ -161,7 +131,7 @@ export default function PatientProfilePage() {
                     required
                     fullWidth
                     disabled={!isEditing}
-                    icon={<IconUser size={18} />}
+                    icon={<IconUserSquareRounded size={18} />}
                   />
                   <Input
                     label="Số điện thoại"
@@ -235,16 +205,44 @@ export default function PatientProfilePage() {
                   />
                 </div>
               </form>
+              <div className="mt-4 w-full flex justify-end">
+                {!isEditing ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsEditing(true)}
+                    icon={<IconEdit size={16} />}
+                  >
+                    Chỉnh sửa
+                  </Button>
+                ) : (
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsEditing(false)}
+                      icon={<IconX size={16} />}
+                    >
+                      Hủy
+                    </Button>
+                    <Button
+                      size="sm"
+                      type="submit"
+                      form="profile-form"
+                      icon={<IconCheck size={16} />}
+                    >
+                      Lưu
+                    </Button>
+                  </div>
+                )}
+              </div>
             </CardBody>
           </Card>
 
           {/* Account Info Card */}
           <Card className="border border-gray-200">
-            <CardHeader className="border-b border-gray-200 pb-4">
-              <h3 className="text-lg w-full font-semibold text-primary flex items-center gap-2">
-                <IconShieldLock size={20} />
-                <span>Thông tin tài khoản</span>
-              </h3>
+            <CardHeader icon={<IconShieldLock size={20} />}>
+              <CardTitle>Thông tin tài khoản</CardTitle>
             </CardHeader>
             <CardBody className="p-4">
               <div className="space-y-4">

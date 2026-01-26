@@ -25,7 +25,7 @@ import { vi } from "date-fns/locale";
 import {
   IconLayoutGrid,
   IconCalendar,
-  IconUserSquareRoundeds,
+  IconUserSquareRounded,
   IconSearch,
   IconPlus,
 } from "@tabler/icons-react";
@@ -44,7 +44,7 @@ const navItems = [
   {
     label: "Bệnh nhân",
     path: ROUTES.STAFF_PATIENTS,
-    icon: <IconUserSquareRoundeds size={20} />,
+    icon: <IconUserSquareRounded size={20} />,
   },
 ];
 
@@ -160,7 +160,7 @@ export default function StaffPatientsPage() {
       </div>
 
       <Card>
-        <CardHeader icon={<IconUserSquareRoundeds size={20} />}>
+        <CardHeader icon={<IconUserSquareRounded size={20} />}>
           <CardTitle>Danh sách bệnh nhân</CardTitle>
         </CardHeader>
         <CardBody>

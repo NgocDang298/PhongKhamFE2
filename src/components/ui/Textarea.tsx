@@ -19,7 +19,7 @@ export default function Textarea({
   return (
     <div className={cn("flex flex-col gap-1.5", fullWidth && "w-full")}>
       {label && (
-        <label className="text-sm font-medium text-gray-700" htmlFor={props.id}>
+        <label className="text-sm font-semibold text-primarygray-700" htmlFor={props.id}>
           {label}
           {props.required && <span className="text-danger-500 ml-1">*</span>}
         </label>
