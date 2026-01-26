@@ -17,12 +17,17 @@ import {
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import Textarea from "@/components/ui/Textarea";
+import Input from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
+import Pagination from "@/components/ui/Pagination";
 import * as testResultService from "@/lib/services/testResults";
 import * as testRequestService from "@/lib/services/testRequests";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import {
   IconCircleCheck,
+  IconFilter,
+  IconRefresh,
 } from "@tabler/icons-react";
 
 import { LAB_NAV_ITEMS } from "@/lib/navigation";
@@ -38,6 +43,22 @@ export default function LabTestResultsPage() {
     resultData: "",
     notes: "",
   });
+  const [existingResult, setExistingResult] = useState<any>(null);
+
+  // Pagination state
+  const [pagination, setPagination] = useState({
+    total: 0,
+    limit: 20,
+    skip: 0,
+    currentPage: 1,
+  });
+
+  // Filter state
+  const [filters, setFilters] = useState({
+    status: "completed" as "waiting" | "processing" | "completed" | "",
+    fromDate: "",
+    toDate: "",
+  });
 
   useEffect(() => {
     if (authLoading) return;
@@ -46,19 +67,63 @@ export default function LabTestResultsPage() {
       return;
     }
     loadData();
-  }, [user, isAuthenticated, authLoading, router]);
+  }, [user, isAuthenticated, authLoading, router, filters, pagination.skip, pagination.limit]);
 
   const loadData = async () => {
     try {
       setLoading(true);
-      const response = await testRequestService.getTestRequests({ status: "completed" });
+      const params: any = {
+        limit: pagination.limit,
+        skip: pagination.skip,
+      };
+
+      if (filters.status) params.status = filters.status;
+      if (filters.fromDate) params.fromDate = filters.fromDate;
+      if (filters.toDate) params.toDate = filters.toDate;
+
+      const response = await testRequestService.getTestRequests(params);
       setTestRequests(response.data?.testRequests || []);
+      setPagination(prev => ({
+        ...prev,
+        total: response.data?.total || 0,
+      }));
     } catch (error) {
       console.error("Error loading test results:", error);
       toast.error("Không thể tải danh sách kết quả xét nghiệm");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFilterChange = (key: string, value: any) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+    setPagination(prev => ({ ...prev, skip: 0, currentPage: 1 }));
+  };
+
+  const handleResetFilters = () => {
+    setFilters({
+      status: "completed",
+      fromDate: "",
+      toDate: "",
+    });
+    setPagination(prev => ({ ...prev, skip: 0, currentPage: 1 }));
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPagination(prev => ({
+      ...prev,
+      currentPage: newPage,
+      skip: (newPage - 1) * prev.limit,
+    }));
+  };
+
+  const handlePageSizeChange = (newSize: number) => {
+    setPagination(prev => ({
+      ...prev,
+      limit: newSize,
+      skip: 0,
+      currentPage: 1,
+    }));
   };
 
   const handleCreateResult = async (e: React.FormEvent) => {
@@ -89,9 +154,27 @@ export default function LabTestResultsPage() {
     }
   };
 
-  const handleOpenModal = (request: any) => {
+  const handleOpenModal = async (request: any) => {
     setSelectedRequest(request);
     setIsModalOpen(true);
+
+    // Try to load existing result
+    try {
+      const result = await testResultService.getTestResultByRequest(request._id);
+      if (result.data) {
+        setExistingResult(result.data);
+        setFormData({
+          resultData: typeof result.data.resultData === 'object'
+            ? JSON.stringify(result.data.resultData, null, 2)
+            : result.data.resultData || "",
+          notes: result.data.resultData?.notes || "",
+        });
+      }
+    } catch (error) {
+      // No existing result, keep form empty
+      setExistingResult(null);
+      setFormData({ resultData: "", notes: "" });
+    }
   };
 
   if (authLoading || loading) {
@@ -112,11 +195,78 @@ export default function LabTestResultsPage() {
     return request.serviceId?.name || "N/A";
   };
 
+  const totalPages = Math.ceil(pagination.total / pagination.limit);
+
+  const getStatusBadge = (status: string) => {
+    const badges = {
+      waiting: "bg-yellow-100 text-yellow-700 border-yellow-200",
+      processing: "bg-blue-100 text-blue-700 border-blue-200",
+      completed: "bg-green-100 text-green-700 border-green-200",
+    };
+    const labels = {
+      waiting: "Chờ xử lý",
+      processing: "Đang xử lý",
+      completed: "Hoàn thành",
+    };
+    return (
+      <span className={`px-2 py-0.5 text-xs font-semibold rounded-md border ${badges[status as keyof typeof badges] || 'bg-gray-100 text-gray-600'}`}>
+        {labels[status as keyof typeof labels] || status}
+      </span>
+    );
+  };
+
   return (
     <DashboardLayout navItems={LAB_NAV_ITEMS} title="Kết quả xét nghiệm">
+      {/* Filter Panel */}
+      <Card className="mb-6">
+        <CardHeader icon={<IconFilter size={20} />}>
+          <CardTitle>Bộ lọc tìm kiếm</CardTitle>
+        </CardHeader>
+        <CardBody>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Select
+              label="Trạng thái"
+              value={filters.status}
+              onChange={(e) => handleFilterChange('status', e.target.value)}
+              options={[
+                { value: "", label: "Tất cả trạng thái" },
+                { value: "waiting", label: "Chờ xử lý" },
+                { value: "processing", label: "Đang xử lý" },
+                { value: "completed", label: "Hoàn thành" },
+              ]}
+              fullWidth
+            />
+            <Input
+              label="Từ ngày"
+              type="date"
+              value={filters.fromDate}
+              onChange={(e) => handleFilterChange('fromDate', e.target.value)}
+              fullWidth
+            />
+            <Input
+              label="Đến ngày"
+              type="date"
+              value={filters.toDate}
+              onChange={(e) => handleFilterChange('toDate', e.target.value)}
+              fullWidth
+            />
+            <div className="flex items-end gap-2">
+              <Button
+                variant="outline"
+                onClick={handleResetFilters}
+                icon={<IconRefresh size={16} />}
+                fullWidth
+              >
+                Đặt lại
+              </Button>
+            </div>
+          </div>
+        </CardBody>
+      </Card>
+
       <Card>
         <CardHeader icon={<IconCircleCheck size={20} />}>
-          <CardTitle>Danh sách kết quả xét nghiệm</CardTitle>
+          <CardTitle>Danh sách kết quả xét nghiệm ({pagination.total})</CardTitle>
         </CardHeader>
         <CardBody>
           {testRequests.length === 0 ? (
@@ -127,17 +277,22 @@ export default function LabTestResultsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-16">STT</TableHead>
                   <TableHead>Bệnh nhân</TableHead>
                   <TableHead>Dịch vụ</TableHead>
-                  <TableHead>Loại xét nghiệm</TableHead>
-                  <TableHead>Y tá xét nghiệm</TableHead>
-                  <TableHead>Ngày hoàn thành</TableHead>
+                  <TableHead>Loại XN</TableHead>
+                  <TableHead>Y tá XN</TableHead>
+                  <TableHead>Trạng thái</TableHead>
+                  <TableHead>Ngày yêu cầu</TableHead>
                   <TableHead>Thao tác</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {testRequests.map((request) => (
+                {testRequests.map((request, index) => (
                   <TableRow key={request._id}>
+                    <TableCell className="text-gray-500 font-medium">
+                      {pagination.skip + index + 1}
+                    </TableCell>
                     <TableCell className="font-medium text-gray-800">
                       {getPatientName(request)}
                     </TableCell>
@@ -153,7 +308,10 @@ export default function LabTestResultsPage() {
                       {request.labNurseId?.fullName || "-"}
                     </TableCell>
                     <TableCell>
-                      {format(new Date(request.updatedAt), "dd/MM/yyyy HH:mm", { locale: vi })}
+                      {getStatusBadge(request.status)}
+                    </TableCell>
+                    <TableCell className="text-sm text-gray-600">
+                      {format(new Date(request.createdAt || request.requestedAt), "dd/MM/yyyy HH:mm", { locale: vi })}
                     </TableCell>
                     <TableCell>
                       <Button
@@ -161,7 +319,7 @@ export default function LabTestResultsPage() {
                         size="sm"
                         onClick={() => handleOpenModal(request)}
                       >
-                        Chi tiết
+                        {request.status === 'completed' ? 'Xem' : 'Nhập KQ'}
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -169,6 +327,14 @@ export default function LabTestResultsPage() {
               </TableBody>
             </Table>
           )}
+
+          <Pagination
+            total={pagination.total}
+            limit={pagination.limit}
+            skip={pagination.skip}
+            onPageChange={handlePageChange}
+            onLimitChange={handlePageSizeChange}
+          />
         </CardBody>
       </Card>
 
@@ -223,24 +389,54 @@ export default function LabTestResultsPage() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-primary">Kết quả chi tiết</label>
-              <div className="p-4 bg-white border border-gray-200 rounded-xl min-h-[100px] text-gray-800 whitespace-pre-wrap">
-                {formData.resultData || "Chưa có dữ liệu kết quả"}
-              </div>
-            </div>
+            {selectedRequest.status === 'completed' && existingResult ? (
+              <>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-primary">Kết quả chi tiết</label>
+                  <div className="p-4 bg-white border border-gray-200 rounded-xl min-h-[100px] text-gray-800 whitespace-pre-wrap">
+                    {formData.resultData || "Chưa có dữ liệu kết quả"}
+                  </div>
+                </div>
 
-            <Textarea
-              label="Ghi chú thêm"
-              name="notes"
-              value={formData.notes}
-              onChange={(e) =>
-                setFormData({ ...formData, notes: e.target.value })
-              }
-              fullWidth
-              disabled // Keep read-only for history view
-              rows={3}
-            />
+                <Textarea
+                  label="Ghi chú"
+                  name="notes"
+                  value={formData.notes}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
+                  fullWidth
+                  disabled
+                  rows={3}
+                />
+              </>
+            ) : (
+              <form onSubmit={handleCreateResult} className="space-y-4">
+                <Textarea
+                  label="Kết quả xét nghiệm (JSON hoặc văn bản)"
+                  name="resultData"
+                  value={formData.resultData}
+                  onChange={(e) =>
+                    setFormData({ ...formData, resultData: e.target.value })
+                  }
+                  required
+                  fullWidth
+                  rows={6}
+                  placeholder='{"value": "123", "unit": "mg/dL"} hoặc ghi chú văn bản'
+                  helperText="Nhập kết quả dưới dạng JSON hoặc văn bản tự do"
+                />
+                <Textarea
+                  label="Ghi chú thêm"
+                  name="notes"
+                  value={formData.notes}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
+                  fullWidth
+                  rows={3}
+                />
+              </form>
+            )}
           </div>
         )}
       </Modal>
