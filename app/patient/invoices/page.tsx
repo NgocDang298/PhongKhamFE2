@@ -177,7 +177,7 @@ export default function PatientInvoicesPage() {
                       >
                         {
                           INVOICE_STATUS_LABELS[
-                            invoice.status as keyof typeof INVOICE_STATUS_LABELS
+                          invoice.status as keyof typeof INVOICE_STATUS_LABELS
                           ]
                         }
                       </span>
@@ -223,7 +223,7 @@ export default function PatientInvoicesPage() {
         }
       >
         {selectedInvoice && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
               <div>
                 <strong>Mã hóa đơn:</strong> #
@@ -252,7 +252,7 @@ export default function PatientInvoicesPage() {
                 >
                   {
                     INVOICE_STATUS_LABELS[
-                      selectedInvoice.status as keyof typeof INVOICE_STATUS_LABELS
+                    selectedInvoice.status as keyof typeof INVOICE_STATUS_LABELS
                     ]
                   }
                 </span>

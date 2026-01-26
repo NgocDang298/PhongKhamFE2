@@ -103,7 +103,7 @@ export default function StaffDashboard() {
 
   return (
     <DashboardLayout navItems={navItems} title="Tổng quan">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <Card className="hover:shadow-lg transition-shadow">
           <CardBody>
             <div className="flex items-center gap-4">

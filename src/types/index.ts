@@ -19,6 +19,7 @@ export interface AuthResponse {
   user: User & {
     fullName?: string;
   };
+  message?: string;
 }
 
 export interface LoginRequest {

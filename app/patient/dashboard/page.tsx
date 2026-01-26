@@ -127,7 +127,7 @@ export default function PatientDashboard() {
   return (
     <DashboardLayout navItems={navItems} title="Tổng quan">
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <Card className="hover:shadow-lg transition-shadow">
           <CardBody>
             <div className="flex items-center gap-4">
@@ -218,9 +218,8 @@ export default function PatientDashboard() {
                     </div>
                   </div>
                   <span
-                    className={`px-3 py-1 text-xs font-medium rounded-full border ${
-                      statusColors[apt.status as keyof typeof statusColors]
-                    }`}
+                    className={`px-3 py-1 text-xs font-medium rounded-full border ${statusColors[apt.status as keyof typeof statusColors]
+                      }`}
                   >
                     {statusLabels[apt.status as keyof typeof statusLabels]}
                   </span>

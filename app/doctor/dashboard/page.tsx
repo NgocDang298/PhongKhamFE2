@@ -147,7 +147,7 @@ export default function DoctorDashboard() {
 
   return (
     <DashboardLayout navItems={navItems} title="Tổng quan">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card className="hover:shadow-lg transition-all duration-300 border-none bg-gradient-to-br from-white to-gray-50">
           <CardBody>
             <div className="flex items-center gap-4">

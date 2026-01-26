@@ -132,7 +132,7 @@ export default function BookAppointmentPage() {
           <CardTitle>Đặt lịch hẹn mới</CardTitle>
         </CardHeader>
         <CardBody>
-          <form onSubmit={handleSubmit} className="space-y-6 max-w-xl">
+          <form onSubmit={handleSubmit} className="space-y-4 max-w-xl">
             {error && (
               <div className="flex items-center gap-2 p-4 mb-4 text-red-800 bg-red-50 border border-red-200 rounded-lg">
                 <IconAlertCircle size={20} />
@@ -175,15 +175,13 @@ export default function BookAppointmentPage() {
                     <button
                       key={slot.time}
                       type="button"
-                      className={`flex flex-col items-center justify-center p-3 text-sm font-medium border rounded-lg transition-all ${
-                        selectedSlot === slot.time
+                      className={`flex flex-col items-center justify-center p-3 text-sm font-medium border rounded-lg transition-all ${selectedSlot === slot.time
                           ? "!border-primary bg-primary/10 text-primary"
                           : "border-gray-200 text-gray-700 hover:border-primary/50"
-                      } ${
-                        slot.isBooked
+                        } ${slot.isBooked
                           ? "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200"
                           : ""
-                      }`}
+                        }`}
                       onClick={() =>
                         !slot.isBooked && setSelectedSlot(slot.time)
                       }

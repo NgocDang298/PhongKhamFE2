@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "react-toastify";
 import { useAuth } from "@/contexts/AuthContext";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -96,7 +97,8 @@ export default function RegisterPage() {
       // Chỉ cho phép đăng ký patient
       registerData.cccd = formData.cccd;
 
-      await register(registerData);
+      const response = await register(registerData);
+      toast.success(response.message || "Đăng ký thành công!");
 
       // Redirect patients to medical profile page
       if (selectedRole === "patient") {
@@ -104,7 +106,9 @@ export default function RegisterPage() {
       }
       // Redirect is handled by AuthContext for other roles
     } catch (err: any) {
-      setError(err.message || "Đăng ký thất bại");
+      const errorMessage = err.response?.data?.message || err.message || "Đăng ký thất bại";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

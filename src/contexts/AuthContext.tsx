@@ -8,14 +8,14 @@ import React, {
   ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
-import type { User, LoginRequest, RegisterRequest } from "@/types";
+import type { User, LoginRequest, RegisterRequest, AuthResponse, ApiResponse } from "@/types";
 import * as authLib from "@/lib/services/auth";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (credentials: LoginRequest) => Promise<void>;
-  register: (data: RegisterRequest) => Promise<void>;
+  login: (credentials: LoginRequest) => Promise<AuthResponse>;
+  register: (data: RegisterRequest) => Promise<ApiResponse>;
   logout: () => Promise<void>;
   isAuthenticated: boolean;
 }
@@ -28,7 +28,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    // Listen for 401 unauthorized events from api interceptor
     const handleUnauthorized = () => {
       setUser(null);
       router.push("/login");
@@ -42,14 +41,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [router]);
 
   useEffect(() => {
-    // Check if user is logged in on mount
-    // Sử dụng setTimeout để đảm bảo localStorage đã sẵn sàng
     const checkAuth = () => {
       try {
         const currentUser = authLib.getCurrentUser();
         const token = authLib.getToken();
 
-        // Chỉ set user nếu có cả token và user data
         if (token && currentUser) {
           setUser(currentUser);
         } else {
@@ -84,6 +80,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Redirect to appropriate dashboard
       const dashboardRoute = authLib.getDashboardRoute(response.user.role);
       router.push(dashboardRoute);
+
+      return response;
     } catch (error) {
       throw error;
     }
@@ -91,9 +89,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = async (data: RegisterRequest) => {
     try {
-      await authLib.register(data);
+      const response = await authLib.register(data);
       // After successful registration, redirect to login
       router.push("/login");
+      return response;
     } catch (error) {
       throw error;
     }

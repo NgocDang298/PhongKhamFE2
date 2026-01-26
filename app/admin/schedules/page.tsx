@@ -441,14 +441,14 @@ export default function AdminSchedulesPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         {/* Danh sách bác sĩ và y tá */}
         <Card className="lg:col-span-1">
           <CardHeader icon={<IconUsers size={20} />}>
             <CardTitle>Danh sách nhân viên</CardTitle>
           </CardHeader>
           <CardBody>
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
                   Bác sĩ
@@ -461,12 +461,11 @@ export default function AdminSchedulesPage() {
                   doctors.map((doctor) => (
                     <button
                       key={doctor._id}
-                      className={`w-full flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-primary/50 hover:bg-primary/5 transition-all text-left ${
-                        selectedPerson?.id === doctor._id &&
+                      className={`w-full flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-primary/50 hover:bg-primary/5 transition-all text-left ${selectedPerson?.id === doctor._id &&
                         selectedPerson?.type === "doctor"
-                          ? "!border-primary bg-primary/5 text-primary"
-                          : ""
-                      }`}
+                        ? "!border-primary bg-primary/5 text-primary"
+                        : ""
+                        }`}
                       onClick={() =>
                         handleSelectPerson(
                           doctor._id,
@@ -501,12 +500,11 @@ export default function AdminSchedulesPage() {
                   nurses.map((nurse) => (
                     <button
                       key={nurse._id}
-                      className={`w-full flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-primary/50 hover:bg-primary/5 transition-all text-left ${
-                        selectedPerson?.id === nurse._id &&
+                      className={`w-full flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-primary/50 hover:bg-primary/5 transition-all text-left ${selectedPerson?.id === nurse._id &&
                         selectedPerson?.type === "nurse"
-                          ? "!border-primary bg-primary/5 text-primary"
-                          : ""
-                      }`}
+                        ? "!border-primary bg-primary/5 text-primary"
+                        : ""
+                        }`}
                       onClick={() =>
                         handleSelectPerson(nurse._id, nurse.fullName, "nurse")
                       }
@@ -564,7 +562,7 @@ export default function AdminSchedulesPage() {
                       <TableCell>
                         {
                           DAY_LABELS[
-                            schedule.dayOfWeek as keyof typeof DAY_LABELS
+                          schedule.dayOfWeek as keyof typeof DAY_LABELS
                           ]
                         }
                       </TableCell>
@@ -745,7 +743,7 @@ export default function AdminSchedulesPage() {
           </>
         }
       >
-        <div className="space-y-6">
+        <div className="space-y-4">
           {error && (
             <div className="flex items-center gap-2 p-4 mb-4 text-red-800 bg-red-50 border border-red-200 rounded-lg text-sm">
               <IconAlertCircle size={20} />
@@ -802,11 +800,10 @@ export default function AdminSchedulesPage() {
                 <button
                   key={day.value}
                   type="button"
-                  className={`py-2 text-sm font-medium border rounded-lg transition-all ${
-                    quickCreateData.selectedDays.includes(day.value)
-                      ? "!border-primary bg-primary text-white shadow-md shadow-primary/20"
-                      : "border-gray-200 text-gray-600 hover:border-primary/50"
-                  }`}
+                  className={`py-2 text-sm font-medium border rounded-lg transition-all ${quickCreateData.selectedDays.includes(day.value)
+                    ? "!border-primary bg-primary text-white shadow-md shadow-primary/20"
+                    : "border-gray-200 text-gray-600 hover:border-primary/50"
+                    }`}
                   onClick={() => toggleDay(day.value)}
                 >
                   {day.label}

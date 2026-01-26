@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "react-toastify";
 import { useAuth } from "@/contexts/AuthContext";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
@@ -36,10 +37,12 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await login(formData);
-      // Redirect is handled by AuthContext
+      const response = await login(formData);
+      toast.success(response.message || "Đăng nhập thành công!");
     } catch (err: any) {
-      setError(err.message || "Đăng nhập thất bại");
+      const errorMessage = err.response?.data?.message || err.message || "Đăng nhập thất bại";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

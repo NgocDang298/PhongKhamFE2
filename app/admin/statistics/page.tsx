@@ -107,7 +107,7 @@ export default function AdminStatisticsPage() {
       </div>
 
       {statistics && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <Card>
             <CardHeader>
               <CardTitle>Tổng doanh thu</CardTitle>
@@ -161,8 +161,8 @@ export default function AdminStatisticsPage() {
                 {period === "daily"
                   ? "ngày"
                   : period === "monthly"
-                  ? "tháng"
-                  : "năm"}
+                    ? "tháng"
+                    : "năm"}
               </CardTitle>
             </CardHeader>
             <CardBody>
@@ -175,13 +175,13 @@ export default function AdminStatisticsPage() {
                     <div className="font-medium text-gray-700">
                       {period === "daily"
                         ? format(new Date(item.period), "dd/MM/yyyy", {
-                            locale: vi,
-                          })
+                          locale: vi,
+                        })
                         : period === "monthly"
-                        ? format(new Date(item.period), "MM/yyyy", {
+                          ? format(new Date(item.period), "MM/yyyy", {
                             locale: vi,
                           })
-                        : item.period}
+                          : item.period}
                     </div>
                     <div className="text-lg font-bold text-primary">
                       {formatCurrency(item.revenue || 0)}

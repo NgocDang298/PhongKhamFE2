@@ -15,7 +15,7 @@ export function Card({ children, className, glass, hover }: CardProps) {
         "bg-white rounded-xl border border-gray-200 shadow-sm",
         glass && "glass",
         hover &&
-          "transition-all duration-200 hover:shadow-lg hover:-translate-y-1",
+        "transition-all duration-200 hover:shadow-lg hover:-translate-y-1",
         className
       )}
     >
@@ -34,7 +34,7 @@ export function CardHeader({ children, className, icon }: CardHeaderProps) {
   return (
     <div
       className={cn(
-        "p-4 border-b border-gray-200 flex items-center gap-2",
+        "p-4 border-b border-gray-200 flex items-center justify-center gap-2",
         className
       )}
     >
@@ -74,7 +74,7 @@ interface CardBodyProps {
 }
 
 export function CardBody({ children, className }: CardBodyProps) {
-  return <div className={cn("px-6 py-5", className)}>{children}</div>;
+  return <div className={cn("p-4", className)}>{children}</div>;
 }
 
 interface CardFooterProps {

@@ -128,7 +128,7 @@ export default function MedicalProfilePage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
+          <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
             {error && (
               <div className="flex items-center gap-2 p-4 mb-4 text-red-800 bg-red-50 border border-red-200 rounded-lg">
                 <IconAlertCircle size={20} />
