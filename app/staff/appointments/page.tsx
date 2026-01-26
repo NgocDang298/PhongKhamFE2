@@ -155,7 +155,7 @@ export default function StaffAppointmentsPage() {
       typeof apt.patientId === "object" && apt.patientId
         ? apt.patientId.fullName
         : patients.find((p) => p._id === apt.patientId)?.fullName ||
-          "Không xác định";
+        "Không xác định";
 
     const doctorName =
       typeof apt.doctorId === "object" && apt.doctorId
@@ -249,7 +249,7 @@ export default function StaffAppointmentsPage() {
 
       toast.success(
         <div>
-          <p className="font-bold">Đặt lịch thành công!</p>
+          <p className="font-semibold">Đặt lịch thành công!</p>
           <p className="text-sm">Bác sĩ: {doctorName}</p>
           {specialty && <p className="text-sm">Chuyên khoa: {specialty}</p>}
           <p className="text-sm">
@@ -307,22 +307,20 @@ export default function StaffAppointmentsPage() {
             <div className="flex items-center bg-gray-100 p-1 h-10 rounded-lg mt-6 border">
               <button
                 onClick={() => setViewMode("calendar")}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                  viewMode === "calendar"
-                    ? "bg-white text-primary shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === "calendar"
+                  ? "bg-white text-primary shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+                  }`}
               >
                 <IconCalendar size={18} />
                 Lịch
               </button>
               <button
                 onClick={() => setViewMode("table")}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                  viewMode === "table"
-                    ? "bg-white text-primary shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === "table"
+                  ? "bg-white text-primary shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+                  }`}
               >
                 <IconTable size={18} />
                 Danh sách
@@ -418,7 +416,7 @@ export default function StaffAppointmentsPage() {
                       {typeof apt.patientId === "object" && apt.patientId
                         ? apt.patientId.fullName
                         : patients.find((p) => p._id === apt.patientId)
-                            ?.fullName || "Không xác định"}
+                          ?.fullName || "Không xác định"}
                     </TableCell>
                     <TableCell>
                       {typeof apt.doctorId === "object" && apt.doctorId
@@ -442,7 +440,7 @@ export default function StaffAppointmentsPage() {
                       >
                         {
                           APPOINTMENT_STATUS_LABELS[
-                            apt.status as keyof typeof APPOINTMENT_STATUS_LABELS
+                          apt.status as keyof typeof APPOINTMENT_STATUS_LABELS
                           ]
                         }
                       </span>
@@ -619,10 +617,10 @@ export default function StaffAppointmentsPage() {
             <div>
               <strong>Bệnh nhân:</strong>{" "}
               {typeof selectedAppointment.patientId === "object" &&
-              selectedAppointment.patientId
+                selectedAppointment.patientId
                 ? selectedAppointment.patientId.fullName
                 : patients.find((p) => p._id === selectedAppointment.patientId)
-                    ?.fullName || "Không xác định"}
+                  ?.fullName || "Không xác định"}
             </div>
             <div>
               <strong>Ngày giờ:</strong>{" "}
@@ -712,7 +710,7 @@ export default function StaffAppointmentsPage() {
                 >
                   {
                     APPOINTMENT_STATUS_LABELS[
-                      selectedAppointment.status as keyof typeof APPOINTMENT_STATUS_LABELS
+                    selectedAppointment.status as keyof typeof APPOINTMENT_STATUS_LABELS
                     ]
                   }
                 </span>
@@ -725,20 +723,20 @@ export default function StaffAppointmentsPage() {
               </label>
               <div className="font-medium">
                 {typeof selectedAppointment.patientId === "object" &&
-                selectedAppointment.patientId
+                  selectedAppointment.patientId
                   ? selectedAppointment.patientId.fullName
                   : patients.find(
-                      (p) => p._id === selectedAppointment.patientId
-                    )?.fullName || "Không xác định"}
+                    (p) => p._id === selectedAppointment.patientId
+                  )?.fullName || "Không xác định"}
               </div>
               <div className="text-sm text-gray-600 mt-1">
                 SĐT:{" "}
                 {typeof selectedAppointment.patientId === "object" &&
-                selectedAppointment.patientId
+                  selectedAppointment.patientId
                   ? selectedAppointment.patientId.phone
                   : patients.find(
-                      (p) => p._id === selectedAppointment.patientId
-                    )?.phone || "-"}
+                    (p) => p._id === selectedAppointment.patientId
+                  )?.phone || "-"}
               </div>
             </div>
 
@@ -746,10 +744,10 @@ export default function StaffAppointmentsPage() {
               <label className="text-sm text-gray-500 block mb-1">Bác sĩ</label>
               <div className="font-medium">
                 {typeof selectedAppointment.doctorId === "object" &&
-                selectedAppointment.doctorId
+                  selectedAppointment.doctorId
                   ? selectedAppointment.doctorId.fullName
                   : doctors.find((d) => d._id === selectedAppointment.doctorId)
-                      ?.fullName || "Chưa chọn"}
+                    ?.fullName || "Chưa chọn"}
               </div>
             </div>
 
@@ -758,7 +756,7 @@ export default function StaffAppointmentsPage() {
                 <label className="text-sm text-gray-500 block mb-1">
                   Ghi chú
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg text-gray-700 border border-gray-100 italic">
+                <div className="p-3 bg-gray-50 rounded-lg text-gray-700 border border-gray-200 italic">
                   "{selectedAppointment.note}"
                 </div>
               </div>

@@ -423,7 +423,7 @@ export default function StaffInvoicesPage() {
                     </TableCell>
                     <TableCell>
                       {typeof invoice.patientId === "object" &&
-                      invoice.patientId
+                        invoice.patientId
                         ? invoice.patientId.fullName
                         : "Không xác định"}
                     </TableCell>
@@ -450,7 +450,7 @@ export default function StaffInvoicesPage() {
                       >
                         {
                           INVOICE_STATUS_LABELS[
-                            invoice.status as keyof typeof INVOICE_STATUS_LABELS
+                          invoice.status as keyof typeof INVOICE_STATUS_LABELS
                           ]
                         }
                       </span>
@@ -739,7 +739,7 @@ export default function StaffInvoicesPage() {
                 >
                   {
                     INVOICE_STATUS_LABELS[
-                      selectedInvoice.status as keyof typeof INVOICE_STATUS_LABELS
+                    selectedInvoice.status as keyof typeof INVOICE_STATUS_LABELS
                     ]
                   }
                 </span>
@@ -781,7 +781,7 @@ export default function StaffInvoicesPage() {
             </div>
 
             <div className="flex justify-end p-4 bg-gray-50 rounded">
-              <div className="text-xl font-bold">
+              <div className="text-xl font-semibold">
                 Tổng cộng: {formatCurrency(selectedInvoice.totalAmount)}
               </div>
             </div>

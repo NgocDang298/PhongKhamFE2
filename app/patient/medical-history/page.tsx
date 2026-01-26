@@ -17,41 +17,10 @@ import { ROUTES } from "@/lib/constants";
 import * as profileService from "@/lib/services/profile";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
+import { PATIENT_NAV_ITEMS } from "@/lib/navigation";
 import {
-  IconLayoutGrid,
-  IconCalendar,
   IconFileText,
-  IconReceipt,
-  IconUser,
 } from "@tabler/icons-react";
-
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.PATIENT_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Lịch hẹn",
-    path: ROUTES.PATIENT_APPOINTMENTS,
-    icon: <IconCalendar size={20} />,
-  },
-  {
-    label: "Lịch sử khám",
-    path: ROUTES.PATIENT_MEDICAL_HISTORY,
-    icon: <IconFileText size={20} />,
-  },
-  {
-    label: "Hóa đơn",
-    path: ROUTES.PATIENT_INVOICES,
-    icon: <IconReceipt size={20} />,
-  },
-  {
-    label: "Hồ sơ",
-    path: ROUTES.PATIENT_PROFILE,
-    icon: <IconUser size={20} />,
-  },
-];
 
 export default function PatientMedicalHistoryPage() {
   const router = useRouter();
@@ -83,7 +52,7 @@ export default function PatientMedicalHistoryPage() {
 
   if (authLoading || loading) {
     return (
-      <DashboardLayout navItems={navItems} title="Lịch sử khám bệnh">
+      <DashboardLayout navItems={PATIENT_NAV_ITEMS} title="Lịch sử khám bệnh">
         <div className="flex items-center justify-center h-64 text-gray-500">
           Đang tải...
         </div>
@@ -92,7 +61,7 @@ export default function PatientMedicalHistoryPage() {
   }
 
   return (
-    <DashboardLayout navItems={navItems} title="Lịch sử khám bệnh">
+    <DashboardLayout navItems={PATIENT_NAV_ITEMS} title="Lịch sử khám bệnh">
       <Card>
         <CardHeader icon={<IconFileText size={20} />}>
           <CardTitle>Hồ sơ y tế</CardTitle>
@@ -100,8 +69,8 @@ export default function PatientMedicalHistoryPage() {
         <CardBody>
           {medicalHistory ? (
             <div className="space-y-8">
-              <div className="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">
                   Thông tin cơ bản
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
@@ -114,8 +83,8 @@ export default function PatientMedicalHistoryPage() {
 
               {medicalHistory.allergies &&
                 medicalHistory.allergies.length > 0 && (
-                  <div className="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  <div className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
                       Dị ứng
                     </h3>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
@@ -130,8 +99,8 @@ export default function PatientMedicalHistoryPage() {
 
               {medicalHistory.chronicDiseases &&
                 medicalHistory.chronicDiseases.length > 0 && (
-                  <div className="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  <div className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
                       Bệnh mãn tính
                     </h3>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
@@ -146,8 +115,8 @@ export default function PatientMedicalHistoryPage() {
 
               {medicalHistory.medications &&
                 medicalHistory.medications.length > 0 && (
-                  <div className="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  <div className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
                       Thuốc đang dùng
                     </h3>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
@@ -162,8 +131,8 @@ export default function PatientMedicalHistoryPage() {
 
               {medicalHistory.surgeries &&
                 medicalHistory.surgeries.length > 0 && (
-                  <div className="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  <div className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
                       Phẫu thuật
                     </h3>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
@@ -178,8 +147,8 @@ export default function PatientMedicalHistoryPage() {
 
               {medicalHistory.familyHistory &&
                 medicalHistory.familyHistory.length > 0 && (
-                  <div className="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  <div className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
                       Tiền sử gia đình
                     </h3>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
@@ -193,8 +162,8 @@ export default function PatientMedicalHistoryPage() {
                 )}
 
               {medicalHistory.notes && (
-                <div className="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                <div className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
                     Ghi chú
                   </h3>
                   <p className="text-gray-700">{medicalHistory.notes}</p>
@@ -203,8 +172,8 @@ export default function PatientMedicalHistoryPage() {
 
               {medicalHistory.examinations &&
                 medicalHistory.examinations.length > 0 && (
-                  <div className="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  <div className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
                       Lịch sử khám bệnh
                     </h3>
                     <Table>
@@ -228,7 +197,7 @@ export default function PatientMedicalHistoryPage() {
                             </TableCell>
                             <TableCell>
                               {typeof exam.doctorId === "object" &&
-                              exam.doctorId
+                                exam.doctorId
                                 ? exam.doctorId.fullName
                                 : "Không xác định"}
                             </TableCell>

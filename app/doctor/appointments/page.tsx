@@ -274,7 +274,7 @@ export default function DoctorAppointmentsPage() {
                       >
                         {
                           APPOINTMENT_STATUS_LABELS[
-                            apt.status as keyof typeof APPOINTMENT_STATUS_LABELS
+                          apt.status as keyof typeof APPOINTMENT_STATUS_LABELS
                           ]
                         }
                       </span>
@@ -338,7 +338,7 @@ export default function DoctorAppointmentsPage() {
                 </label>
                 <div className="font-medium">
                   {typeof selectedAppointment.patientId === "object" &&
-                  selectedAppointment.patientId
+                    selectedAppointment.patientId
                     ? selectedAppointment.patientId.fullName
                     : "Không xác định"}
                 </div>
@@ -363,7 +363,7 @@ export default function DoctorAppointmentsPage() {
                   <span className="inline-block px-3 py-1 text-sm font-semibold rounded-full">
                     {
                       APPOINTMENT_STATUS_LABELS[
-                        selectedAppointment.status as keyof typeof APPOINTMENT_STATUS_LABELS
+                      selectedAppointment.status as keyof typeof APPOINTMENT_STATUS_LABELS
                       ]
                     }
                   </span>
@@ -377,7 +377,7 @@ export default function DoctorAppointmentsPage() {
                   <div className="font-medium">
                     {typeof selectedAppointment.confirmedBy === "object"
                       ? selectedAppointment.confirmedBy.fullName ||
-                        "Không xác định"
+                      "Không xác định"
                       : "ID: " + selectedAppointment.confirmedBy}
                   </div>
                 </div>
@@ -389,7 +389,7 @@ export default function DoctorAppointmentsPage() {
                 <label className="text-sm text-gray-500 block mb-1">
                   Ghi chú
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg text-gray-700 border border-gray-100">
+                <div className="p-3 bg-gray-50 rounded-lg text-gray-700 border border-gray-200">
                   {selectedAppointment.note}
                 </div>
               </div>
@@ -398,8 +398,8 @@ export default function DoctorAppointmentsPage() {
             {/* More patient info if available */}
             {typeof selectedAppointment.patientId === "object" &&
               selectedAppointment.patientId && (
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <h4 className="font-medium mb-2 text-gray-900">
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <h4 className="font-medium mb-2 text-gray-800">
                     Thông tin bệnh nhân
                   </h4>
                   <div className="grid grid-cols-2 gap-4 text-sm">
@@ -408,8 +408,8 @@ export default function DoctorAppointmentsPage() {
                       {selectedAppointment.patientId.gender === "male"
                         ? "Nam"
                         : selectedAppointment.patientId.gender === "female"
-                        ? "Nữ"
-                        : "Khác"}
+                          ? "Nữ"
+                          : "Khác"}
                     </div>
                     <div>
                       <span className="text-gray-500">Số điện thoại:</span>{" "}
@@ -460,7 +460,7 @@ export default function DoctorAppointmentsPage() {
             <div>
               <strong>Bệnh nhân:</strong>{" "}
               {typeof selectedAppointment.patientId === "object" &&
-              selectedAppointment.patientId
+                selectedAppointment.patientId
                 ? selectedAppointment.patientId.fullName
                 : "Không xác định"}
             </div>

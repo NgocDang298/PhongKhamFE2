@@ -12,18 +12,10 @@ import Textarea from "@/components/ui/Textarea";
 import { ROUTES, BLOOD_TYPE_OPTIONS } from "@/lib/constants";
 import * as medicalProfileService from "@/lib/services/medicalProfile";
 import {
-  IconLayoutGrid,
   IconAlertCircle,
   IconNotes,
 } from "@tabler/icons-react";
-
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.PATIENT_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-];
+import { PATIENT_NAV_ITEMS } from "@/lib/navigation";
 
 export default function MedicalProfilePage() {
   const router = useRouter();
@@ -111,7 +103,7 @@ export default function MedicalProfilePage() {
   };
 
   return (
-    <DashboardLayout navItems={navItems} title="Hồ sơ y tế">
+    <DashboardLayout navItems={PATIENT_NAV_ITEMS} title="Hồ sơ y tế">
       <Card>
         <CardHeader icon={<IconNotes size={20} />}>
           <CardTitle>

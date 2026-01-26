@@ -1,1 +1,10 @@
 1. Màu chủ đạo: 6366f1
+2. 
+Sử dụng các màu sau:
+primary: '#4435ab',
+        secondary: '#ef619e',
+        tertiary: '#af5dbb',
+        quaternary: '#af5dbb',
+Sử dụng các màu sau cho text: 
+text-gray-800 cho màu đậm và tối
+text-primary cho màu title

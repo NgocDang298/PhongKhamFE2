@@ -158,10 +158,10 @@ export default function DoctorDashboard() {
                   color: "#6366f1",
                 }}
               >
-                <IconCalendar size={24} />
+                <IconCalendar size={20} />
               </div>
               <div>
-                <div className="text-3xl font-bold text-gray-900 leading-none mb-1">
+                <div className="text-3xl font-semibold text-gray-800 leading-none mb-1">
                   {stats.todayAppointments}
                 </div>
                 <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">
@@ -182,10 +182,10 @@ export default function DoctorDashboard() {
                   color: "#f59e0b",
                 }}
               >
-                <IconClock size={24} />
+                <IconClock size={20} />
               </div>
               <div>
-                <div className="text-3xl font-bold text-gray-900 leading-none mb-1">
+                <div className="text-3xl font-semibold text-gray-800 leading-none mb-1">
                   {stats.processingExaminations}
                 </div>
                 <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">
@@ -206,10 +206,10 @@ export default function DoctorDashboard() {
                   color: "#10b981",
                 }}
               >
-                <IconCircleCheck size={24} />
+                <IconCircleCheck size={20} />
               </div>
               <div>
-                <div className="text-3xl font-bold text-gray-900 leading-none mb-1">
+                <div className="text-3xl font-semibold text-gray-800 leading-none mb-1">
                   {stats.completedExaminations}
                 </div>
                 <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">

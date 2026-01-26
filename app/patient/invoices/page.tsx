@@ -20,41 +20,10 @@ import * as invoiceService from "@/lib/services/invoices";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
+import { PATIENT_NAV_ITEMS } from "@/lib/navigation";
 import {
-  IconLayoutGrid,
-  IconCalendar,
-  IconFileText,
   IconReceipt,
-  IconUser,
 } from "@tabler/icons-react";
-
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.PATIENT_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Lịch hẹn",
-    path: ROUTES.PATIENT_APPOINTMENTS,
-    icon: <IconCalendar size={20} />,
-  },
-  {
-    label: "Lịch sử khám",
-    path: ROUTES.PATIENT_MEDICAL_HISTORY,
-    icon: <IconFileText size={20} />,
-  },
-  {
-    label: "Hóa đơn",
-    path: ROUTES.PATIENT_INVOICES,
-    icon: <IconReceipt size={20} />,
-  },
-  {
-    label: "Hồ sơ",
-    path: ROUTES.PATIENT_PROFILE,
-    icon: <IconUser size={20} />,
-  },
-];
 
 export default function PatientInvoicesPage() {
   const router = useRouter();
@@ -103,7 +72,7 @@ export default function PatientInvoicesPage() {
 
   if (authLoading || loading) {
     return (
-      <DashboardLayout navItems={navItems} title="Hóa đơn của tôi">
+      <DashboardLayout navItems={PATIENT_NAV_ITEMS} title="Hóa đơn của tôi">
         <div className="flex items-center justify-center h-64 text-gray-500">
           Đang tải...
         </div>
@@ -112,7 +81,7 @@ export default function PatientInvoicesPage() {
   }
 
   return (
-    <DashboardLayout navItems={navItems} title="Hóa đơn của tôi">
+    <DashboardLayout navItems={PATIENT_NAV_ITEMS} title="Hóa đơn của tôi">
       <div className="flex justify-between items-center mb-4">
         <div style={{ maxWidth: "300px" }}>
           <Select
@@ -260,7 +229,7 @@ export default function PatientInvoicesPage() {
             </div>
             {selectedInvoice.items && selectedInvoice.items.length > 0 && (
               <div className="mt-6">
-                <h4 className="text-lg font-semibold mb-4 text-gray-900">
+                <h4 className="text-lg font-semibold mb-4 text-gray-800">
                   Chi tiết dịch vụ
                 </h4>
                 <Table>
@@ -291,7 +260,7 @@ export default function PatientInvoicesPage() {
                 </Table>
               </div>
             )}
-            <div className="flex justify-end p-4 text-xl font-bold bg-gray-50 rounded-lg mt-6">
+            <div className="flex justify-end p-4 text-xl font-semibold bg-gray-50 rounded-lg mt-6">
               <strong>
                 Tổng cộng: {formatCurrency(selectedInvoice.totalAmount)}
               </strong>

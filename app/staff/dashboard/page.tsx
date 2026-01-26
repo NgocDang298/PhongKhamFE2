@@ -114,10 +114,10 @@ export default function StaffDashboard() {
                   color: "#f59e0b",
                 }}
               >
-                <IconCalendar size={24} />
+                <IconCalendar size={20} />
               </div>
               <div>
-                <div className="text-3xl font-bold text-gray-900">
+                <div className="text-3xl font-semibold text-gray-800">
                   {stats.pendingAppointments}
                 </div>
                 <div className="text-sm text-gray-500">
@@ -138,10 +138,10 @@ export default function StaffDashboard() {
                   color: "#6366f1",
                 }}
               >
-                <IconUsers size={24} />
+                <IconUsers size={20} />
               </div>
               <div>
-                <div className="text-3xl font-bold text-gray-900">
+                <div className="text-3xl font-semibold text-gray-800">
                   {stats.totalPatients}
                 </div>
                 <div className="text-sm text-gray-500">Tổng bệnh nhân</div>
@@ -160,10 +160,10 @@ export default function StaffDashboard() {
                   color: "#ef4444",
                 }}
               >
-                <IconFileText size={24} />
+                <IconFileText size={20} />
               </div>
               <div>
-                <div className="text-3xl font-bold text-gray-900">
+                <div className="text-3xl font-semibold text-gray-800">
                   {stats.unpaidInvoices}
                 </div>
                 <div className="text-sm text-gray-500">

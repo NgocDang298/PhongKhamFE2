@@ -113,7 +113,7 @@ export default function AdminStatisticsPage() {
               <CardTitle>Tổng doanh thu</CardTitle>
             </CardHeader>
             <CardBody>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-semibold text-gray-800">
                 {formatCurrency(statistics.totalRevenue || 0)}
               </div>
             </CardBody>
@@ -123,7 +123,7 @@ export default function AdminStatisticsPage() {
               <CardTitle>Tổng số hóa đơn</CardTitle>
             </CardHeader>
             <CardBody>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-semibold text-gray-800">
                 {statistics.totalInvoices || 0}
               </div>
             </CardBody>
@@ -133,7 +133,7 @@ export default function AdminStatisticsPage() {
               <CardTitle>Hóa đơn đã thanh toán</CardTitle>
             </CardHeader>
             <CardBody>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-semibold text-gray-800">
                 {statistics.paidInvoices || 0}
               </div>
             </CardBody>
@@ -143,7 +143,7 @@ export default function AdminStatisticsPage() {
               <CardTitle>Hóa đơn chưa thanh toán</CardTitle>
             </CardHeader>
             <CardBody>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-semibold text-gray-800">
                 {statistics.unpaidInvoices || 0}
               </div>
             </CardBody>
@@ -183,7 +183,7 @@ export default function AdminStatisticsPage() {
                           })
                           : item.period}
                     </div>
-                    <div className="text-lg font-bold text-primary">
+                    <div className="text-lg font-semibold text-primary">
                       {formatCurrency(item.revenue || 0)}
                     </div>
                   </div>

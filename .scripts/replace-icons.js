@@ -48,13 +48,13 @@ const iconMappings = [
   // Currency Dollar
   {
     pattern: /<svg[^>]*>\s*<line x1="12" y1="1" x2="12" y2="23"[^>]*\/>\s*<path d="M17 5H9\.5 a3\.5 3\.5 0 0 0 0 7h5 a3\.5 3\.5 0 0 1 0 7H6"[^>]*\/>\s*<\/svg>/gs,
-    replacement: '<IconCurrencyDollar size={24} />',
+    replacement: '<IconCurrencyDollar size={20} />',
     import: 'IconCurrencyDollar'
   },
   // Check Circle
   {
     pattern: /<svg[^>]*>\s*<path d="M22 11\.08V12 a10 10 0 1 1-5\.93-9\.14"[^>]*\/>\s*<polyline points="22 4 12 14\.01 9 11\.01"[^>]*\/>\s*<\/svg>/gs,
-    replacement: '<IconCircleCheck size={24} />',
+    replacement: '<IconCircleCheck size={20} />',
     import: 'IconCircleCheck'
   },
   // Alert Circle
@@ -96,7 +96,7 @@ const iconMappings = [
   // Package/Box
   {
     pattern: /<svg[^>]*>\s*<rect x="3" y="8" width="18" height="4" rx="1"[^>]*\/>\s*<path d="M12 8v13"[^>]*\/>\s*<\/svg>/gs,
-    replacement: '<IconPackage size={24} />',
+    replacement: '<IconPackage size={20} />',
     import: 'IconPackage'
   },
   // Trending Up
@@ -132,7 +132,7 @@ const files = [
 
 function processFile(filePath) {
   const fullPath = path.join(__dirname, '..', filePath);
-  
+
   if (!fs.existsSync(fullPath)) {
     console.log(`⚠️  File not found: ${filePath}`);
     return;
@@ -159,7 +159,7 @@ function processFile(filePath) {
   // Add imports if not already present
   if (usedIcons.size > 0) {
     const importStatement = `import {\n  ${Array.from(usedIcons).join(',\n  ')},\n} from "@tabler/icons-react";\n`;
-    
+
     // Check if @tabler/icons-react import already exists
     if (!content.includes('@tabler/icons-react')) {
       // Add after the last import statement
@@ -170,7 +170,7 @@ function processFile(filePath) {
       // Merge with existing import
       const existingImportRegex = /import\s*{([^}]+)}\s*from\s*["']@tabler\/icons-react["'];?/;
       const match = content.match(existingImportRegex);
-      
+
       if (match) {
         const existingIcons = match[1].split(',').map(s => s.trim()).filter(Boolean);
         const allIcons = new Set([...existingIcons, ...Array.from(usedIcons)]);

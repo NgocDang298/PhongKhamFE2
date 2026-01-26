@@ -118,10 +118,10 @@ export default function AdminDashboard() {
                   color: "#10b981",
                 }}
               >
-                <IconCurrencyDollar size={24} />
+                <IconCurrencyDollar size={20} />
               </div>
               <div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-semibold text-gray-800">
                   {formatCurrency(stats.totalRevenue)}
                 </div>
                 <div className="text-sm text-gray-500">Tổng doanh thu</div>
@@ -140,10 +140,10 @@ export default function AdminDashboard() {
                   color: "#6366f1",
                 }}
               >
-                <IconPackage size={24} />
+                <IconPackage size={20} />
               </div>
               <div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-semibold text-gray-800">
                   {stats.totalServices}
                 </div>
                 <div className="text-sm text-gray-500">Tổng dịch vụ</div>
@@ -162,10 +162,10 @@ export default function AdminDashboard() {
                   color: "#f59e0b",
                 }}
               >
-                <IconCalendar size={24} />
+                <IconCalendar size={20} />
               </div>
               <div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-semibold text-gray-800">
                   {stats.pendingAppointments}
                 </div>
                 <div className="text-sm text-gray-500">
@@ -186,10 +186,10 @@ export default function AdminDashboard() {
                   color: "#ef4444",
                 }}
               >
-                <IconFileText size={24} />
+                <IconFileText size={20} />
               </div>
               <div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-semibold text-gray-800">
                   {formatCurrency(stats.unpaidAmount)}
                 </div>
                 <div className="text-sm text-gray-500">Chưa thanh toán</div>
@@ -206,27 +206,27 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardBody>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="p-6 bg-gray-50 rounded-xl">
+              <div className="p-4 bg-gray-50 rounded-xl">
                 <div className="text-sm font-medium text-gray-500 mb-2">
                   Tổng doanh thu
                 </div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="text-2xl font-semibold text-gray-800">
                   {formatCurrency(stats.totalRevenue)}
                 </div>
               </div>
-              <div className="p-6 bg-gray-50 rounded-xl">
+              <div className="p-4 bg-gray-50 rounded-xl">
                 <div className="text-sm font-medium text-gray-500 mb-2">
                   Đã thanh toán
                 </div>
-                <div className="text-2xl font-bold text-emerald-600">
+                <div className="text-2xl font-semibold text-emerald-600">
                   {formatCurrency(stats.paidAmount)}
                 </div>
               </div>
-              <div className="p-6 bg-gray-50 rounded-xl">
+              <div className="p-4 bg-gray-50 rounded-xl">
                 <div className="text-sm font-medium text-gray-500 mb-2">
                   Chưa thanh toán
                 </div>
-                <div className="text-2xl font-bold text-red-600">
+                <div className="text-2xl font-semibold text-red-600">
                   {formatCurrency(stats.unpaidAmount)}
                 </div>
               </div>

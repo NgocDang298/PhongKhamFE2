@@ -461,7 +461,7 @@ export default function AdminSchedulesPage() {
                   doctors.map((doctor) => (
                     <button
                       key={doctor._id}
-                      className={`w-full flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-primary/50 hover:bg-primary/5 transition-all text-left ${selectedPerson?.id === doctor._id &&
+                      className={`w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-left ${selectedPerson?.id === doctor._id &&
                         selectedPerson?.type === "doctor"
                         ? "!border-primary bg-primary/5 text-primary"
                         : ""
@@ -500,7 +500,7 @@ export default function AdminSchedulesPage() {
                   nurses.map((nurse) => (
                     <button
                       key={nurse._id}
-                      className={`w-full flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-primary/50 hover:bg-primary/5 transition-all text-left ${selectedPerson?.id === nurse._id &&
+                      className={`w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-primary/50 hover:bg-primary/5 transition-all text-left ${selectedPerson?.id === nurse._id &&
                         selectedPerson?.type === "nurse"
                         ? "!border-primary bg-primary/5 text-primary"
                         : ""
@@ -825,7 +825,7 @@ export default function AdminSchedulesPage() {
               {quickCreateData.shifts.map((shift, index) => (
                 <div
                   key={index}
-                  className="grid grid-cols-1 md:grid-cols-[1fr,1fr,2fr,auto] gap-4 p-4 bg-gray-50 rounded-xl items-end border border-gray-100"
+                  className="grid grid-cols-1 md:grid-cols-[1fr,1fr,2fr,auto] gap-4 p-4 bg-gray-50 rounded-xl items-end border border-gray-200"
                 >
                   <Input
                     label="Giờ bắt đầu"

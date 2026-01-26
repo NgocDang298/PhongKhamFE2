@@ -80,7 +80,7 @@ interface TableCellProps {
 
 export function TableCell({ children, className }: TableCellProps) {
   return (
-    <td className={cn("px-6 py-4 text-sm text-gray-900", className)}>
+    <td className={cn("px-6 py-4 text-sm text-gray-800", className)}>
       {children}
     </td>
   );

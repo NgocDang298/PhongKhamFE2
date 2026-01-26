@@ -27,7 +27,7 @@ export default function Textarea({
       <textarea
         className={cn(
           "w-full px-4 py-2 rounded-lg border transition-all duration-200",
-          "bg-white text-gray-900 placeholder:text-gray-400",
+          "bg-white text-gray-800 placeholder:text-gray-400",
           "focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent",
           "disabled:bg-gray-100 disabled:cursor-not-allowed",
           "resize-y min-h-[100px]",

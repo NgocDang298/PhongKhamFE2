@@ -12,30 +12,11 @@ import Textarea from "@/components/ui/Textarea";
 import { ROUTES } from "@/lib/constants";
 import * as appointmentService from "@/lib/services/appointments";
 import { format } from "date-fns";
+import { PATIENT_NAV_ITEMS } from "@/lib/navigation";
 import {
-  IconLayoutGrid,
-  IconCalendar,
   IconCalendarPlus,
   IconAlertCircle,
 } from "@tabler/icons-react";
-
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.PATIENT_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Lịch hẹn",
-    path: ROUTES.PATIENT_APPOINTMENTS,
-    icon: <IconCalendar size={20} />,
-  },
-  {
-    label: "Đặt lịch",
-    path: ROUTES.PATIENT_BOOK_APPOINTMENT,
-    icon: <IconCalendarPlus size={20} />,
-  },
-];
 
 export default function BookAppointmentPage() {
   const router = useRouter();
@@ -126,7 +107,7 @@ export default function BookAppointmentPage() {
   const today = new Date().toISOString().split("T")[0];
 
   return (
-    <DashboardLayout navItems={navItems} title="Đặt lịch hẹn">
+    <DashboardLayout navItems={PATIENT_NAV_ITEMS} title="Đặt lịch hẹn">
       <Card>
         <CardHeader icon={<IconCalendarPlus size={20} />}>
           <CardTitle>Đặt lịch hẹn mới</CardTitle>
@@ -176,8 +157,8 @@ export default function BookAppointmentPage() {
                       key={slot.time}
                       type="button"
                       className={`flex flex-col items-center justify-center p-3 text-sm font-medium border rounded-lg transition-all ${selectedSlot === slot.time
-                          ? "!border-primary bg-primary/10 text-primary"
-                          : "border-gray-200 text-gray-700 hover:border-primary/50"
+                        ? "!border-primary bg-primary/10 text-primary"
+                        : "border-gray-200 text-gray-700 hover:border-primary/50"
                         } ${slot.isBooked
                           ? "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200"
                           : ""

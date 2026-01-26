@@ -67,7 +67,7 @@ interface UserWithRole {
   role: UserRole;
   specialty?: string;
   cccd?: string;
-  userId: string | { _id: string; [key: string]: any };
+  userId: string | { _id: string;[key: string]: any };
   gender?: "male" | "female" | "other";
   dateOfBirth?: string;
   address?: string;
@@ -362,23 +362,22 @@ export default function AdminUsersPage() {
                     <TableRow key={user._id}>
                       <TableCell>
                         <span
-                          className={`px-2 py-1 text-xs font-medium rounded-full ${
-                            user.role === "doctor"
-                              ? "bg-blue-100 text-blue-800"
-                              : user.role === "staff"
+                          className={`px-2 py-1 text-xs font-medium rounded-full ${user.role === "doctor"
+                            ? "bg-blue-100 text-blue-800"
+                            : user.role === "staff"
                               ? "bg-purple-100 text-purple-800"
                               : user.role === "lab_nurse"
-                              ? "bg-amber-100 text-amber-800"
-                              : "bg-green-100 text-green-800"
-                          }`}
+                                ? "bg-amber-100 text-amber-800"
+                                : "bg-green-100 text-green-800"
+                            }`}
                         >
                           {user.role === "doctor"
                             ? "Bác sĩ"
                             : user.role === "staff"
-                            ? "Nhân viên"
-                            : user.role === "lab_nurse"
-                            ? "Y tá xét nghiệm"
-                            : "Bệnh nhân"}
+                              ? "Nhân viên"
+                              : user.role === "lab_nurse"
+                                ? "Y tá xét nghiệm"
+                                : "Bệnh nhân"}
                         </span>
                       </TableCell>
                       <TableCell>{user.fullName}</TableCell>
@@ -427,7 +426,7 @@ export default function AdminUsersPage() {
         {selectedUser && (
           <div className="space-y-8">
             <div className="space-y-4">
-              <h3 className="text-lg font-bold text-gray-900 border-b pb-2">
+              <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
                 Thông tin chung
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -436,7 +435,7 @@ export default function AdminUsersPage() {
                     {getProfileIdLabel(selectedUser.role)}
                   </span>
                   <span
-                    className="text-base font-medium text-gray-900 break-all"
+                    className="text-base font-medium text-gray-800 break-all"
                     title={selectedUser._id}
                   >
                     {selectedUser._id}
@@ -447,7 +446,7 @@ export default function AdminUsersPage() {
                     Mã tài khoản (User ID)
                   </span>
                   <span
-                    className="text-base font-medium text-gray-900 break-all"
+                    className="text-base font-medium text-gray-800 break-all"
                     title={getAccountId(selectedUser)}
                   >
                     {getAccountId(selectedUser)}
@@ -455,78 +454,77 @@ export default function AdminUsersPage() {
                 </div>
                 <div className="flex flex-col gap-1">
                   <span className="text-sm text-gray-500">Họ và tên</span>
-                  <span className="text-base font-medium text-gray-900 break-all">
+                  <span className="text-base font-medium text-gray-800 break-all">
                     {selectedUser.fullName}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1">
                   <span className="text-sm text-gray-500">Vai trò</span>
-                  <div className="text-base font-medium text-gray-900 break-all">
+                  <div className="text-base font-medium text-gray-800 break-all">
                     <span
-                      className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        selectedUser.role === "doctor"
-                          ? "bg-blue-100 text-blue-800"
-                          : selectedUser.role === "staff"
+                      className={`px-2 py-1 text-xs font-medium rounded-full ${selectedUser.role === "doctor"
+                        ? "bg-blue-100 text-blue-800"
+                        : selectedUser.role === "staff"
                           ? "bg-purple-100 text-purple-800"
                           : selectedUser.role === "patient"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-amber-100 text-amber-800"
-                      }`}
+                            ? "bg-green-100 text-green-800"
+                            : "bg-amber-100 text-amber-800"
+                        }`}
                     >
                       {selectedUser.role === "doctor"
                         ? "Bác sĩ"
                         : selectedUser.role === "staff"
-                        ? "Nhân viên"
-                        : selectedUser.role === "patient"
-                        ? "Bệnh nhân"
-                        : "Y tá xét nghiệm"}
+                          ? "Nhân viên"
+                          : selectedUser.role === "patient"
+                            ? "Bệnh nhân"
+                            : "Y tá xét nghiệm"}
                     </span>
                   </div>
                 </div>
                 <div className="flex flex-col gap-1">
                   <span className="text-sm text-gray-500">Email</span>
-                  <span className="text-base font-medium text-gray-900 break-all">
+                  <span className="text-base font-medium text-gray-800 break-all">
                     {selectedUser.email || "-"}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1">
                   <span className="text-sm text-gray-500">Số điện thoại</span>
-                  <span className="text-base font-medium text-gray-900 break-all">
+                  <span className="text-base font-medium text-gray-800 break-all">
                     {selectedUser.phone || "-"}
                   </span>
                 </div>
 
                 <div className="flex flex-col gap-1">
                   <span className="text-sm text-gray-500">Giới tính</span>
-                  <span className="text-base font-medium text-gray-900 break-all">
+                  <span className="text-base font-medium text-gray-800 break-all">
                     {selectedUser.gender === "male"
                       ? "Nam"
                       : selectedUser.gender === "female"
-                      ? "Nữ"
-                      : selectedUser.gender === "other"
-                      ? "Khác"
-                      : "-"}
+                        ? "Nữ"
+                        : selectedUser.gender === "other"
+                          ? "Khác"
+                          : "-"}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1">
                   <span className="text-sm text-gray-500">Ngày sinh</span>
-                  <span className="text-base font-medium text-gray-900 break-all">
+                  <span className="text-base font-medium text-gray-800 break-all">
                     {selectedUser.dateOfBirth
                       ? new Date(selectedUser.dateOfBirth).toLocaleDateString(
-                          "vi-VN"
-                        )
+                        "vi-VN"
+                      )
                       : "-"}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1">
                   <span className="text-sm text-gray-500">CCCD</span>
-                  <span className="text-base font-medium text-gray-900 break-all">
+                  <span className="text-base font-medium text-gray-800 break-all">
                     {selectedUser.cccd || "-"}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1">
                   <span className="text-sm text-gray-500">Địa chỉ</span>
-                  <span className="text-base font-medium text-gray-900 break-all">
+                  <span className="text-base font-medium text-gray-800 break-all">
                     {selectedUser.address || "-"}
                   </span>
                 </div>
@@ -535,31 +533,31 @@ export default function AdminUsersPage() {
 
             {selectedUser.role === "doctor" && (
               <div className="space-y-4">
-                <h3 className="text-lg font-bold text-gray-900 border-b pb-2">
+                <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
                   Thông tin bác sĩ
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1">
                     <span className="text-sm text-gray-500">Chuyên khoa</span>
-                    <span className="text-base font-medium text-gray-900 break-all">
+                    <span className="text-base font-medium text-gray-800 break-all">
                       {selectedUser.specialty || "-"}
                     </span>
                   </div>
                   <div className="flex flex-col gap-1">
                     <span className="text-sm text-gray-500">Bằng cấp</span>
-                    <span className="text-base font-medium text-gray-900 break-all">
+                    <span className="text-base font-medium text-gray-800 break-all">
                       {selectedUser.degree || "-"}
                     </span>
                   </div>
                   <div className="flex flex-col gap-1">
                     <span className="text-sm text-gray-500">Năm sinh</span>
-                    <span className="text-base font-medium text-gray-900 break-all">
+                    <span className="text-base font-medium text-gray-800 break-all">
                       {selectedUser.birthYear || "-"}
                     </span>
                   </div>
                   <div className="flex flex-col gap-1">
                     <span className="text-sm text-gray-500">Kinh nghiệm</span>
-                    <span className="text-base font-medium text-gray-900 break-all">
+                    <span className="text-base font-medium text-gray-800 break-all">
                       {selectedUser.workExperience
                         ? `${selectedUser.workExperience} năm`
                         : "-"}

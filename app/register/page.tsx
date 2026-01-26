@@ -159,7 +159,7 @@ export default function RegisterPage() {
                   <button
                     key={role.value}
                     onClick={() => handleRoleSelect(role.value as UserRole)}
-                    className="p-6 border-2 border-gray-200 rounded-2xl bg-white/80 flex items-center gap-4 text-lg font-semibold transition-all hover:border-primary hover:bg-white hover:-translate-y-1 hover:shadow-lg group"
+                    className="p-4 border-2 border-gray-200 rounded-2xl bg-white/80 flex items-center gap-4 text-lg font-semibold transition-all hover:border-primary hover:bg-white hover:-translate-y-1 hover:shadow-lg group"
                   >
                     <span className="text-3xl">{role.icon}</span>
                     <span className="flex-1 text-left">{role.label}</span>

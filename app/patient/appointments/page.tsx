@@ -20,30 +20,12 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import viLocale from "@fullcalendar/core/locales/vi";
+import { PATIENT_NAV_ITEMS } from "@/lib/navigation";
 import {
-  IconLayoutGrid,
   IconCalendar,
   IconPlus,
   IconAlertCircle,
 } from "@tabler/icons-react";
-
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.PATIENT_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Lịch hẹn",
-    path: ROUTES.PATIENT_APPOINTMENTS,
-    icon: <IconCalendar size={20} />,
-  },
-  {
-    label: "Đặt lịch",
-    path: ROUTES.PATIENT_BOOK_APPOINTMENT,
-    icon: <IconPlus size={20} />,
-  },
-];
 
 export default function PatientAppointments() {
   const router = useRouter();
@@ -164,7 +146,7 @@ export default function PatientAppointments() {
   };
 
   return (
-    <DashboardLayout navItems={navItems} title="Lịch hẹn của tôi">
+    <DashboardLayout navItems={PATIENT_NAV_ITEMS} title="Lịch hẹn của tôi">
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
         <div style={{ maxWidth: "300px" }}>
           <Select
@@ -325,7 +307,7 @@ export default function PatientAppointments() {
                 >
                   {
                     APPOINTMENT_STATUS_LABELS[
-                      selectedAppointment.status as keyof typeof APPOINTMENT_STATUS_LABELS
+                    selectedAppointment.status as keyof typeof APPOINTMENT_STATUS_LABELS
                     ]
                   }
                 </span>
@@ -336,7 +318,7 @@ export default function PatientAppointments() {
               <label className="text-sm text-gray-500 block mb-1">Bác sĩ</label>
               <div className="font-medium">
                 {typeof selectedAppointment.doctorId === "object" &&
-                selectedAppointment.doctorId
+                  selectedAppointment.doctorId
                   ? selectedAppointment.doctorId.fullName
                   : "Chưa chọn bác sĩ"}
               </div>
@@ -353,7 +335,7 @@ export default function PatientAppointments() {
                 <label className="text-sm text-gray-500 block mb-1">
                   Ghi chú
                 </label>
-                <div className="p-3 bg-gray-50 rounded-lg text-gray-700 border border-gray-100">
+                <div className="p-3 bg-gray-50 rounded-lg text-gray-700 border border-gray-200">
                   {selectedAppointment.note}
                 </div>
               </div>
@@ -389,7 +371,7 @@ export default function PatientAppointments() {
       >
         <p>Bạn có chắc chắn muốn hủy lịch hẹn này không?</p>
         {selectedAppointment && (
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+          <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
             <div className="mb-2">
               <strong>Ngày giờ:</strong>{" "}
               {format(
