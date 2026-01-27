@@ -3,22 +3,22 @@ import type { ApiResponse, TestRequest, CreateTestRequestRequest } from '@/types
 
 // 6.1. Tạo Yêu Cầu Xét Nghiệm
 export async function createTestRequest(data: CreateTestRequestRequest): Promise<ApiResponse<TestRequest>> {
-    return post('/api/test-requests', data);
+    return post('/test-requests', data);
 }
 
 // 6.2. Lấy Yêu Cầu Xét Nghiệm Theo Ca Khám
 export async function getTestRequestsByExamination(examId: string): Promise<ApiResponse<TestRequest[]>> {
-    return get(`/api/examinations/${examId}/test-requests`);
+    return get(`/examinations/${examId}/test-requests`);
 }
 
 // 6.3. Lấy Chi Tiết Yêu Cầu Xét Nghiệm
 export async function getTestRequest(id: string): Promise<ApiResponse<TestRequest>> {
-    return get(`/api/test-requests/${id}`);
+    return get(`/test-requests/${id}`);
 }
 
 // 6.4. Cập Nhật Trạng Thái Yêu Cầu
 export async function updateTestRequestStatus(id: string, status: 'waiting' | 'processing' | 'completed'): Promise<ApiResponse<TestRequest>> {
-    return put(`/api/test-requests/${id}/status`, { status });
+    return put(`/test-requests/${id}/status`, { status });
 }
 
 // 6.5. Danh Sách Yêu Cầu Xét Nghiệm
@@ -36,7 +36,7 @@ export async function getTestRequests(params?: {
     limit: number;
     skip: number;
 }>> {
-    return get('/api/test-requests', params);
+    return get('/test-requests', params);
 }
 
 // 13.8. Cập Nhật Yêu Cầu Xét Nghiệm
@@ -45,10 +45,10 @@ export async function updateTestRequest(id: string, data: {
     labNurseId?: string;
     serviceId?: string;
 }): Promise<ApiResponse<TestRequest>> {
-    return put(`/api/test-requests/${id}`, data);
+    return put(`/test-requests/${id}`, data);
 }
 
 // 13.9. Xóa Yêu Cầu Xét Nghiệm
 export async function deleteTestRequest(id: string): Promise<ApiResponse> {
-    return del(`/api/test-requests/${id}`);
+    return del(`/test-requests/${id}`);
 }

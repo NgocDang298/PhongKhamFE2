@@ -199,6 +199,7 @@ export interface TestResult {
 export interface CreateTestResultRequest {
   testRequestId: string;
   resultData: Record<string, any>;
+  labNurseId?: string;
 }
 
 // ============= Services =============

@@ -3,17 +3,17 @@ import type { ApiResponse, Examination, StartExaminationRequest, UpdateExaminati
 
 // 5.1. Bắt Đầu Ca Khám
 export async function startExamination(data: StartExaminationRequest): Promise<ApiResponse<Examination>> {
-    return post('/api/examinations/start', data);
+    return post('/examinations/start', data);
 }
 
 // 5.2. Lấy Thông Tin Ca Khám
 export async function getExamination(id: string): Promise<ApiResponse<Examination>> {
-    return get(`/api/examinations/${id}`);
+    return get(`/examinations/${id}`);
 }
 
 // 5.3. Lấy Ca Khám Theo Appointment
 export async function getExaminationByAppointment(appointmentId: string): Promise<ApiResponse<Examination>> {
-    return get(`/api/examinations/appointment/${appointmentId}`);
+    return get(`/examinations/appointment/${appointmentId}`);
 }
 
 // 5.4. Danh Sách Ca Khám
@@ -31,20 +31,20 @@ export async function getExaminations(params?: {
     limit: number;
     skip: number;
 }>> {
-    return get('/api/examinations', params);
+    return get('/examinations', params);
 }
 
 // 5.5. Cập Nhật Ca Khám
 export async function updateExamination(id: string, data: UpdateExaminationRequest): Promise<ApiResponse<Examination>> {
-    return put(`/api/examinations/${id}`, data);
+    return put(`/examinations/${id}`, data);
 }
 
 // 5.6. Hoàn Thành Ca Khám
 export async function completeExamination(id: string, data?: UpdateExaminationRequest): Promise<ApiResponse<Examination>> {
-    return put(`/api/examinations/${id}/complete`, data || {});
+    return put(`/examinations/${id}/complete`, data || {});
 }
 
 // 13.7. Xóa Ca Khám
 export async function deleteExamination(id: string): Promise<ApiResponse> {
-    return del(`/api/examinations/${id}`);
+    return del(`/examinations/${id}`);
 }

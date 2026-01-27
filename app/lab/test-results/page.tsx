@@ -52,7 +52,6 @@ export default function LabTestResultsPage() {
     notes: "",
   });
   const [existingResult, setExistingResult] = useState<any>(null);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]); // URLs from server after upload
 
@@ -155,30 +154,24 @@ export default function LabTestResultsPage() {
         notes: formData.notes,
       };
 
-      // Upload images first if any
-      let imageUrls: string[] = [];
-      if (selectedFiles.length > 0) {
-        try {
-          const uploadResponse = await uploadFiles(selectedFiles);
-          imageUrls = uploadResponse.data?.urls || [];
-        } catch (uploadError: any) {
-          toast.error("Lỗi khi upload ảnh: " + (uploadError.message || "Vui lòng thử lại"));
-          setLoading(false);
-          return;
-        }
-      }
+      // Combine existing images with newly uploaded images
+      const allImageUrls = [
+        ...(existingResult?.images || []),
+        ...uploadedImageUrls,
+      ];
 
       if (existingResult) {
         await testResultService.updateTestResult(existingResult._id, {
           resultData: finalResultData,
-          ...(imageUrls.length > 0 && { images: imageUrls }),
+          ...(allImageUrls.length > 0 && { images: allImageUrls }),
         });
         toast.success("Cập nhật kết quả thành công");
       } else {
         await testResultService.createTestResult({
           testRequestId: selectedRequest._id,
           resultData: finalResultData,
-          ...(imageUrls.length > 0 && { images: imageUrls }),
+          labNurseId: user?._id || selectedRequest.labNurseId?._id,
+          ...(allImageUrls.length > 0 && { images: allImageUrls }),
         });
         toast.success("Lưu kết quả thành công");
       }
@@ -197,25 +190,44 @@ export default function LabTestResultsPage() {
     setSelectedRequest(null);
     setExistingResult(null);
     setFormData({ resultData: "", notes: "" });
-    setSelectedFiles([]);
     previewUrls.forEach(url => URL.revokeObjectURL(url));
     setPreviewUrls([]);
+    setUploadedImageUrls([]);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
-      setSelectedFiles(prev => [...prev, ...files]);
 
+      // Create preview URLs immediately
       const newPreviews = files.map(file => URL.createObjectURL(file));
       setPreviewUrls(prev => [...prev, ...newPreviews]);
+
+      // Upload files to API
+      try {
+        toast.info("Đang tải ảnh lên...");
+        const uploadResponse = await uploadFiles(files);
+        const urls = uploadResponse.data?.urls || [];
+
+        if (urls.length > 0) {
+          setUploadedImageUrls(prev => [...prev, ...urls]);
+          toast.success(`Tải lên thành công ${urls.length} ảnh`);
+        } else {
+          throw new Error("Không nhận được URL ảnh từ server");
+        }
+      } catch (error: any) {
+        toast.error("Lỗi khi tải ảnh lên: " + (error.message || "Vui lòng thử lại"));
+        // Remove the preview URLs if upload failed
+        newPreviews.forEach(url => URL.revokeObjectURL(url));
+        setPreviewUrls(prev => prev.slice(0, -files.length));
+      }
     }
   };
 
   const removeFile = (index: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
     URL.revokeObjectURL(previewUrls[index]);
     setPreviewUrls(prev => prev.filter((_, i) => i !== index));
+    setUploadedImageUrls(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleOpenModal = async (request: any) => {
