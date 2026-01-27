@@ -7,6 +7,7 @@ import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import { ROUTES } from "@/lib/constants";
+import { STAFF_NAV_ITEMS } from "@/lib/navigation";
 import * as appointmentService from "@/lib/services/appointments";
 import * as patientService from "@/lib/services/patients";
 import * as invoiceService from "@/lib/services/invoices";
@@ -18,33 +19,6 @@ import {
   IconSettings,
 } from "@tabler/icons-react";
 
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.STAFF_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Lịch hẹn",
-    path: ROUTES.STAFF_APPOINTMENTS,
-    icon: <IconCalendar size={20} />,
-  },
-  {
-    label: "Bệnh nhân",
-    path: ROUTES.STAFF_PATIENTS,
-    icon: <IconUserSquareRounded size={20} />,
-  },
-  {
-    label: "Hóa đơn",
-    path: ROUTES.STAFF_INVOICES,
-    icon: <IconFileText size={20} />,
-  },
-  {
-    label: "Dịch vụ",
-    path: ROUTES.STAFF_SERVICES,
-    icon: <IconSettings size={20} />,
-  },
-];
 
 export default function StaffDashboard() {
   const router = useRouter();
@@ -93,7 +67,7 @@ export default function StaffDashboard() {
 
   if (authLoading || loading) {
     return (
-      <DashboardLayout navItems={navItems} title="Tổng quan">
+      <DashboardLayout navItems={STAFF_NAV_ITEMS} title="Tổng quan">
         <div className="flex items-center justify-center h-64 text-gray-500">
           Đang tải...
         </div>
@@ -102,7 +76,7 @@ export default function StaffDashboard() {
   }
 
   return (
-    <DashboardLayout navItems={navItems} title="Tổng quan">
+    <DashboardLayout navItems={STAFF_NAV_ITEMS} title="Tổng quan">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <Card className="hover:shadow-lg transition-shadow">
           <CardBody>

@@ -18,35 +18,17 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Modal from "@/components/ui/Modal";
 import Select from "@/components/ui/Select";
-import { ROUTES, GENDER_OPTIONS } from "@/lib/constants";
+import { GENDER_OPTIONS } from "@/lib/constants";
+import { STAFF_NAV_ITEMS } from "@/lib/navigation";
 import * as patientService from "@/lib/services/patients";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import {
-  IconLayoutGrid,
-  IconCalendar,
   IconUserSquareRounded,
   IconSearch,
   IconPlus,
 } from "@tabler/icons-react";
 
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.STAFF_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Lịch hẹn",
-    path: ROUTES.STAFF_APPOINTMENTS,
-    icon: <IconCalendar size={20} />,
-  },
-  {
-    label: "Bệnh nhân",
-    path: ROUTES.STAFF_PATIENTS,
-    icon: <IconUserSquareRounded size={20} />,
-  },
-];
 
 export default function StaffPatientsPage() {
   const router = useRouter();
@@ -129,7 +111,7 @@ export default function StaffPatientsPage() {
 
   if (authLoading || loading) {
     return (
-      <DashboardLayout navItems={navItems} title="Quản lý bệnh nhân">
+      <DashboardLayout navItems={STAFF_NAV_ITEMS} title="Quản lý bệnh nhân">
         <div className="flex items-center justify-center h-64 text-gray-500">
           Đang tải...
         </div>
@@ -138,7 +120,7 @@ export default function StaffPatientsPage() {
   }
 
   return (
-    <DashboardLayout navItems={navItems} title="Quản lý bệnh nhân">
+    <DashboardLayout navItems={STAFF_NAV_ITEMS} title="Quản lý bệnh nhân">
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
         <div className="w-full md:max-w-md">
           <Input

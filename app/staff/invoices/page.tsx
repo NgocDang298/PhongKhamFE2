@@ -23,6 +23,8 @@ import * as invoiceService from "@/lib/services/invoices";
 import * as patientService from "@/lib/services/patients";
 import * as serviceService from "@/lib/services/services";
 import * as examinationService from "@/lib/services/examinations";
+import * as testRequestService from "@/lib/services/testRequests";
+import { STAFF_NAV_ITEMS } from "@/lib/navigation";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
@@ -35,30 +37,9 @@ import {
   IconTrash,
   IconEdit,
   IconEye,
+  IconX,
 } from "@tabler/icons-react";
 
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.STAFF_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Lịch hẹn",
-    path: ROUTES.STAFF_APPOINTMENTS,
-    icon: <IconCalendar size={20} />,
-  },
-  {
-    label: "Bệnh nhân",
-    path: ROUTES.STAFF_PATIENTS,
-    icon: <IconUserSquareRounded size={20} />,
-  },
-  {
-    label: "Hóa đơn",
-    path: ROUTES.STAFF_INVOICES,
-    icon: <IconReceipt size={20} />,
-  },
-];
 
 export default function StaffInvoicesPage() {
   const router = useRouter();
@@ -344,7 +325,7 @@ export default function StaffInvoicesPage() {
 
   if (authLoading || loading) {
     return (
-      <DashboardLayout navItems={navItems} title="Quản lý hóa đơn">
+      <DashboardLayout navItems={STAFF_NAV_ITEMS} title="Quản lý hóa đơn">
         <div className="flex items-center justify-center h-64 text-gray-500">
           Đang tải...
         </div>
@@ -353,7 +334,7 @@ export default function StaffInvoicesPage() {
   }
 
   return (
-    <DashboardLayout navItems={navItems} title="Quản lý hóa đơn">
+    <DashboardLayout navItems={STAFF_NAV_ITEMS} title="Quản lý hóa đơn">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
         <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
           <div style={{ maxWidth: "250px" }}>
@@ -422,10 +403,16 @@ export default function StaffInvoicesPage() {
                       #{invoice.invoiceNumber || invoice._id.slice(-6)}
                     </TableCell>
                     <TableCell>
-                      {typeof invoice.patientId === "object" &&
-                        invoice.patientId
-                        ? invoice.patientId.fullName
-                        : "Không xác định"}
+                      <div className="font-medium text-gray-900">
+                        {typeof invoice.patientId === "object" && invoice.patientId
+                          ? invoice.patientId.fullName
+                          : "Không xác định"}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {typeof invoice.patientId === "object" && invoice.patientId
+                          ? invoice.patientId.phone || invoice.patientId.phoneNumber
+                          : ""}
+                      </div>
                     </TableCell>
                     <TableCell>
                       {format(new Date(invoice.createdAt || ""), "dd/MM/yyyy", {
@@ -513,8 +500,9 @@ export default function StaffInvoicesPage() {
         title="Tạo hóa đơn mới"
         size="lg"
         footer={
-          <>
+          <div className="flex w-full gap-4 justify-end">
             <Button
+              icon={<IconX size={20} />}
               variant="outline"
               onClick={() => {
                 setIsCreateModalOpen(false);
@@ -527,8 +515,8 @@ export default function StaffInvoicesPage() {
             >
               Hủy
             </Button>
-            <Button onClick={handleCreateInvoice}>Tạo hóa đơn</Button>
-          </>
+            <Button icon={<IconPlus size={20} />} onClick={handleCreateInvoice}>Tạo hóa đơn</Button>
+          </div>
         }
       >
         <form onSubmit={handleCreateInvoice} className="space-y-4">
@@ -539,7 +527,7 @@ export default function StaffInvoicesPage() {
                 { value: "", label: "Chọn bệnh nhân" },
                 ...patients.map((p) => ({
                   value: p._id,
-                  label: `${p.fullName} - ${p.phoneNumber || ""}`,
+                  label: `${p.fullName} - ${p.phone || p.phoneNumber || ""}`,
                 })),
               ]}
               value={createFormData.patientId}
@@ -566,19 +554,60 @@ export default function StaffInvoicesPage() {
                 },
                 ...examinations.map((exam) => ({
                   value: exam._id,
-                  label: `${format(
+                  label: `Ca khám: ${format(
                     new Date(exam.examDate),
                     "dd/MM/yyyy HH:mm"
-                  )} - ${exam.diagnosis || "Chưa có chẩn đoán"}`,
+                  )}`,
                 })),
               ]}
               value={createFormData.examinationId}
-              onChange={(e) =>
+              onChange={async (e) => {
+                const examId = e.target.value;
+                if (!examId) {
+                  setCreateFormData({ ...createFormData, examinationId: "", items: [] });
+                  return;
+                }
+
+                // 1. Tìm thông tin ca khám từ danh sách đã load
+                const selectedExam = examinations.find(ex => ex._id === examId);
+
+                // 2. Khởi tạo items với dịch vụ chính của ca khám
+                let newItems: any[] = [];
+                if (selectedExam?.serviceId) {
+                  newItems.push({
+                    type: "service",
+                    referenceId: selectedExam.serviceId._id || selectedExam.serviceId,
+                    quantity: 1
+                  });
+                }
+
                 setCreateFormData({
                   ...createFormData,
-                  examinationId: e.target.value,
-                })
-              }
+                  examinationId: examId,
+                  items: newItems
+                });
+
+                // 3. Tự động lấy thêm các xét nghiệm đã hoàn thành của ca khám này
+                try {
+                  const testRes: any = await testRequestService.getTestRequestsByExamination(examId);
+                  const completedTests = (testRes.data || testRes || []).filter((t: any) => t.status === 'completed');
+
+                  if (completedTests.length > 0) {
+                    const testItems = completedTests.map((t: any) => ({
+                      type: "test",
+                      referenceId: t.serviceId?._id || t.serviceId,
+                      quantity: 1
+                    }));
+
+                    setCreateFormData(prev => ({
+                      ...prev,
+                      items: [...prev.items, ...testItems]
+                    }));
+                  }
+                } catch (err) {
+                  console.error("Lỗi khi lấy danh sách xét nghiệm:", err);
+                }
+              }}
               required
               disabled={!createFormData.patientId || examinations.length === 0}
               fullWidth
@@ -587,14 +616,18 @@ export default function StaffInvoicesPage() {
 
           <div className="border-t pt-4">
             <div className="flex justify-between items-center mb-3">
-              <h4 className="font-medium">Dịch vụ / Xét nghiệm</h4>
+              <div className="space-y-1">
+                <h4 className="font-semibold text-gray-900">Chi tiết dịch vụ thu phí</h4>
+                <p className="text-xs text-gray-500 italic">Dịch vụ & Xét nghiệm được tự động tổng hợp từ ca khám</p>
+              </div>
               <Button
                 type="button"
                 size="sm"
+                variant="outline"
                 onClick={addItemToCreate}
                 icon={<IconPlus size={14} />}
               >
-                Thêm dịch vụ
+                Thêm thủ công
               </Button>
             </div>
 

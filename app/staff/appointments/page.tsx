@@ -21,6 +21,7 @@ import Input from "@/components/ui/Input";
 import { ROUTES, APPOINTMENT_STATUS_LABELS } from "@/lib/constants";
 import * as appointmentService from "@/lib/services/appointments";
 import * as patientService from "@/lib/services/patients";
+import { STAFF_NAV_ITEMS } from "@/lib/navigation";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import {
@@ -36,18 +37,6 @@ import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import viLocale from "@fullcalendar/core/locales/vi";
 
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.STAFF_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Lịch hẹn",
-    path: ROUTES.STAFF_APPOINTMENTS,
-    icon: <IconCalendar size={20} />,
-  },
-];
 
 export default function StaffAppointmentsPage() {
   const router = useRouter();
@@ -275,7 +264,7 @@ export default function StaffAppointmentsPage() {
 
   if (authLoading || loading) {
     return (
-      <DashboardLayout navItems={navItems} title="Quản lý lịch hẹn">
+      <DashboardLayout navItems={STAFF_NAV_ITEMS} title="Quản lý lịch hẹn">
         <div className="flex items-center justify-center h-64 text-gray-500">
           Đang tải...
         </div>
@@ -284,7 +273,7 @@ export default function StaffAppointmentsPage() {
   }
 
   return (
-    <DashboardLayout navItems={navItems} title="Quản lý lịch hẹn">
+    <DashboardLayout navItems={STAFF_NAV_ITEMS} title="Quản lý lịch hẹn">
       <div className="flex justify-between items-center mb-4">
         <div className="flex flex-col md:flex-row gap-4 w-full md:items-end md:justify-between">
           <div className="flex items-center gap-4">

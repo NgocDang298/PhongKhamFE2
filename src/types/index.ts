@@ -249,7 +249,7 @@ export interface Invoice {
 
 export interface CreateInvoiceRequest {
   examinationId: string;
-  items: Array<{
+  items?: Array<{
     type: 'service' | 'test';
     referenceId: string;
     quantity: number;

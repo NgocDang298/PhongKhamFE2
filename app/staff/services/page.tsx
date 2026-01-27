@@ -13,44 +13,14 @@ import {
   TableHead,
   TableCell,
 } from "@/components/ui/Table";
-import { ROUTES, SERVICE_TYPE_LABELS } from "@/lib/constants";
+import { SERVICE_TYPE_LABELS } from "@/lib/constants";
+import { STAFF_NAV_ITEMS } from "@/lib/navigation";
 import * as serviceService from "@/lib/services/services";
 import { formatCurrency } from "@/lib/utils";
 import {
-  IconLayoutGrid,
-  IconCalendar,
-  IconUserSquareRounded,
-  IconReceipt,
   IconSettings,
 } from "@tabler/icons-react";
 
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.STAFF_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Lịch hẹn",
-    path: ROUTES.STAFF_APPOINTMENTS,
-    icon: <IconCalendar size={20} />,
-  },
-  {
-    label: "Bệnh nhân",
-    path: ROUTES.STAFF_PATIENTS,
-    icon: <IconUserSquareRounded size={20} />,
-  },
-  {
-    label: "Hóa đơn",
-    path: ROUTES.STAFF_INVOICES,
-    icon: <IconReceipt size={20} />,
-  },
-  {
-    label: "Dịch vụ",
-    path: ROUTES.STAFF_SERVICES,
-    icon: <IconSettings size={20} />,
-  },
-];
 
 export default function StaffServicesPage() {
   const router = useRouter();
@@ -87,7 +57,7 @@ export default function StaffServicesPage() {
 
   if (authLoading || loading) {
     return (
-      <DashboardLayout navItems={navItems} title="Danh sách dịch vụ">
+      <DashboardLayout navItems={STAFF_NAV_ITEMS} title="Danh sách dịch vụ">
         <div className="flex items-center justify-center h-64 text-gray-500">
           Đang tải...
         </div>
@@ -96,7 +66,7 @@ export default function StaffServicesPage() {
   }
 
   return (
-    <DashboardLayout navItems={navItems} title="Danh sách dịch vụ">
+    <DashboardLayout navItems={STAFF_NAV_ITEMS} title="Danh sách dịch vụ">
       <Card>
         <CardHeader icon={<IconSettings size={20} />}>
           <CardTitle>Dịch vụ khám bệnh</CardTitle>
