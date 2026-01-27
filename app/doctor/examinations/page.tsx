@@ -410,9 +410,8 @@ export default function DoctorExaminationsPage() {
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <div style={{ maxWidth: "300px" }}>
             <Select
-              label="Lọc theo trạng thái"
               options={[
-                { value: "", label: "Tất cả" },
+                { value: "", label: "Lọc theo trạng thái" },
                 { value: "processing", label: "Đang khám" },
                 { value: "done", label: "Hoàn thành" },
               ]}

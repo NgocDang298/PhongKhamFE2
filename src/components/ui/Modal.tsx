@@ -73,7 +73,7 @@ export default function Modal({
           {children}
         </div>
         {footer && (
-          <div className="p-4 flex items-center gap-4 border-t border-gray-200 bg-gray-50 rounded-b-xl self-end">
+          <div className="p-4 flex items-center justify-end gap-4 border-t border-gray-200 bg-gray-50 rounded-b-xl self-end">
             {footer}
           </div>
         )}

@@ -18,6 +18,7 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Modal from "@/components/ui/Modal";
 import Select from "@/components/ui/Select";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { GENDER_OPTIONS } from "@/lib/constants";
 import { STAFF_NAV_ITEMS } from "@/lib/navigation";
 import * as patientService from "@/lib/services/patients";
@@ -112,38 +113,69 @@ export default function StaffPatientsPage() {
   if (authLoading || loading) {
     return (
       <DashboardLayout navItems={STAFF_NAV_ITEMS} title="Quản lý bệnh nhân">
-        <div className="flex items-center justify-center h-64 text-gray-500">
-          Đang tải...
-        </div>
+        <Card>
+          <CardHeader icon={<IconUserSquareRounded size={20} />}>
+            <CardTitle>Danh sách bệnh nhân</CardTitle>
+            <div className="ml-auto flex flex-col md:flex-row items-center gap-3">
+              <Skeleton className="h-10 w-64" />
+              <Skeleton className="h-10 w-48" />
+            </div>
+          </CardHeader>
+          <CardBody>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Họ tên</TableHead>
+                  <TableHead>SĐT</TableHead>
+                  <TableHead>CCCD</TableHead>
+                  <TableHead>Giới tính</TableHead>
+                  <TableHead>Ngày sinh</TableHead>
+                  <TableHead>Địa chỉ</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[...Array(5)].map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-12" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-48" /></TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardBody>
+        </Card>
       </DashboardLayout>
     );
   }
 
   return (
     <DashboardLayout navItems={STAFF_NAV_ITEMS} title="Quản lý bệnh nhân">
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
-        <div className="w-full md:max-w-md">
-          <Input
-            label="Tìm kiếm"
-            type="text"
-            placeholder="Tìm theo tên, CCCD, SĐT..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            fullWidth
-            icon={<IconSearch size={20} />}
-          />
-        </div>
-        <Button
-          onClick={() => setIsModalOpen(true)}
-          icon={<IconPlus size={16} />}
-        >
-          Tạo bệnh nhân walk-in
-        </Button>
-      </div>
-
       <Card>
         <CardHeader icon={<IconUserSquareRounded size={20} />}>
           <CardTitle>Danh sách bệnh nhân</CardTitle>
+          <div className="ml-auto flex flex-col md:flex-row items-center gap-3">
+            <div className="w-full md:w-80">
+              <Input
+                type="text"
+                placeholder="Tìm tên, CCCD, SĐT..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                fullWidth
+                icon={<IconSearch size={18} />}
+              />
+            </div>
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              icon={<IconPlus size={16} />}
+              className="whitespace-nowrap"
+            >
+              Tạo bệnh nhân walk-in
+            </Button>
+          </div>
         </CardHeader>
         <CardBody>
           {patients.length === 0 ? (

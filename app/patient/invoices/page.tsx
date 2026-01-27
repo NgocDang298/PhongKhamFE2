@@ -23,7 +23,9 @@ import { vi } from "date-fns/locale";
 import { PATIENT_NAV_ITEMS } from "@/lib/navigation";
 import {
   IconReceipt,
+  IconX,
 } from "@tabler/icons-react";
+import Button from "@/components/ui/Button";
 
 export default function PatientInvoicesPage() {
   const router = useRouter();
@@ -85,9 +87,8 @@ export default function PatientInvoicesPage() {
       <div className="flex justify-between items-center mb-4">
         <div style={{ maxWidth: "300px" }}>
           <Select
-            label="Lọc theo trạng thái"
             options={[
-              { value: "", label: "Tất cả" },
+              { value: "", label: "Lọc theo trạng thái" },
               { value: "paid", label: "Đã thanh toán" },
               { value: "unpaid", label: "Chưa thanh toán" },
             ]}
@@ -180,15 +181,16 @@ export default function PatientInvoicesPage() {
         title="Chi tiết hóa đơn"
         size="lg"
         footer={
-          <button
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+          <Button
+            icon={<IconX size={20} />}
+            variant="outline"
             onClick={() => {
               setIsModalOpen(false);
               setSelectedInvoice(null);
             }}
           >
             Đóng
-          </button>
+          </Button>
         }
       >
         {selectedInvoice && (

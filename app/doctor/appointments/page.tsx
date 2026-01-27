@@ -215,9 +215,8 @@ export default function DoctorAppointmentsPage() {
       <div className="flex justify-between items-center mb-4">
         <div style={{ maxWidth: "300px" }}>
           <Select
-            label="Lọc theo trạng thái"
             options={[
-              { value: "", label: "Tất cả" },
+              { value: "", label: "Lọc theo trạng thái" },
               { value: "pending", label: "Chờ xác nhận" },
               { value: "confirmed", label: "Đã xác nhận" },
               { value: "cancelled", label: "Đã hủy" },

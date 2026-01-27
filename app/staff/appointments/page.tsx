@@ -18,6 +18,7 @@ import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
 import Modal from "@/components/ui/Modal";
 import Input from "@/components/ui/Input";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { ROUTES, APPOINTMENT_STATUS_LABELS } from "@/lib/constants";
 import * as appointmentService from "@/lib/services/appointments";
 import * as patientService from "@/lib/services/patients";
@@ -265,23 +266,38 @@ export default function StaffAppointmentsPage() {
   if (authLoading || loading) {
     return (
       <DashboardLayout navItems={STAFF_NAV_ITEMS} title="Quản lý lịch hẹn">
-        <div className="flex items-center justify-center h-64 text-gray-500">
-          Đang tải...
-        </div>
+        <Card>
+          <CardHeader icon={<IconCalendar size={20} />}>
+            <CardTitle>Quản lý lịch hẹn</CardTitle>
+            <div className="ml-auto flex flex-col md:flex-row items-center gap-3">
+              <Skeleton className="h-10 w-48" />
+              <Skeleton className="h-10 w-32" />
+              <Skeleton className="h-10 w-36" />
+              <Skeleton className="h-10 w-36" />
+            </div>
+          </CardHeader>
+          <CardBody>
+            <div className="space-y-4">
+              <Skeleton className="h-96 w-full" />
+            </div>
+          </CardBody>
+        </Card>
       </DashboardLayout>
     );
   }
 
   return (
     <DashboardLayout navItems={STAFF_NAV_ITEMS} title="Quản lý lịch hẹn">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex flex-col md:flex-row gap-4 w-full md:items-end md:justify-between">
-          <div className="flex items-center gap-4">
-            <div style={{ maxWidth: "300px" }}>
+      <Card>
+        <CardHeader icon={<IconCalendar size={20} />}>
+          <CardTitle>
+            {viewMode === "calendar" ? "Lịch khám bệnh" : "Danh sách lịch hẹn"}
+          </CardTitle>
+          <div className="ml-auto flex flex-col md:flex-row items-center gap-3">
+            <div className="w-full md:w-56">
               <Select
-                label="Lọc theo trạng thái"
                 options={[
-                  { value: "", label: "Tất cả" },
+                  { value: "", label: "Lọc theo trạng thái" },
                   { value: "pending", label: "Chờ xác nhận" },
                   { value: "confirmed", label: "Đã xác nhận" },
                   { value: "in-progress", label: "Đang khám" },
@@ -293,8 +309,9 @@ export default function StaffAppointmentsPage() {
                 fullWidth
               />
             </div>
-            <div className="flex items-center bg-gray-100 p-1 h-10 rounded-lg mt-4 border">
+            <div className="flex items-center bg-gray-100 p-1 h-10 rounded-lg border">
               <button
+                type="button"
                 onClick={() => setViewMode("calendar")}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === "calendar"
                   ? "bg-white text-primary shadow-sm"
@@ -305,6 +322,7 @@ export default function StaffAppointmentsPage() {
                 Lịch
               </button>
               <button
+                type="button"
                 onClick={() => setViewMode("table")}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === "table"
                   ? "bg-white text-primary shadow-sm"
@@ -312,34 +330,30 @@ export default function StaffAppointmentsPage() {
                   }`}
               >
                 <IconTable size={18} />
-                Danh sách
+                D.Sách
               </button>
             </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsAutoAssignModalOpen(true)}
+                icon={<IconPlus size={16} />}
+                className="whitespace-nowrap"
+              >
+                Tự động
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setIsCreateModalOpen(true)}
+                icon={<IconPlus size={16} />}
+                className="whitespace-nowrap"
+              >
+                Tạo mới
+              </Button>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setIsAutoAssignModalOpen(true)}
-              icon={<IconPlus size={16} />}
-            >
-              Đặt lịch tự động
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => setIsCreateModalOpen(true)}
-              icon={<IconPlus size={16} />}
-            >
-              Tạo lịch hẹn mới
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      <Card>
-        <CardHeader icon={<IconCalendar size={20} />}>
-          <CardTitle>
-            {viewMode === "calendar" ? "Lịch khám bệnh" : "Danh sách lịch hẹn"}
-          </CardTitle>
         </CardHeader>
         <CardBody>
           {appointments.length === 0 ? (

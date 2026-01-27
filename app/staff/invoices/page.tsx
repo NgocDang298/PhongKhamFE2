@@ -18,6 +18,7 @@ import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
 import Input from "@/components/ui/Input";
 import Modal from "@/components/ui/Modal";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { ROUTES, INVOICE_STATUS_LABELS } from "@/lib/constants";
 import * as invoiceService from "@/lib/services/invoices";
 import * as patientService from "@/lib/services/patients";
@@ -326,57 +327,98 @@ export default function StaffInvoicesPage() {
   if (authLoading || loading) {
     return (
       <DashboardLayout navItems={STAFF_NAV_ITEMS} title="Quản lý hóa đơn">
-        <div className="flex items-center justify-center h-64 text-gray-500">
-          Đang tải...
-        </div>
+        <Card>
+          <CardHeader icon={<IconReceipt size={20} />}>
+            <CardTitle>Danh sách hóa đơn</CardTitle>
+            <div className="ml-auto flex flex-col md:flex-row items-center gap-3">
+              <Skeleton className="h-10 w-48" />
+              <Skeleton className="h-10 w-56" />
+              <Skeleton className="h-10 w-32" />
+            </div>
+          </CardHeader>
+          <CardBody>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Mã HĐ</TableHead>
+                  <TableHead>Bệnh nhân</TableHead>
+                  <TableHead>Ngày tạo</TableHead>
+                  <TableHead>Số DV</TableHead>
+                  <TableHead>Tổng tiền</TableHead>
+                  <TableHead>Trạng thái</TableHead>
+                  <TableHead>Thao tác</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[...Array(5)].map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                    <TableCell>
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-24" />
+                      </div>
+                    </TableCell>
+                    <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-8" /></TableCell>
+                    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-24 rounded-full" /></TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Skeleton className="h-8 w-16" />
+                        <Skeleton className="h-8 w-16" />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardBody>
+        </Card>
       </DashboardLayout>
     );
   }
 
   return (
     <DashboardLayout navItems={STAFF_NAV_ITEMS} title="Quản lý hóa đơn">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-        <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
-          <div style={{ maxWidth: "250px" }}>
-            <Select
-              label="Lọc theo trạng thái"
-              options={[
-                { value: "", label: "Tất cả" },
-                { value: "paid", label: "Đã thanh toán" },
-                { value: "unpaid", label: "Chưa thanh toán" },
-              ]}
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              fullWidth
-            />
-          </div>
-          <div style={{ maxWidth: "250px" }}>
-            <Select
-              label="Lọc theo bệnh nhân"
-              options={[
-                { value: "", label: "Tất cả bệnh nhân" },
-                ...patients.map((p) => ({
-                  value: p._id,
-                  label: p.fullName,
-                })),
-              ]}
-              value={patientFilter}
-              onChange={(e) => setPatientFilter(e.target.value)}
-              fullWidth
-            />
-          </div>
-        </div>
-        <Button
-          onClick={() => setIsCreateModalOpen(true)}
-          icon={<IconPlus size={16} />}
-        >
-          Tạo hóa đơn
-        </Button>
-      </div>
-
       <Card>
         <CardHeader icon={<IconReceipt size={20} />}>
           <CardTitle>Danh sách hóa đơn</CardTitle>
+          <div className="ml-auto flex flex-col md:flex-row items-center gap-3">
+            <div className="w-full md:w-48">
+              <Select
+                options={[
+                  { value: "", label: "Tất cả trạng thái" },
+                  { value: "paid", label: "Đã thanh toán" },
+                  { value: "unpaid", label: "Chưa thanh toán" },
+                ]}
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                fullWidth
+              />
+            </div>
+            <div className="w-full md:w-56">
+              <Select
+                options={[
+                  { value: "", label: "Tất cả bệnh nhân" },
+                  ...patients.map((p) => ({
+                    value: p._id,
+                    label: p.fullName,
+                  })),
+                ]}
+                value={patientFilter}
+                onChange={(e) => setPatientFilter(e.target.value)}
+                fullWidth
+              />
+            </div>
+            <Button
+              onClick={() => setIsCreateModalOpen(true)}
+              icon={<IconPlus size={16} />}
+              className="whitespace-nowrap"
+            >
+              Tạo hóa đơn
+            </Button>
+          </div>
         </CardHeader>
         <CardBody>
           {invoices.length === 0 ? (
@@ -726,6 +768,7 @@ export default function StaffInvoicesPage() {
         size="lg"
         footer={
           <Button
+            icon={<IconX size={20} />}
             variant="outline"
             onClick={() => {
               setIsDetailModalOpen(false);
