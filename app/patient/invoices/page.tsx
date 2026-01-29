@@ -88,24 +88,25 @@ export default function PatientInvoicesPage() {
 
   return (
     <DashboardLayout navItems={PATIENT_NAV_ITEMS} title="Hóa đơn của tôi">
-      <div className="flex justify-between items-center mb-4">
-        <div style={{ maxWidth: "300px" }}>
-          <Select
-            options={[
-              { value: "", label: "Lọc theo trạng thái" },
-              { value: "paid", label: "Đã thanh toán" },
-              { value: "unpaid", label: "Chưa thanh toán" },
-            ]}
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            fullWidth
-          />
-        </div>
-      </div>
-
       <Card>
         <CardHeader icon={<IconReceipt size={20} />}>
-          <CardTitle>Danh sách hóa đơn</CardTitle>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
+            <CardTitle>Danh sách hóa đơn</CardTitle>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <div className="w-full md:w-56">
+                <Select
+                  options={[
+                    { value: "", label: "Tất cả trạng thái" },
+                    { value: "paid", label: "Đã thanh toán" },
+                    { value: "unpaid", label: "Chưa thanh toán" },
+                  ]}
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  fullWidth
+                />
+              </div>
+            </div>
+          </div>
         </CardHeader>
         <CardBody>
           {invoices.length === 0 ? (

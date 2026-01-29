@@ -1,9 +1,5 @@
-// Application Constants
-
-// ============= API Configuration =============
 export const API_BASE_URL = 'http://localhost:8000/api/v1';
 
-// ============= User Roles =============
 export const USER_ROLES = {
     PATIENT: 'patient',
     DOCTOR: 'doctor',
@@ -20,7 +16,6 @@ export const ROLE_LABELS = {
     admin: 'Quản trị viên',
 } as const;
 
-// ============= Status Mappings =============
 export const APPOINTMENT_STATUS = {
     PENDING: 'pending',
     CONFIRMED: 'confirmed',

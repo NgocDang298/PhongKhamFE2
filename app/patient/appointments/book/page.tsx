@@ -25,6 +25,7 @@ import {
   IconCalendar,
   IconCalendarCheck,
   IconX,
+  IconStethoscope,
 } from "@tabler/icons-react";
 import { toast } from "react-toastify";
 
@@ -42,6 +43,8 @@ export default function BookAppointmentPage() {
   const [selectedDate, setSelectedDate] = useState("");
   const [availableSlots, setAvailableSlots] = useState<any[]>([]);
   const [selectedSlot, setSelectedSlot] = useState("");
+  const [specialties, setSpecialties] = useState<string[]>([]);
+  const [selectedSpecialty, setSelectedSpecialty] = useState("");
   const [note, setNote] = useState("");
 
   // Loading & Error
@@ -49,6 +52,7 @@ export default function BookAppointmentPage() {
   const [doctorsLoading, setDoctorsLoading] = useState(false);
   const [datesLoading, setDatesLoading] = useState(false);
   const [slotsLoading, setSlotsLoading] = useState(false);
+  const [specialtiesLoading, setSpecialtiesLoading] = useState(false);
   const [error, setError] = useState("");
 
   const today = format(new Date(), "yyyy-MM-dd");
@@ -60,6 +64,7 @@ export default function BookAppointmentPage() {
       return;
     }
     loadDoctors();
+    loadSpecialties();
   }, [user, isAuthenticated, authLoading, router]);
 
   // Load available dates when doctor changes
@@ -83,18 +88,23 @@ export default function BookAppointmentPage() {
     }
     setSelectedDate("");
     setSelectedSlot("");
+    setSelectedSpecialty("");
     setAvailableSlots([]);
   }, [selectedDoctorId, bookingMode]);
 
-  // Load slots when date/doctor changes
+  // Load slots when date/specialty/doctor changes
   useEffect(() => {
     if (selectedDate) {
+      if (bookingMode === "auto-assign" && !selectedSpecialty) {
+        setAvailableSlots([]);
+        return;
+      }
       loadAvailableSlots();
       setSelectedSlot("");
     } else {
       setAvailableSlots([]);
     }
-  }, [selectedDate, selectedDoctorId, bookingMode]);
+  }, [selectedDate, selectedSpecialty, selectedDoctorId, bookingMode]);
 
   const loadDoctors = async () => {
     try {
@@ -107,6 +117,19 @@ export default function BookAppointmentPage() {
       toast.error("Không thể tải danh sách bác sĩ");
     } finally {
       setDoctorsLoading(false);
+    }
+  };
+
+  const loadSpecialties = async () => {
+    try {
+      setSpecialtiesLoading(true);
+      const response: any = await appointmentService.getSpecialties();
+      const data = response.data || response || [];
+      setSpecialties(data);
+    } catch (error) {
+      console.error("Error loading specialties:", error);
+    } finally {
+      setSpecialtiesLoading(false);
     }
   };
 
@@ -138,6 +161,7 @@ export default function BookAppointmentPage() {
       } else {
         response = await appointmentService.getAvailableSlots({
           date: selectedDate,
+          specialty: selectedSpecialty,
         });
       }
 
@@ -166,6 +190,11 @@ export default function BookAppointmentPage() {
       return;
     }
 
+    if (bookingMode === "auto-assign" && !selectedSpecialty) {
+      setError("Vui lòng chọn chuyên khoa");
+      return;
+    }
+
     setLoading(true);
     try {
       let response: any;
@@ -180,6 +209,7 @@ export default function BookAppointmentPage() {
       } else {
         response = await appointmentService.autoAssignAppointment({
           appointmentDate: selectedSlot,
+          specialty: selectedSpecialty,
           note,
         });
         const assignedDoctor = response.data?.doctorId?.fullName;
@@ -278,9 +308,14 @@ export default function BookAppointmentPage() {
                             : "border-gray-200 hover:border-primary/50"
                             }`}
                         >
-                          <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
-                            <IconUserSquareRounded size={20} />
-                          </div>
+                          <img
+                            src={
+                              doc?.avatar ||
+                              `https://api.dicebear.com/7.x/avataaars/svg?seed=${doc.fullName}`
+                            }
+                            alt={doc.fullName}
+                            className="w-10 h-10 rounded-full object-cover border-2 border-primary/20 bg-primary/5"
+                          />
                           <div>
                             <div className="font-semibold text-gray-900 leading-tight">{doc.fullName}</div>
                             <div className="text-xs text-primary font-medium mt-0.5 uppercase tracking-wider">{doc.specialty}</div>
@@ -342,16 +377,54 @@ export default function BookAppointmentPage() {
                 </div>
               </div>
 
+              {/* Step: Specialty Selection (Only for Auto-Assign mode) */}
+              {bookingMode === "auto-assign" && (
+                <div className="p-4 space-y-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">2</div>
+                    <label className="text-base font-semibold text-gray-800">Chọn chuyên khoa</label>
+                  </div>
+
+                  {specialtiesLoading ? (
+                    <div className="h-10 bg-gray-100 animate-pulse rounded-lg w-full"></div>
+                  ) : !selectedDate ? (
+                    <div className="text-sm text-gray-400 italic">Vui lòng chọn ngày trước</div>
+                  ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {specialties.map((spec) => (
+                        <div
+                          key={spec}
+                          onClick={() => setSelectedSpecialty(spec)}
+                          className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center gap-2 ${selectedSpecialty === spec
+                            ? "border-primary bg-primary/5 ring-1 ring-primary"
+                            : "border-gray-200 hover:border-primary/50"
+                            }`}
+                        >
+                          <div className={`p-2 rounded-lg ${selectedSpecialty === spec ? "bg-primary text-white" : "bg-gray-100 text-gray-400"}`}>
+                            <IconStethoscope size={18} />
+                          </div>
+                          <span className={`text-sm font-semibold ${selectedSpecialty === spec ? "text-primary" : "text-gray-700"}`}>
+                            {spec}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Step 3: Slot Selection */}
               <div className="p-4 space-y-4">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
-                    {bookingMode === "by-doctor" ? "3" : "2"}
+                    {bookingMode === "by-doctor" ? "3" : "3"}
                   </div>
                   <label className="text-base font-semibold text-gray-800">Khung giờ rảnh</label>
                 </div>
 
-                {!selectedDate ? (
+                {bookingMode === "auto-assign" && !selectedSpecialty ? (
+                  <div className="text-sm text-gray-400 italic">Vui lòng chọn chuyên khoa để xem giờ rảnh</div>
+                ) : !selectedDate ? (
                   <div className="text-sm text-gray-400 italic">Vui lòng chọn ngày trước</div>
                 ) : slotsLoading ? (
                   <div className="grid grid-cols-4 gap-3">

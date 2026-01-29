@@ -29,6 +29,7 @@ import {
   IconCheck,
 } from "@tabler/icons-react";
 import Select from "@/components/ui/Select";
+import { Badge } from "@/components/ui/Badge";
 
 export default function PatientProfilePage() {
   const router = useRouter();
@@ -245,7 +246,7 @@ export default function PatientProfilePage() {
               <CardTitle>Thông tin tài khoản</CardTitle>
             </CardHeader>
             <CardBody className="p-4">
-              <div className="space-y-4">
+              <div className="space-y-4 text-sm">
                 <div className="flex justify-between items-center py-2 border-b border-gray-50">
                   <span className="text-gray-500 font-medium">Email đăng nhập</span>
                   <span className="text-gray-700 font-semibold">{userAccount?.email}</span>
@@ -260,7 +261,9 @@ export default function PatientProfilePage() {
                 </div>
                 <div className="flex justify-between items-center py-2">
                   <span className="text-gray-500 font-medium">Vai trò người dùng</span>
-                  <span className="px-3 py-1 bg-primary/10 text-primary text-sm font-semibold rounded-full uppercase tracking-wider">{userAccount?.role}</span>
+                  <Badge variant="primary" className="uppercase tracking-wider">
+                    {userAccount?.role}
+                  </Badge>
                 </div>
               </div>
             </CardBody>

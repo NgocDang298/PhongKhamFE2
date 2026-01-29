@@ -170,6 +170,7 @@ export default function DashboardLayout({
         className={`
                     fixed left-0 top-0 h-full bg-white border-r border-gray-200
                     transition-all duration-300 ease-in-out z-40
+                    flex flex-col
                     ${sidebarOpen ? "w-64" : "w-20"}
                 `}
       >
@@ -298,18 +299,21 @@ export default function DashboardLayout({
           })}
         </nav>
 
-        {/* Sidebar Footer */}
-        <div className="p-4 border-t border-gray-200 space-y-3">
+        {/* User Info & Logout Button */}
+        <div className="mt-auto p-4 border-t border-gray-200 space-y-4">
           {/* User Info */}
           <div
             className={`flex items-center gap-3 ${!sidebarOpen && "justify-center"
               }`}
           >
-            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary font-semibold">
-              {user?.fullName?.charAt(0) || user?.email?.charAt(0) || (
-                <IconUserSquareRounded size={20} />
-              )}
-            </div>
+            <img
+              src={
+                user?.avatar ||
+                `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.fullName || user?.email}`
+              }
+              alt={user?.fullName || "User Avatar"}
+              className="w-10 h-10 rounded-full object-cover border-2 border-primary/20 bg-primary/5"
+            />
             {sidebarOpen && (
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium text-gray-700 truncate">
@@ -329,7 +333,7 @@ export default function DashboardLayout({
             variant="destructive"
             size="sm"
             onClick={handleLogout}
-            icon={<IconLogout size={16} />}
+            icon={<IconLogout size={20} />}
             fullWidth
           >
             {sidebarOpen && "Đăng xuất"}

@@ -32,7 +32,7 @@ export default function Select({
   return (
     <div className={cn("flex flex-col gap-1.5", fullWidth && "w-full")}>
       {label && (
-        <label className="text-base font-semibold text-primary" htmlFor={props.id}>
+        <label className="text-sm font-semibold text-primary" htmlFor={props.id}>
           {label}
           {props.required && <span className="text-danger-500 ml-1">*</span>}
         </label>
@@ -45,7 +45,7 @@ export default function Select({
         )}
         <select
           className={cn(
-            "w-full px-4 py-2 rounded-lg border transition-all duration-200 appearance-none text-base",
+            "w-full px-4 py-2 rounded-lg border transition-all duration-200 appearance-none text-sm",
             "bg-white text-gray-700",
             "focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent",
             "disabled:bg-gray-100 disabled:cursor-not-allowed",
@@ -74,9 +74,9 @@ export default function Select({
           className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
         />
       </div>
-      {error && <span className="text-base text-danger-500">{error}</span>}
+      {error && <span className="text-sm text-danger-500">{error}</span>}
       {helperText && !error && (
-        <span className="text-base text-gray-500">{helperText}</span>
+        <span className="text-sm text-gray-500">{helperText}</span>
       )}
     </div>
   );

@@ -10,6 +10,7 @@ export interface User {
   role: UserRole;
   fullName?: string;
   phone?: string;
+  avatar?: string;
   createdAt?: string;
 }
 

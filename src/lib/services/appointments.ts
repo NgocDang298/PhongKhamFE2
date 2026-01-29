@@ -13,10 +13,10 @@ export async function getAppointments(params?: {
     return get('/appointments', params);
 }
 
-// 2.3. Lấy Slots Có Sẵn
 export async function getAvailableSlots(params: {
     date: string; // YYYY-MM-DD
     doctorId?: string;
+    specialty?: string;
 }): Promise<ApiResponse<TimeSlot[]>> {
     return get('/appointments/slots', params);
 }
@@ -51,6 +51,11 @@ export async function getAvailableDates(doctorId: string): Promise<ApiResponse<s
     return get('/appointments/doctors/available-dates', { doctorId });
 }
 
+// 2.9a. Lấy Danh Sách Chuyên Khoa
+export async function getSpecialties(): Promise<ApiResponse<string[]>> {
+    return get('/appointments/specialties');
+}
+
 // 2.10. Slots Trống Theo Bác Sĩ và Ngày
 export async function getDoctorAvailableSlots(params: {
     doctorId: string;
@@ -67,6 +72,7 @@ export async function createDoctorAppointment(data: CreateAppointmentRequest & {
 // 2.12. Tạo Lịch Hẹn Tự Động (Hệ thống chọn bác sĩ)
 export async function autoAssignAppointment(data: {
     appointmentDate: string;
+    specialty?: string;
     note?: string;
     patientId?: string; // Optional - for staff/admin to book for other patients
 }): Promise<ApiResponse<Appointment>> {
