@@ -990,7 +990,7 @@ export default function StaffInvoicesPage() {
             không?
           </p>
           <p className="text-sm text-red-600 mt-3 font-medium">
-            ⚠️ Hành động này không thể hoàn tác!
+            Hành động này không thể hoàn tác!
           </p>
         </div>
       </Modal>
