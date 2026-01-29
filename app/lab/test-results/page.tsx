@@ -37,6 +37,8 @@ import {
   IconNurse,
   IconClock,
   IconSend,
+  IconEye,
+  IconEdit,
 } from "@tabler/icons-react";
 
 import { LAB_NAV_ITEMS } from "@/lib/navigation";
@@ -431,6 +433,7 @@ export default function LabTestResultsPage() {
                         variant="outline"
                         size="sm"
                         onClick={() => handleOpenModal(request)}
+                        icon={request.status === 'completed' ? <IconEye size={18} /> : <IconEdit size={18} />}
                       >
                         {request.status === 'completed' ? 'Xem' : 'Nhập KQ'}
                       </Button>

@@ -524,7 +524,7 @@ export default function AdminUsersPage() {
                         <Button
                           size="sm"
                           onClick={() => handleViewUser(user)}
-                          icon={<IconEye size={16} />}
+                          icon={<IconEye size={18} />}
                         >
                           Xem
                         </Button>

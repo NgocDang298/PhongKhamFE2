@@ -32,6 +32,8 @@ import {
   IconAlertCircle,
   IconX,
   IconCalendar,
+  IconTrash,
+  IconEdit,
 } from "@tabler/icons-react";
 import { ADMIN_NAV_ITEMS } from "@/lib/navigation";
 import Pagination from "@/components/ui/Pagination";
@@ -57,6 +59,8 @@ export default function AdminSchedulesPage() {
   const [limit, setLimit] = useState(10);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isQuickCreateOpen, setIsQuickCreateOpen] = useState(false);
+  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] = useState(false);
+  const [scheduleToDelete, setScheduleToDelete] = useState<ScheduleWithPerson | null>(null);
   const [editingSchedule, setEditingSchedule] =
     useState<ScheduleWithPerson | null>(null);
   const [error, setError] = useState("");
@@ -369,10 +373,6 @@ export default function AdminSchedulesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Bạn có chắc chắn muốn xóa lịch làm việc này?")) {
-      return;
-    }
-
     try {
       await workScheduleService.deleteWorkSchedule(id);
       toast.success("Đã xóa lịch làm việc thành công");
@@ -568,13 +568,18 @@ export default function AdminSchedulesPage() {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleOpenModal(schedule)}
+                                icon={<IconEdit size={18} />}
                               >
                                 Sửa
                               </Button>
                               <Button
                                 variant="danger"
                                 size="sm"
-                                onClick={() => handleDelete(schedule._id)}
+                                onClick={() => {
+                                  setScheduleToDelete(schedule);
+                                  setIsDeleteConfirmModalOpen(true);
+                                }}
+                                icon={<IconTrash size={18} />}
                               >
                                 Xóa
                               </Button>
@@ -699,6 +704,66 @@ export default function AdminSchedulesPage() {
             fullWidth
           />
         </form>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={isDeleteConfirmModalOpen}
+        onClose={() => {
+          setIsDeleteConfirmModalOpen(false);
+          setScheduleToDelete(null);
+        }}
+        title="Xác nhận xóa lịch làm việc"
+        size="sm"
+        footer={
+          <>
+            <Button
+              variant="outline"
+              icon={<IconX size={20} />}
+              onClick={() => {
+                setIsDeleteConfirmModalOpen(false);
+                setScheduleToDelete(null);
+              }}
+            >
+              Hủy
+            </Button>
+            <Button
+              variant="danger"
+              icon={<IconTrash size={20} />}
+              onClick={() => {
+                if (scheduleToDelete) {
+                  handleDelete(scheduleToDelete._id);
+                  setIsDeleteConfirmModalOpen(false);
+                  setScheduleToDelete(null);
+                }
+              }}
+            >
+              Xác nhận xóa
+            </Button>
+          </>
+        }
+      >
+        <div className="text-center py-4">
+          <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <IconTrash size={32} />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Xóa lịch làm việc</h3>
+          <p className="text-gray-600">
+            Bạn có chắc chắn muốn xóa lịch làm việc{" "}
+            <span className="font-semibold">
+              {scheduleToDelete && DAY_LABELS[scheduleToDelete.dayOfWeek as keyof typeof DAY_LABELS]}
+            </span>{" "}
+            ({scheduleToDelete?.shiftStart} - {scheduleToDelete?.shiftEnd}){" "}
+            của{" "}
+            <span className="font-semibold">
+              {scheduleToDelete?.personName}
+            </span>{" "}
+            không?
+          </p>
+          <p className="text-sm text-red-600 mt-3 font-medium">
+            ⚠️ Hành động này không thể hoàn tác!
+          </p>
+        </div>
       </Modal>
 
       {/* Quick Create Modal */}

@@ -52,7 +52,8 @@ export default function StaffAppointmentsPage() {
   const [viewMode, setViewMode] = useState<"calendar" | "table">("calendar");
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmConfirmModalOpen, setIsConfirmConfirmModalOpen] = useState(false);
+  const [isRejectConfirmModalOpen, setIsRejectConfirmModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isAutoAssignModalOpen, setIsAutoAssignModalOpen] = useState(false);
@@ -465,7 +466,11 @@ export default function StaffAppointmentsPage() {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => handleConfirm(apt._id)}
+                                  onClick={() => {
+                                    setSelectedAppointment(apt);
+                                    setIsConfirmConfirmModalOpen(true);
+                                  }}
+                                  icon={<IconCheck size={18} />}
                                 >
                                   Xác nhận
                                 </Button>
@@ -474,8 +479,9 @@ export default function StaffAppointmentsPage() {
                                   size="sm"
                                   onClick={() => {
                                     setSelectedAppointment(apt);
-                                    setIsModalOpen(true);
+                                    setIsRejectConfirmModalOpen(true);
                                   }}
+                                  icon={<IconX size={18} />}
                                 >
                                   Từ chối
                                 </Button>
@@ -594,21 +600,75 @@ export default function StaffAppointmentsPage() {
         }
       `}</style>
 
-      {/* Reject Modal */}
+      {/* Confirm Confirmation Modal */}
       <Modal
-        isOpen={isModalOpen}
+        isOpen={isConfirmConfirmModalOpen}
         onClose={() => {
-          setIsModalOpen(false);
+          setIsConfirmConfirmModalOpen(false);
           setSelectedAppointment(null);
         }}
-        title="Từ chối lịch hẹn"
+        title="Xác nhận lịch hẹn"
+        size="sm"
         footer={
           <>
             <Button
               variant="outline"
               icon={<IconX size={20} />}
               onClick={() => {
-                setIsModalOpen(false);
+                setIsConfirmConfirmModalOpen(false);
+                setSelectedAppointment(null);
+              }}
+            >
+              Hủy
+            </Button>
+            <Button
+              variant="primary"
+              icon={<IconCheck size={20} />}
+              onClick={() => {
+                if (selectedAppointment) {
+                  handleConfirm(selectedAppointment._id);
+                  setIsConfirmConfirmModalOpen(false);
+                  setSelectedAppointment(null);
+                }
+              }}
+            >
+              Xác nhận ngay
+            </Button>
+          </>
+        }
+      >
+        <div className="text-center py-4">
+          <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <IconCheck size={32} />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Xác nhận lịch hẹn</h3>
+          <p className="text-gray-600">
+            Bạn có chắc chắn muốn xác nhận lịch hẹn cho bệnh nhân{" "}
+            <span className="font-semibold">
+              {typeof selectedAppointment?.patientId === "object"
+                ? selectedAppointment?.patientId.fullName
+                : patients.find((p) => p._id === selectedAppointment?.patientId)?.fullName}
+            </span>?
+          </p>
+        </div>
+      </Modal>
+
+      {/* Reject Modal */}
+      <Modal
+        isOpen={isRejectConfirmModalOpen}
+        onClose={() => {
+          setIsRejectConfirmModalOpen(false);
+          setSelectedAppointment(null);
+        }}
+        title="Từ chối lịch hẹn"
+        size="sm"
+        footer={
+          <>
+            <Button
+              variant="outline"
+              icon={<IconX size={20} />}
+              onClick={() => {
+                setIsRejectConfirmModalOpen(false);
                 setSelectedAppointment(null);
               }}
             >
@@ -620,7 +680,7 @@ export default function StaffAppointmentsPage() {
               onClick={() => {
                 if (selectedAppointment) {
                   handleReject(selectedAppointment._id);
-                  setIsModalOpen(false);
+                  setIsRejectConfirmModalOpen(false);
                   setSelectedAppointment(null);
                 }
               }}
@@ -630,34 +690,20 @@ export default function StaffAppointmentsPage() {
           </>
         }
       >
-        <p>Bạn có chắc chắn muốn từ chối lịch hẹn này không?</p>
-        {selectedAppointment && (
-          <div
-            style={{
-              marginTop: "1rem",
-              padding: "1rem",
-              background: "#f3f4f6",
-              borderRadius: "0.5rem",
-            }}
-          >
-            <div>
-              <strong>Bệnh nhân:</strong>{" "}
-              {typeof selectedAppointment.patientId === "object" &&
-                selectedAppointment.patientId
-                ? selectedAppointment.patientId.fullName
-                : patients.find((p) => p._id === selectedAppointment.patientId)
-                  ?.fullName || "Chưa cập nhật"}
-            </div>
-            <div>
-              <strong>Ngày giờ:</strong>{" "}
-              {format(
-                new Date(selectedAppointment.appointmentDate),
-                "dd/MM/yyyy HH:mm",
-                { locale: vi }
-              )}
-            </div>
+        <div className="text-center py-4">
+          <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <IconX size={32} />
           </div>
-        )}
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Từ chối lịch hẹn</h3>
+          <p className="text-gray-600">
+            Bạn có chắc chắn muốn từ chối lịch hẹn của bệnh nhân{" "}
+            <span className="font-semibold">
+              {typeof selectedAppointment?.patientId === "object"
+                ? selectedAppointment?.patientId.fullName
+                : patients.find((p) => p._id === selectedAppointment?.patientId)?.fullName}
+            </span> không? Hành động này không thể hoàn tác.
+          </p>
+        </div>
       </Modal>
 
       {/* Detail Modal */}
@@ -678,8 +724,8 @@ export default function StaffAppointmentsPage() {
                     variant="outline"
                     icon={<IconCheck size={20} />}
                     onClick={() => {
-                      handleConfirm(selectedAppointment._id);
                       setIsDetailModalOpen(false);
+                      setIsConfirmConfirmModalOpen(true);
                     }}
                   >
                     Xác nhận
@@ -689,7 +735,7 @@ export default function StaffAppointmentsPage() {
                     icon={<IconX size={20} />}
                     onClick={() => {
                       setIsDetailModalOpen(false);
-                      setIsModalOpen(true);
+                      setIsRejectConfirmModalOpen(true);
                     }}
                   >
                     Từ chối

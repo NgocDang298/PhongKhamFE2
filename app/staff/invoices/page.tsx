@@ -60,6 +60,8 @@ export default function StaffInvoicesPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isPayConfirmModalOpen, setIsPayConfirmModalOpen] = useState(false);
+  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
 
   // Form data
@@ -234,11 +236,6 @@ export default function StaffInvoicesPage() {
   };
 
   const handleDeleteInvoice = async (id: string) => {
-    if (
-      !confirm("Xác nhận xóa hóa đơn này? Hành động này không thể hoàn tác.")
-    ) {
-      return;
-    }
     try {
       await invoiceService.deleteInvoice(id);
       toast.success("Đã xóa hóa đơn thành công");
@@ -249,9 +246,6 @@ export default function StaffInvoicesPage() {
   };
 
   const handlePayInvoice = async (id: string) => {
-    if (!confirm("Xác nhận thanh toán hóa đơn này?")) {
-      return;
-    }
     try {
       await invoiceService.payInvoice(id);
       toast.success("Đã thanh toán hóa đơn thành công");
@@ -492,7 +486,7 @@ export default function StaffInvoicesPage() {
                               variant="outline"
                               size="sm"
                               onClick={() => handleViewDetails(invoice)}
-                              icon={<IconEye size={14} />}
+                              icon={<IconEye size={18} />}
                             >
                               Xem
                             </Button>
@@ -502,22 +496,29 @@ export default function StaffInvoicesPage() {
                                   variant="outline"
                                   size="sm"
                                   onClick={() => handleOpenUpdateModal(invoice)}
-                                  icon={<IconEdit size={14} />}
+                                  icon={<IconEdit size={18} />}
                                 >
                                   Sửa
                                 </Button>
                                 <Button
                                   variant="primary"
                                   size="sm"
-                                  onClick={() => handlePayInvoice(invoice._id)}
+                                  onClick={() => {
+                                    setSelectedInvoice(invoice);
+                                    setIsPayConfirmModalOpen(true);
+                                  }}
+                                  icon={<IconReceipt size={18} />}
                                 >
                                   Thanh toán
                                 </Button>
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => handleDeleteInvoice(invoice._id)}
-                                  icon={<IconTrash size={14} />}
+                                  onClick={() => {
+                                    setSelectedInvoice(invoice);
+                                    setIsDeleteConfirmModalOpen(true);
+                                  }}
+                                  icon={<IconTrash size={18} />}
                                   style={{ color: "#ef4444" }}
                                 >
                                   Xóa
@@ -867,6 +868,131 @@ export default function StaffInvoicesPage() {
             </div>
           </div>
         )}
+      </Modal>
+
+      {/* Pay Confirmation Modal */}
+      <Modal
+        isOpen={isPayConfirmModalOpen}
+        onClose={() => {
+          setIsPayConfirmModalOpen(false);
+          setSelectedInvoice(null);
+        }}
+        title="Xác nhận thanh toán"
+        size="sm"
+        footer={
+          <>
+            <Button
+              variant="outline"
+              icon={<IconX size={20} />}
+              onClick={() => {
+                setIsPayConfirmModalOpen(false);
+                setSelectedInvoice(null);
+              }}
+            >
+              Hủy
+            </Button>
+            <Button
+              variant="primary"
+              onClick={() => {
+                if (selectedInvoice) {
+                  handlePayInvoice(selectedInvoice._id);
+                  setIsPayConfirmModalOpen(false);
+                  setSelectedInvoice(null);
+                }
+              }}
+            >
+              Xác nhận thanh toán
+            </Button>
+          </>
+        }
+      >
+        <div className="text-center py-4">
+          <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <IconReceipt size={32} />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Xác nhận thanh toán</h3>
+          <p className="text-gray-600 mb-4">
+            Bạn có chắc chắn muốn xác nhận thanh toán hóa đơn{" "}
+            <span className="font-semibold">
+              #{selectedInvoice?.invoiceNumber || selectedInvoice?._id.slice(-6)}
+            </span>{" "}
+            cho bệnh nhân{" "}
+            <span className="font-semibold">
+              {typeof selectedInvoice?.patientId === "object"
+                ? selectedInvoice?.patientId.fullName
+                : "Chưa cập nhật"}
+            </span>?
+          </p>
+          {selectedInvoice && (
+            <div className="p-3 bg-gray-50 rounded text-left">
+              <div className="text-sm text-gray-600">Tổng tiền:</div>
+              <div className="text-xl font-bold text-primary">
+                {formatCurrency(selectedInvoice.totalAmount)}
+              </div>
+            </div>
+          )}
+        </div>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={isDeleteConfirmModalOpen}
+        onClose={() => {
+          setIsDeleteConfirmModalOpen(false);
+          setSelectedInvoice(null);
+        }}
+        title="Xác nhận xóa hóa đơn"
+        size="sm"
+        footer={
+          <>
+            <Button
+              variant="outline"
+              icon={<IconX size={20} />}
+              onClick={() => {
+                setIsDeleteConfirmModalOpen(false);
+                setSelectedInvoice(null);
+              }}
+            >
+              Hủy
+            </Button>
+            <Button
+              variant="danger"
+              icon={<IconTrash size={20} />}
+              onClick={() => {
+                if (selectedInvoice) {
+                  handleDeleteInvoice(selectedInvoice._id);
+                  setIsDeleteConfirmModalOpen(false);
+                  setSelectedInvoice(null);
+                }
+              }}
+            >
+              Xác nhận xóa
+            </Button>
+          </>
+        }
+      >
+        <div className="text-center py-4">
+          <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <IconTrash size={32} />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Xóa hóa đơn</h3>
+          <p className="text-gray-600">
+            Bạn có chắc chắn muốn xóa hóa đơn{" "}
+            <span className="font-semibold">
+              #{selectedInvoice?.invoiceNumber || selectedInvoice?._id.slice(-6)}
+            </span>{" "}
+            của bệnh nhân{" "}
+            <span className="font-semibold">
+              {typeof selectedInvoice?.patientId === "object"
+                ? selectedInvoice?.patientId.fullName
+                : "Chưa cập nhật"}
+            </span>{" "}
+            không?
+          </p>
+          <p className="text-sm text-red-600 mt-3 font-medium">
+            ⚠️ Hành động này không thể hoàn tác!
+          </p>
+        </div>
       </Modal>
 
       {/* Update Invoice Modal */}

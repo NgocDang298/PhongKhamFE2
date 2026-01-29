@@ -39,6 +39,7 @@ import {
   IconTable,
   IconX,
   IconTrash,
+  IconEye,
 } from "@tabler/icons-react";
 
 export default function PatientAppointments() {
@@ -354,6 +355,7 @@ export default function PatientAppointments() {
                               setSelectedAppointment(apt);
                               setDetailModalOpen(true);
                             }}
+                            icon={<IconEye size={18} />}
                           >
                             Chi tiết
                           </Button>

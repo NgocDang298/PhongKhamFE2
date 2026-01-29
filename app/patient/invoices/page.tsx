@@ -24,6 +24,7 @@ import { PATIENT_NAV_ITEMS } from "@/lib/navigation";
 import {
   IconReceipt,
   IconX,
+  IconEye,
 } from "@tabler/icons-react";
 import Button from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -155,15 +156,17 @@ export default function PatientInvoicesPage() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <button
-                            className="text-primary hover:text-primary-600 font-medium"
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => {
                               setSelectedInvoice(invoice);
                               setIsModalOpen(true);
                             }}
+                            icon={<IconEye size={18} />}
                           >
                             Xem chi tiết
-                          </button>
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))}

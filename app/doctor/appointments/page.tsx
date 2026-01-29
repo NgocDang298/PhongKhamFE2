@@ -30,6 +30,7 @@ import {
   IconFileText,
   IconX,
   IconStethoscope,
+  IconEye,
 } from "@tabler/icons-react";
 import { DOCTOR_NAV_ITEMS } from "@/lib/navigation";
 import Pagination from "@/components/ui/Pagination";
@@ -269,6 +270,7 @@ export default function DoctorAppointmentsPage() {
                               variant="outline"
                               size="sm"
                               onClick={() => handleViewDetails(apt)}
+                              icon={<IconEye size={18} />}
                             >
                               Xem chi tiết
                             </Button>
@@ -277,6 +279,7 @@ export default function DoctorAppointmentsPage() {
                                 variant="primary"
                                 size="sm"
                                 onClick={() => handleOpenStartExam(apt)}
+                                icon={<IconStethoscope size={18} />}
                               >
                                 Bắt đầu khám
                               </Button>

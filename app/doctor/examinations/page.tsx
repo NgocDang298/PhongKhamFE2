@@ -33,6 +33,7 @@ import {
   IconCalendar,
   IconFileText,
   IconPlus,
+  IconEdit,
 } from "@tabler/icons-react";
 import { DOCTOR_NAV_ITEMS } from "@/lib/navigation";
 import { Badge } from "@/components/ui/Badge";
@@ -463,6 +464,7 @@ export default function DoctorExaminationsPage() {
                             variant="outline"
                             size="sm"
                             onClick={() => handleOpenUpdateModal(exam)}
+                            icon={<IconEdit size={18} />}
                           >
                             {exam.status === "processing" ? "Cập nhật" : "Xem/Sửa"}
                           </Button>

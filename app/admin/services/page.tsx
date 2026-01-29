@@ -33,6 +33,8 @@ import {
   IconCalendar,
   IconChartBar,
   IconPlus,
+  IconEdit,
+  IconTrash,
 } from "@tabler/icons-react";
 import { ADMIN_NAV_ITEMS } from "@/lib/navigation";
 import { Badge } from "@/components/ui/Badge";
@@ -228,6 +230,7 @@ export default function AdminServicesPage() {
                               variant="outline"
                               size="sm"
                               onClick={() => handleOpenEditModal(service)}
+                              icon={<IconEdit size={18} />}
                             >
                               Sửa
                             </Button>
@@ -235,6 +238,7 @@ export default function AdminServicesPage() {
                               variant="danger"
                               size="sm"
                               onClick={() => handleDelete(service._id)}
+                              icon={<IconTrash size={18} />}
                             >
                               Xóa
                             </Button>

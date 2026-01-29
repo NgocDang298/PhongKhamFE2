@@ -21,6 +21,9 @@ import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import {
   IconFileText,
+  IconEye,
+  IconPlayerPlay,
+  IconCheck,
 } from "@tabler/icons-react";
 
 import { LAB_NAV_ITEMS } from "@/lib/navigation";
@@ -222,6 +225,7 @@ export default function LabTestRequestsPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleViewDetail(request._id)}
+                          icon={<IconEye size={18} />}
                         >
                           Chi tiết
                         </Button>
@@ -230,6 +234,7 @@ export default function LabTestRequestsPage() {
                             variant="primary"
                             size="sm"
                             onClick={() => handleUpdateStatus(request._id, "processing")}
+                            icon={<IconPlayerPlay size={18} />}
                           >
                             Bắt đầu
                           </Button>
@@ -239,6 +244,7 @@ export default function LabTestRequestsPage() {
                             variant="primary"
                             size="sm"
                             onClick={() => handleUpdateStatus(request._id, "completed")}
+                            icon={<IconCheck size={18} />}
                           >
                             Hoàn thành
                           </Button>
