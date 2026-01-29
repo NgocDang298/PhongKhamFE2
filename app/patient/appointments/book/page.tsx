@@ -52,7 +52,7 @@ export default function BookAppointmentPage() {
 
   // Profile check
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  const [profileData, setProfileData] = useState<any>(null);
+  const [medicalHistory, setMedicalHistory] = useState<any>(null);
   const [hasCheckedProfile, setHasCheckedProfile] = useState(false);
 
   // Loading & Error
@@ -80,21 +80,22 @@ export default function BookAppointmentPage() {
     if (hasCheckedProfile) return;
 
     try {
-      const response = await profileService.getProfile();
-      const profile = (response as any).data?.profile || (response as any).profile || response;
-      setProfileData(profile);
+      const response = await profileService.getMedicalHistory();
+      const history = (response as any).data || response || null;
+      setMedicalHistory(history);
 
-      const isIncomplete = !profile?.dateOfBirth ||
-        !profile?.gender ||
-        !profile?.address ||
-        !profile?.phoneNumber;
+      // Check if medical history is incomplete
+      // Important fields: bloodType, allergies, chronicDiseases, etc.
+      const isIncomplete = !history?.bloodType ||
+        (!history?.allergies || history.allergies.length === 0) ||
+        (!history?.chronicDiseases || history.chronicDiseases.length === 0);
 
       if (isIncomplete) {
         setIsProfileModalOpen(true);
       }
       setHasCheckedProfile(true);
     } catch (error) {
-      console.error("Error checking profile:", error);
+      console.error("Error checking medical history:", error);
       setHasCheckedProfile(true);
     }
   };
@@ -578,30 +579,30 @@ export default function BookAppointmentPage() {
           </div>
 
           <div className="space-y-3">
-            <h5 className="font-medium text-gray-700">Thông tin cần cập nhật:</h5>
+            <h5 className="font-medium text-gray-700">Thông tin y tế cần bổ sung:</h5>
             <div className="space-y-2">
-              {!profileData?.dateOfBirth && (
+              {!medicalHistory?.bloodType && (
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <IconX size={16} className="text-secondary" />
-                  <span>Ngày sinh</span>
+                  <span>Nhóm máu (Rất quan trọng)</span>
                 </div>
               )}
-              {!profileData?.gender && (
+              {(!medicalHistory?.allergies || medicalHistory.allergies.length === 0) && (
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <IconX size={16} className="text-secondary" />
-                  <span>Giới tính</span>
+                  <span>Dị ứng thuốc/thực phẩm</span>
                 </div>
               )}
-              {!profileData?.phoneNumber && (
+              {(!medicalHistory?.chronicDiseases || medicalHistory.chronicDiseases.length === 0) && (
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <IconX size={16} className="text-secondary" />
-                  <span>Số điện thoại</span>
+                  <span>Bệnh mãn tính (Tiểu đường, Tim mạch...)</span>
                 </div>
               )}
-              {!profileData?.address && (
+              {(!medicalHistory?.medications || medicalHistory.medications.length === 0) && (
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   <IconX size={16} className="text-secondary" />
-                  <span>Địa chỉ</span>
+                  <span>Các loại thuốc đang sử dụng</span>
                 </div>
               )}
             </div>
