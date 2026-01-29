@@ -1,39 +1,37 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
+export type BadgeVariant =
+  | "primary"
+  | "success"
+  | "warning"
+  | "danger"
+  | "info"
+  | "purple"
+  | "gray";
+
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: "primary" | "success" | "warning" | "danger" | "gray";
-  size?: "sm" | "md" | "lg";
+  variant?: BadgeVariant;
   className?: string;
 }
 
-export default function Badge({
-  children,
-  variant = "primary",
-  size = "md",
-  className,
-}: BadgeProps) {
-  const variants = {
-    primary: "bg-primary/10 text-primary border-primary/20",
-    success: "bg-success-100 text-success-700 border-success-200",
-    warning: "bg-warning-100 text-warning-700 border-warning-200",
-    danger: "bg-danger-100 text-danger-700 border-danger-200",
-    gray: "bg-gray-100 text-gray-700 border-gray-200",
-  };
+const variantClasses: Record<BadgeVariant, string> = {
+  primary: "bg-primary/10 text-primary",
+  success: "bg-emerald-500/15 text-emerald-600",
+  warning: "bg-amber-500/15 text-amber-600",
+  danger: "bg-rose-500/15 text-rose-600",
+  info: "bg-blue-500/15 text-blue-600",
+  purple: "bg-violet-500/15 text-violet-600",
+  gray: "bg-slate-500/15 text-slate-600",
+};
 
-  const sizes = {
-    sm: "px-2 py-0.5 text-xs",
-    md: "px-2.5 py-1 text-sm",
-    lg: "px-3 py-1.5 text-base",
-  };
-
+export function Badge({ children, variant = "gray", className }: BadgeProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center font-medium rounded-full border",
-        variants[variant],
-        sizes[size],
+        "px-3 py-1 text-xs font-semibold rounded-full inline-block whitespace-nowrap",
+        variantClasses[variant],
         className
       )}
     >
@@ -41,3 +39,5 @@ export default function Badge({
     </span>
   );
 }
+
+export default Badge;

@@ -248,15 +248,15 @@ export default function PatientProfilePage() {
               <div className="space-y-4">
                 <div className="flex justify-between items-center py-2 border-b border-gray-50">
                   <span className="text-gray-500 font-medium">Email đăng nhập</span>
-                  <span className="text-gray-800 font-semibold">{userAccount?.email}</span>
+                  <span className="text-gray-700 font-semibold">{userAccount?.email}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-gray-50">
                   <span className="text-gray-500 font-medium">Mã số định danh (CCCD)</span>
-                  <span className="text-gray-800 font-semibold">{userAccount?.cccd}</span>
+                  <span className="text-gray-700 font-semibold">{userAccount?.cccd}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-gray-50">
                   <span className="text-gray-500 font-medium">Ngày tạo tài khoản</span>
-                  <span className="text-gray-800 font-semibold">{userAccount?.createdAt ? format(new Date(userAccount.createdAt), "dd/MM/yyyy HH:mm", { locale: vi }) : "-"}</span>
+                  <span className="text-gray-700 font-semibold">{userAccount?.createdAt ? format(new Date(userAccount.createdAt), "dd/MM/yyyy HH:mm", { locale: vi }) : "-"}</span>
                 </div>
                 <div className="flex justify-between items-center py-2">
                   <span className="text-gray-500 font-medium">Vai trò người dùng</span>
@@ -271,7 +271,7 @@ export default function PatientProfilePage() {
         <div className="lg:col-span-4 space-y-6">
           <Card className="border border-gray-200 shadow-sm">
             <CardBody className="p-4">
-              <div className="flex items-center gap-4 text-gray-800 mb-4 border-b border-gray-200 pb-4">
+              <div className="flex items-center gap-4 text-gray-700 mb-4 border-b border-gray-200 pb-4">
                 <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
                   <IconActivity size={24} />
                 </div>
@@ -282,24 +282,24 @@ export default function PatientProfilePage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-200/50">
-                  <div className="text-2xl font-semibold text-gray-800 mb-1">{stats?.totalAppointments || 0}</div>
+                  <div className="text-2xl font-semibold text-gray-700 mb-1">{stats?.totalAppointments || 0}</div>
                   <div className="text-xs font-semibold text-primary uppercase tracking-widest leading-none">Tổng lịch hẹn</div>
                 </div>
                 <div className="bg-gray-50 p-4 rounded-xl border border-gray-200/50">
-                  <div className="text-2xl font-semibold text-gray-800 mb-1">{stats?.totalExaminations || 0}</div>
+                  <div className="text-2xl font-semibold text-gray-700 mb-1">{stats?.totalExaminations || 0}</div>
                   <div className="text-xs font-semibold text-primary uppercase tracking-widest leading-none">Ca khám bệnh</div>
                 </div>
               </div>
               <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between text-sm">
                 <span className="text-gray-500">Ngày tham gia:</span>
-                <span className="font-semibold text-gray-800 uppercase text-sm">{profile?.registerDate ? format(new Date(profile.registerDate), "dd/MM/yyyy") : "-"}</span>
+                <span className="font-semibold text-gray-700 uppercase text-sm">{profile?.registerDate ? format(new Date(profile.registerDate), "dd/MM/yyyy") : "-"}</span>
               </div>
             </CardBody>
           </Card>
 
           <Card className="border border-gray-200">
             <CardBody className="p-4">
-              <div className="flex items-center gap-4 text-gray-800">
+              <div className="flex items-center gap-4 text-gray-700">
                 <div className="w-12 h-12 rounded-full bg-tertiary/10 text-tertiary flex items-center justify-center shrink-0">
                   <IconStethoscope size={24} />
                 </div>

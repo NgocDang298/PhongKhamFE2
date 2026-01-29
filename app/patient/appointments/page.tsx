@@ -9,9 +9,19 @@ import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
 import Modal from "@/components/ui/Modal";
+import Badge, { BadgeVariant } from "@/components/ui/Badge";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/Table";
 import { ROUTES, APPOINTMENT_STATUS_LABELS } from "@/lib/constants";
 import * as appointmentService from "@/lib/services/appointments";
 import * as profileService from "@/lib/services/profile";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
 import FullCalendar from "@fullcalendar/react";
@@ -25,6 +35,7 @@ import {
   IconCalendar,
   IconPlus,
   IconAlertCircle,
+  IconTable,
 } from "@tabler/icons-react";
 
 export default function PatientAppointments() {
@@ -34,6 +45,7 @@ export default function PatientAppointments() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
+  const [viewMode, setViewMode] = useState<"calendar" | "table">("calendar");
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
@@ -96,6 +108,23 @@ export default function PatientAppointments() {
     }
   };
 
+  const getStatusBadgeVariant = (status: string): BadgeVariant => {
+    switch (status) {
+      case "pending":
+        return "warning";
+      case "confirmed":
+        return "success";
+      case "in-progress":
+        return "info";
+      case "cancelled":
+        return "danger";
+      case "completed":
+        return "purple";
+      default:
+        return "gray";
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "pending":
@@ -147,38 +176,64 @@ export default function PatientAppointments() {
 
   return (
     <DashboardLayout navItems={PATIENT_NAV_ITEMS} title="Lịch hẹn của tôi">
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
-        <div style={{ maxWidth: "300px" }}>
-          <Select
-            options={[
-              { value: "", label: "Lọc theo trạng thái" },
-              { value: "pending", label: "Chờ xác nhận" },
-              { value: "confirmed", label: "Đã xác nhận" },
-              { value: "in-progress", label: "Đang khám" },
-              { value: "completed", label: "Hoàn thành" },
-              { value: "cancelled", label: "Đã hủy" },
-            ]}
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            fullWidth
-          />
-        </div>
-        <Button
-          onClick={() => router.push(ROUTES.PATIENT_BOOK_APPOINTMENT)}
-          icon={<IconPlus size={16} />}
-        >
-          Đặt lịch mới
-        </Button>
-      </div>
-
       <Card>
-        <CardHeader>
-          <CardTitle>Lịch hẹn</CardTitle>
+        <CardHeader icon={<IconCalendar size={20} />}>
+          <CardTitle>
+            {viewMode === "calendar" ? "Lịch hẹn" : "Danh sách lịch hẹn"}
+          </CardTitle>
+          <div className="ml-auto flex flex-col md:flex-row items-center gap-3">
+            <div className="w-full md:w-56">
+              <Select
+                options={[
+                  { value: "", label: "Lọc theo trạng thái" },
+                  { value: "pending", label: "Chờ xác nhận" },
+                  { value: "confirmed", label: "Đã xác nhận" },
+                  { value: "in-progress", label: "Đang khám" },
+                  { value: "completed", label: "Hoàn thành" },
+                  { value: "cancelled", label: "Đã hủy" },
+                ]}
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                fullWidth
+              />
+            </div>
+            <div className="flex items-center bg-gray-100 p-1 h-10 rounded-lg border">
+              <button
+                type="button"
+                onClick={() => setViewMode("calendar")}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === "calendar"
+                  ? "bg-white text-primary shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+                  }`}
+              >
+                <IconCalendar size={18} />
+                Lịch
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("table")}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === "table"
+                  ? "bg-white text-primary shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+                  }`}
+              >
+                <IconTable size={18} />
+                D.Sách
+              </button>
+            </div>
+            <Button
+              onClick={() => router.push(ROUTES.PATIENT_BOOK_APPOINTMENT)}
+              icon={<IconPlus size={16} />}
+              className="whitespace-nowrap"
+            >
+              Đặt lịch mới
+            </Button>
+          </div>
         </CardHeader>
         <CardBody>
           {loading ? (
-            <div className="flex items-center justify-center h-64 text-gray-500">
-              Đang tải...
+            <div className="space-y-4 pt-4">
+              <Skeleton className="h-96 w-full" />
             </div>
           ) : error ? (
             <div className="flex flex-col items-center justify-center py-12 gap-4">
@@ -194,7 +249,7 @@ export default function PatientAppointments() {
             <div className="text-center py-12 text-gray-500">
               Chưa có lịch hẹn nào
             </div>
-          ) : (
+          ) : viewMode === "calendar" ? (
             <div className="fullcalendar-wrapper">
               <FullCalendar
                 plugins={[
@@ -237,6 +292,64 @@ export default function PatientAppointments() {
                 dayMaxEvents={true}
               />
             </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Bác sĩ</TableHead>
+                  <TableHead>Chuyên khoa</TableHead>
+                  <TableHead>Ngày giờ</TableHead>
+                  <TableHead>Trạng thái</TableHead>
+                  <TableHead>Ghi chú</TableHead>
+                  <TableHead>Thao tác</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {appointments.map((apt) => (
+                  <TableRow key={apt._id}>
+                    <TableCell>
+                      {typeof apt.doctorId === "object" && apt.doctorId
+                        ? apt.doctorId.fullName
+                        : "Chưa chọn"}
+                    </TableCell>
+                    <TableCell>
+                      {typeof apt.doctorId === "object" && apt.doctorId
+                        ? apt.doctorId.specialty || "-"
+                        : "-"}
+                    </TableCell>
+                    <TableCell>
+                      {format(
+                        new Date(apt.appointmentDate),
+                        "dd/MM/yyyy HH:mm",
+                        { locale: vi }
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={getStatusBadgeVariant(apt.status)}>
+                        {
+                          APPOINTMENT_STATUS_LABELS[
+                          apt.status as keyof typeof APPOINTMENT_STATUS_LABELS
+                          ]
+                        }
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{apt.note || "-"}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedAppointment(apt);
+                          setDetailModalOpen(true);
+                        }}
+                      >
+                        Chi tiết
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardBody>
       </Card>
@@ -296,20 +409,13 @@ export default function PatientAppointments() {
                 <label className="text-sm text-gray-500 block mb-1">
                   Trạng thái
                 </label>
-                <span
-                  className="px-3 py-1 text-xs font-medium rounded-full inline-block"
-                  style={{
-                    backgroundColor:
-                      getStatusColor(selectedAppointment.status) + "20",
-                    color: getStatusColor(selectedAppointment.status),
-                  }}
-                >
+                <Badge variant={getStatusBadgeVariant(selectedAppointment.status)}>
                   {
                     APPOINTMENT_STATUS_LABELS[
                     selectedAppointment.status as keyof typeof APPOINTMENT_STATUS_LABELS
                     ]
                   }
-                </span>
+                </Badge>
               </div>
             </div>
 

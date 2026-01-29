@@ -132,7 +132,8 @@ export default function PatientDashboard() {
         {/* Welcome Section */}
         <div className="mb-4">
           <h2 className="text-3xl font-extrabold text-primary leading-tight">
-            {greeting}, <span className="text-gray-800">{profile?.fullName || user?.fullName || "Bệnh nhân"}</span>!
+            {greeting}, <span className="text-gray-700">{profile?.fullName || user?.fullName || "Bệnh nhân"}
+              !</span>
           </h2>
           <p className="text-gray-500 mt-2 text-lg">Hôm nay bạn cảm thấy thế nào? Hãy theo dõi tình trạng sức khỏe của mình nhé.</p>
         </div>
@@ -173,7 +174,7 @@ export default function PatientDashboard() {
                           {stat.icon}
                         </div>
                         <div>
-                          <div className="text-3xl font-semibold text-gray-800">{stat.value}</div>
+                          <div className="text-3xl font-semibold text-gray-700">{stat.value}</div>
                           <div className="text-xs font-medium text-gray-600 uppercase tracking-wider">{stat.label}</div>
                         </div>
                       </div>
@@ -213,10 +214,10 @@ export default function PatientDashboard() {
                           <div className="flex items-center gap-5">
                             <div className="flex flex-col items-center justify-center w-14 h-14 rounded-2xl bg-gray-50 text-gray-500 border border-gray-200">
                               <span className="text-xs font-semibold uppercase">{format(new Date(apt.appointmentDate), "MMM", { locale: vi })}</span>
-                              <span className="text-xl font-semibold text-gray-800">{format(new Date(apt.appointmentDate), "dd")}</span>
+                              <span className="text-xl font-semibold text-gray-700">{format(new Date(apt.appointmentDate), "dd")}</span>
                             </div>
                             <div>
-                              <div className="font-semibold text-gray-800">
+                              <div className="font-semibold text-gray-700">
                                 {format(new Date(apt.appointmentDate), "HH:mm", { locale: vi })} — Lịch khám bệnh
                               </div>
                               {typeof apt.doctorId === "object" && apt.doctorId && (

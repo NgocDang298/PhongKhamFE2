@@ -231,7 +231,7 @@ export default function PatientInvoicesPage() {
             </div>
             {selectedInvoice.items && selectedInvoice.items.length > 0 && (
               <div className="mt-4">
-                <h4 className="text-lg font-semibold mb-4 text-gray-800">
+                <h4 className="text-lg font-semibold mb-4 text-gray-700">
                   Chi tiết dịch vụ
                 </h4>
                 <Table>

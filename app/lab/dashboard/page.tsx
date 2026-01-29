@@ -100,7 +100,7 @@ export default function LabDashboard() {
                 <IconClock size={20} />
               </div>
               <div>
-                <div className="text-2xl font-semibold text-gray-800">
+                <div className="text-2xl font-semibold text-gray-700">
                   {stats.waitingRequests}
                 </div>
                 <div className="text-sm text-gray-500">Chờ xử lý</div>
@@ -122,7 +122,7 @@ export default function LabDashboard() {
                 <IconClock size={20} />
               </div>
               <div>
-                <div className="text-2xl font-semibold text-gray-800">
+                <div className="text-2xl font-semibold text-gray-700">
                   {stats.processingRequests}
                 </div>
                 <div className="text-sm text-gray-500">Đang xử lý</div>
@@ -144,7 +144,7 @@ export default function LabDashboard() {
                 <IconCircleCheck size={20} />
               </div>
               <div>
-                <div className="text-2xl font-semibold text-gray-800">
+                <div className="text-2xl font-semibold text-gray-700">
                   {stats.completedRequests}
                 </div>
                 <div className="text-sm text-gray-500">Đã hoàn thành</div>

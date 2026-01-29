@@ -161,7 +161,7 @@ export default function DoctorDashboard() {
                 <IconCalendar size={20} />
               </div>
               <div>
-                <div className="text-3xl font-semibold text-gray-800 leading-none mb-1">
+                <div className="text-3xl font-semibold text-gray-700 leading-none mb-1">
                   {stats.todayAppointments}
                 </div>
                 <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">
@@ -185,7 +185,7 @@ export default function DoctorDashboard() {
                 <IconClock size={20} />
               </div>
               <div>
-                <div className="text-3xl font-semibold text-gray-800 leading-none mb-1">
+                <div className="text-3xl font-semibold text-gray-700 leading-none mb-1">
                   {stats.processingExaminations}
                 </div>
                 <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">
@@ -209,7 +209,7 @@ export default function DoctorDashboard() {
                 <IconCircleCheck size={20} />
               </div>
               <div>
-                <div className="text-3xl font-semibold text-gray-800 leading-none mb-1">
+                <div className="text-3xl font-semibold text-gray-700 leading-none mb-1">
                   {stats.completedExaminations}
                 </div>
                 <div className="text-sm font-medium text-gray-500 uppercase tracking-wider">

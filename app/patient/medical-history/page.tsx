@@ -70,7 +70,7 @@ export default function PatientMedicalHistoryPage() {
           {medicalHistory ? (
             <div className="space-y-6">
               <div className="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                <h3 className="text-lg font-semibold text-gray-700 mb-4">
                   Thông tin cơ bản
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
@@ -84,7 +84,7 @@ export default function PatientMedicalHistoryPage() {
               {medicalHistory.allergies &&
                 medicalHistory.allergies.length > 0 && (
                   <div className="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    <h3 className="text-lg font-semibold text-gray-700 mb-4">
                       Dị ứng
                     </h3>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
@@ -100,7 +100,7 @@ export default function PatientMedicalHistoryPage() {
               {medicalHistory.chronicDiseases &&
                 medicalHistory.chronicDiseases.length > 0 && (
                   <div className="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    <h3 className="text-lg font-semibold text-gray-700 mb-4">
                       Bệnh mãn tính
                     </h3>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
@@ -116,7 +116,7 @@ export default function PatientMedicalHistoryPage() {
               {medicalHistory.medications &&
                 medicalHistory.medications.length > 0 && (
                   <div className="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    <h3 className="text-lg font-semibold text-gray-700 mb-4">
                       Thuốc đang dùng
                     </h3>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
@@ -132,7 +132,7 @@ export default function PatientMedicalHistoryPage() {
               {medicalHistory.surgeries &&
                 medicalHistory.surgeries.length > 0 && (
                   <div className="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    <h3 className="text-lg font-semibold text-gray-700 mb-4">
                       Phẫu thuật
                     </h3>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
@@ -148,7 +148,7 @@ export default function PatientMedicalHistoryPage() {
               {medicalHistory.familyHistory &&
                 medicalHistory.familyHistory.length > 0 && (
                   <div className="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    <h3 className="text-lg font-semibold text-gray-700 mb-4">
                       Tiền sử gia đình
                     </h3>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
@@ -163,7 +163,7 @@ export default function PatientMedicalHistoryPage() {
 
               {medicalHistory.notes && (
                 <div className="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                  <h3 className="text-lg font-semibold text-gray-700 mb-4">
                     Ghi chú
                   </h3>
                   <p className="text-gray-700">{medicalHistory.notes}</p>
@@ -173,7 +173,7 @@ export default function PatientMedicalHistoryPage() {
               {medicalHistory.examinations &&
                 medicalHistory.examinations.length > 0 && (
                   <div className="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                    <h3 className="text-lg font-semibold text-gray-700 mb-4">
                       Lịch sử khám bệnh
                     </h3>
                     <Table>

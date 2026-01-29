@@ -17,6 +17,7 @@ import {
 import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
 import Modal from "@/components/ui/Modal";
+import Badge, { BadgeVariant } from "@/components/ui/Badge";
 import Input from "@/components/ui/Input";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ROUTES, APPOINTMENT_STATUS_LABELS } from "@/lib/constants";
@@ -120,6 +121,23 @@ export default function StaffAppointmentsPage() {
       console.error("Error loading data:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getStatusBadgeVariant = (status: string): BadgeVariant => {
+    switch (status) {
+      case "pending":
+        return "warning";
+      case "confirmed":
+        return "success";
+      case "in-progress":
+        return "info";
+      case "cancelled":
+        return "danger";
+      case "completed":
+        return "purple";
+      default:
+        return "gray";
     }
   };
 
@@ -434,19 +452,13 @@ export default function StaffAppointmentsPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <span
-                        className="px-2 py-1 text-xs font-medium rounded-full"
-                        style={{
-                          backgroundColor: getStatusColor(apt.status) + "20",
-                          color: getStatusColor(apt.status),
-                        }}
-                      >
+                      <Badge variant={getStatusBadgeVariant(apt.status)}>
                         {
                           APPOINTMENT_STATUS_LABELS[
                           apt.status as keyof typeof APPOINTMENT_STATUS_LABELS
                           ]
                         }
-                      </span>
+                      </Badge>
                     </TableCell>
                     <TableCell>{apt.note || "-"}</TableCell>
                     <TableCell>
@@ -703,20 +715,13 @@ export default function StaffAppointmentsPage() {
                 <label className="text-sm text-gray-500 block mb-1">
                   Trạng thái
                 </label>
-                <span
-                  className="px-3 py-1 text-xs font-medium rounded-full inline-block"
-                  style={{
-                    backgroundColor:
-                      getStatusColor(selectedAppointment.status) + "20",
-                    color: getStatusColor(selectedAppointment.status),
-                  }}
-                >
+                <Badge variant={getStatusBadgeVariant(selectedAppointment.status)}>
                   {
                     APPOINTMENT_STATUS_LABELS[
                     selectedAppointment.status as keyof typeof APPOINTMENT_STATUS_LABELS
                     ]
                   }
-                </span>
+                </Badge>
               </div>
             </div>
 

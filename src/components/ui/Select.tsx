@@ -46,7 +46,7 @@ export default function Select({
         <select
           className={cn(
             "w-full px-4 py-2 rounded-lg border transition-all duration-200 appearance-none text-base",
-            "bg-white text-gray-800",
+            "bg-white text-gray-700",
             "focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent",
             "disabled:bg-gray-100 disabled:cursor-not-allowed",
             "cursor-pointer h-10",

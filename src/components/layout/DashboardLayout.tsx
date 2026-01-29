@@ -1,7 +1,8 @@
 "use client";
 
-import React, { ReactNode, useEffect, useState } from "react";
+import React, { ReactNode, useMemo, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { ROLE_LABELS, ROUTES } from "@/lib/constants";
 import {
@@ -31,34 +32,50 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [expandedItems, setExpandedItems] = useState<string[]>([]);
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [manuallyCollapsed, setManuallyCollapsed] = useState<string[]>([]);
+  const [manuallyExpanded, setManuallyExpanded] = useState<string[]>([]);
 
   const filteredNavItems = navItems.filter(
     (item) => !item.roles || (user && item.roles.includes(user.role))
   );
 
-  useEffect(() => {
-    if (filteredNavItems.length > 0 && !isInitialized) {
-      const activeParents = filteredNavItems
-        .filter((item) =>
-          item.subNavItems?.some(
-            (sub) => pathname === sub.path || pathname?.startsWith(sub.path + "/")
-          )
+  const autoExpandedItems = useMemo(() => {
+    return filteredNavItems
+      .filter((item) =>
+        item.subNavItems?.some(
+          (sub) => pathname === sub.path || pathname?.startsWith(sub.path + "/")
         )
-        .map((item) => item.label);
+      )
+      .map((item) => item.label);
+  }, [pathname, filteredNavItems]);
 
-      if (activeParents.length > 0) {
-        setExpandedItems((prev) => Array.from(new Set([...prev, ...activeParents])));
-      }
-      setIsInitialized(true);
-    }
-  }, [pathname, filteredNavItems, isInitialized]);
+  const isExpanded = (label: string) => {
+    const isAutoExpanded = autoExpandedItems.includes(label);
+    const isManuallyExpanded = manuallyExpanded.includes(label);
+    const isManuallyCollapsed = manuallyCollapsed.includes(label);
+
+    if (isManuallyExpanded) return true;
+
+    if (isAutoExpanded && !isManuallyCollapsed) return true;
+
+    return false;
+  };
 
   const toggleExpand = (label: string) => {
-    setExpandedItems((prev) =>
-      prev.includes(label) ? prev.filter((i) => i !== label) : [...prev, label]
-    );
+    const currentlyExpanded = isExpanded(label);
+    const isAutoExpanded = autoExpandedItems.includes(label);
+
+    if (currentlyExpanded) {
+      setManuallyExpanded((prev) => prev.filter((item) => item !== label));
+
+      if (isAutoExpanded) {
+        setManuallyCollapsed((prev) => [...prev, label]);
+      }
+    } else {
+      setManuallyExpanded((prev) => [...prev, label]);
+
+      setManuallyCollapsed((prev) => prev.filter((item) => item !== label));
+    }
   };
 
   const handleLogout = async () => {
@@ -170,7 +187,7 @@ export default function DashboardLayout({
                 <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-white">
                   <IconLayoutDashboard size={20} />
                 </div>
-                <span className="text-lg font-semibold text-gray-800">
+                <span className="text-lg font-semibold text-gray-700">
                   Clinic System
                 </span>
               </>
@@ -188,71 +205,90 @@ export default function DashboardLayout({
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {filteredNavItems.map((item) => {
             const hasSubNav = item.subNavItems && item.subNavItems.length > 0;
-            const isExpanded = expandedItems.includes(item.label);
+            const itemExpanded = isExpanded(item.label);
             const isActive = isItemActive(item);
 
             return (
               <div key={item.label} className="space-y-1">
-                <button
-                  onClick={() => {
-                    if (hasSubNav) {
-                      toggleExpand(item.label);
-                    } else if (item.path) {
-                      router.push(item.path);
-                    }
-                  }}
-                  className={`
-                                    w-full flex items-center gap-3 px-4 py-3 rounded-lg
-                                    transition-all duration-200
-                                    ${isActive && !hasSubNav
-                      ? "bg-primary/10 text-primary font-medium"
-                      : "text-gray-700 hover:bg-gray-100"
-                    }
-                                    ${!sidebarOpen && "justify-center"}
-                                `}
-                >
-                  <span
-                    className={`flex-shrink-0 ${isActive ? "text-primary" : "text-gray-500"
-                      }`}
+                {hasSubNav ? (
+                  <button
+                    onClick={() => toggleExpand(item.label)}
+                    className={`
+                                      w-full flex items-center gap-3 px-4 py-3 rounded-lg
+                                      transition-all duration-200
+                                      ${isActive
+                        ? "text-primary font-medium"
+                        : "text-gray-700 hover:bg-gray-100"
+                      }
+                                      ${!sidebarOpen && "justify-center"}
+                                  `}
                   >
-                    {item.icon}
-                  </span>
-                  {sidebarOpen && (
-                    <>
+                    <span
+                      className={`flex-shrink-0 ${isActive ? "text-primary" : "text-gray-500"
+                        }`}
+                    >
+                      {item.icon}
+                    </span>
+                    {sidebarOpen && (
+                      <>
+                        <span className={`text-sm flex-1 text-left ${isActive ? "font-medium text-primary" : ""}`}>
+                          {item.label}
+                        </span>
+                        <IconChevronDown
+                          size={16}
+                          className={`transition-transform duration-200 ${itemExpanded ? "rotate-180" : ""
+                            }`}
+                        />
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <Link
+                    href={item.path || "#"}
+                    className={`
+                                      w-full flex items-center gap-3 px-4 py-3 rounded-lg
+                                      transition-all duration-200
+                                      ${isActive
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "text-gray-700 hover:bg-gray-100"
+                      }
+                                      ${!sidebarOpen && "justify-center"}
+                                  `}
+                  >
+                    <span
+                      className={`flex-shrink-0 ${isActive ? "text-primary" : "text-gray-500"
+                        }`}
+                    >
+                      {item.icon}
+                    </span>
+                    {sidebarOpen && (
                       <span className={`text-sm flex-1 text-left ${isActive ? "font-medium text-primary" : ""}`}>
                         {item.label}
                       </span>
-                      {hasSubNav && (
-                        <IconChevronDown
-                          size={16}
-                          className={`transition-transform duration-200 ${isExpanded ? "rotate-180" : ""
-                            }`}
-                        />
-                      )}
-                    </>
-                  )}
-                </button>
+                    )}
+                  </Link>
+                )}
 
                 {/* Sub Navigation Items */}
-                {sidebarOpen && hasSubNav && isExpanded && (
+                {sidebarOpen && hasSubNav && itemExpanded && (
                   <div className="ml-9 space-y-1 border-l-2 border-gray-200 pl-2">
                     {item.subNavItems?.map((sub) => {
                       const isSubActive = isPathActive(sub.path, item.subNavItems);
                       return (
-                        <button
+                        <Link
                           key={sub.path}
-                          onClick={() => router.push(sub.path)}
+                          href={sub.path}
                           className={`
                                                     w-full flex items-center px-4 py-2 rounded-lg text-sm
                                                     transition-all duration-200
                                                     ${isSubActive
                               ? "text-primary font-semibold"
-                              : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+                              : "text-gray-600 hover:text-gray-700 hover:bg-gray-50"
                             }
                                                 `}
                         >
                           {sub.label}
-                        </button>
+                        </Link>
                       );
                     })}
                   </div>
@@ -276,7 +312,7 @@ export default function DashboardLayout({
             </div>
             {sidebarOpen && (
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-gray-800 truncate">
+                <div className="text-sm font-medium text-gray-700 truncate">
                   {user?.fullName || "User"}
                 </div>
                 <div className="text-xs text-gray-500 truncate">
@@ -327,7 +363,7 @@ export default function DashboardLayout({
                     whitespace-nowrap text-sm font-medium px-2 py-1 rounded-md transition-all
                     ${crumb.active
                       ? "text-primary bg-primary/5 font-semibold"
-                      : "text-gray-500 hover:text-gray-800 hover:bg-gray-50"
+                      : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
                     }
                   `}
                   disabled={crumb.active}

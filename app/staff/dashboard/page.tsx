@@ -91,7 +91,7 @@ export default function StaffDashboard() {
                 <IconCalendar size={20} />
               </div>
               <div>
-                <div className="text-3xl font-semibold text-gray-800">
+                <div className="text-3xl font-semibold text-gray-700">
                   {stats.pendingAppointments}
                 </div>
                 <div className="text-sm text-gray-500">
@@ -115,7 +115,7 @@ export default function StaffDashboard() {
                 <IconUserSquareRounded size={20} />
               </div>
               <div>
-                <div className="text-3xl font-semibold text-gray-800">
+                <div className="text-3xl font-semibold text-gray-700">
                   {stats.totalPatients}
                 </div>
                 <div className="text-sm text-gray-500">Tổng bệnh nhân</div>
@@ -137,7 +137,7 @@ export default function StaffDashboard() {
                 <IconFileText size={20} />
               </div>
               <div>
-                <div className="text-3xl font-semibold text-gray-800">
+                <div className="text-3xl font-semibold text-gray-700">
                   {stats.unpaidInvoices}
                 </div>
                 <div className="text-sm text-gray-500">

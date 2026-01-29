@@ -20,6 +20,7 @@ import Textarea from "@/components/ui/Textarea";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import Pagination from "@/components/ui/Pagination";
+import Badge, { BadgeVariant } from "@/components/ui/Badge";
 import * as testResultService from "@/lib/services/testResults";
 import * as testRequestService from "@/lib/services/testRequests";
 import { uploadFiles } from "@/lib/services/upload";
@@ -303,22 +304,26 @@ export default function LabTestResultsPage() {
 
   const totalPages = Math.ceil(pagination.total / pagination.limit);
 
-  const getStatusBadge = (status: string) => {
-    const badges = {
-      waiting: "bg-yellow-100 text-yellow-700 border-yellow-200",
-      processing: "bg-blue-100 text-blue-700 border-blue-200",
-      completed: "bg-green-100 text-green-700 border-green-200",
-    };
-    const labels = {
+  const getStatusBadgeVariant = (status: string): BadgeVariant => {
+    switch (status) {
+      case "waiting":
+        return "warning";
+      case "processing":
+        return "info";
+      case "completed":
+        return "success";
+      default:
+        return "gray";
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
       waiting: "Chờ xử lý",
       processing: "Đang xử lý",
       completed: "Hoàn thành",
     };
-    return (
-      <span className={`px-2 py-0.5 text-xs text-nowrap font-semibold rounded-md border ${badges[status as keyof typeof badges] || 'bg-gray-100 text-gray-600'}`}>
-        {labels[status as keyof typeof labels] || status}
-      </span>
-    );
+    return labels[status] || status;
   };
 
   return (
@@ -399,7 +404,7 @@ export default function LabTestResultsPage() {
                     <TableCell className="text-gray-500 font-medium">
                       {pagination.skip + index + 1}
                     </TableCell>
-                    <TableCell className="font-medium text-gray-800">
+                    <TableCell className="font-medium text-gray-700">
                       {getPatientName(request)}
                     </TableCell>
                     <TableCell>
@@ -414,7 +419,9 @@ export default function LabTestResultsPage() {
                       {request.labNurseId?.fullName || "-"}
                     </TableCell>
                     <TableCell>
-                      {getStatusBadge(request.status)}
+                      <Badge variant={getStatusBadgeVariant(request.status)}>
+                        {getStatusLabel(request.status)}
+                      </Badge>
                     </TableCell>
                     <TableCell className="text-sm text-gray-600">
                       {format(new Date(request.createdAt || request.requestedAt), "dd/MM/yyyy HH:mm", { locale: vi })}
@@ -478,7 +485,7 @@ export default function LabTestResultsPage() {
                   <IconUserSquareRounded size={14} />
                   Bệnh nhân
                 </span>
-                <div className="font-semibold text-gray-800 text-sm">{getPatientName(selectedRequest)}</div>
+                <div className="font-semibold text-gray-700 text-sm">{getPatientName(selectedRequest)}</div>
                 <div className="text-xs text-gray-500">
                   NS: {selectedRequest.examId?.patientId?.dateOfBirth ? format(new Date(selectedRequest.examId.patientId.dateOfBirth), "dd/MM/yyyy") : "-"}
                 </div>
@@ -496,14 +503,14 @@ export default function LabTestResultsPage() {
                   <IconNurse size={14} />
                   Người thực hiện
                 </span>
-                <div className="font-semibold text-gray-800 text-sm">{selectedRequest.labNurseId?.fullName || "Chưa xác định"}</div>
+                <div className="font-semibold text-gray-700 text-sm">{selectedRequest.labNurseId?.fullName || "Chưa xác định"}</div>
               </div>
               <div className="space-y-1">
                 <span className="text-xs font-semibold text-primary uppercase tracking-widest flex items-center gap-1.5">
                   <IconClock size={14} />
                   Thời gian yêu cầu
                 </span>
-                <div className="font-semibold text-gray-800 text-sm">{format(new Date(selectedRequest.requestedAt || selectedRequest.createdAt), "dd/MM/yyyy HH:mm")}</div>
+                <div className="font-semibold text-gray-700 text-sm">{format(new Date(selectedRequest.requestedAt || selectedRequest.createdAt), "dd/MM/yyyy HH:mm")}</div>
               </div>
             </div>
 
@@ -516,7 +523,7 @@ export default function LabTestResultsPage() {
                       <IconCircleCheck size={18} />
                       NỘI DUNG KẾT QUẢ XÉT NGHIỆM
                     </label>
-                    <div className="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm min-h-[140px] text-gray-800 leading-relaxed whitespace-pre-wrap text-base font-medium">
+                    <div className="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm min-h-[140px] text-gray-700 leading-relaxed whitespace-pre-wrap text-base font-medium">
                       {formData.resultData || "Chưa có nội dung kết quả."}
                     </div>
                   </div>

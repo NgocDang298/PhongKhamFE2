@@ -17,6 +17,7 @@ import {
 import Button from "@/components/ui/Button";
 import Select from "@/components/ui/Select";
 import Modal from "@/components/ui/Modal";
+import Badge, { BadgeVariant } from "@/components/ui/Badge";
 import { ROUTES, APPOINTMENT_STATUS_LABELS } from "@/lib/constants";
 import * as appointmentService from "@/lib/services/appointments";
 import * as examinationService from "@/lib/services/examinations";
@@ -187,16 +188,16 @@ export default function DoctorAppointmentsPage() {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadgeVariant = (status: string): BadgeVariant => {
     switch (status) {
       case "pending":
-        return "#f59e0b";
+        return "warning";
       case "confirmed":
-        return "#10b981";
+        return "success";
       case "cancelled":
-        return "#ef4444";
+        return "danger";
       default:
-        return "#6b7280";
+        return "gray";
     }
   };
 
@@ -264,19 +265,13 @@ export default function DoctorAppointmentsPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <span
-                        className="px-2 py-1 text-xs font-semibold rounded-full"
-                        style={{
-                          backgroundColor: getStatusColor(apt.status) + "20",
-                          color: getStatusColor(apt.status),
-                        }}
-                      >
+                      <Badge variant={getStatusBadgeVariant(apt.status)}>
                         {
                           APPOINTMENT_STATUS_LABELS[
                           apt.status as keyof typeof APPOINTMENT_STATUS_LABELS
                           ]
                         }
-                      </span>
+                      </Badge>
                     </TableCell>
                     <TableCell>{apt.note || "-"}</TableCell>
                     <TableCell>
@@ -359,13 +354,13 @@ export default function DoctorAppointmentsPage() {
                   Trạng thái
                 </label>
                 <div>
-                  <span className="inline-block px-3 py-1 text-sm font-semibold rounded-full">
+                  <Badge variant={getStatusBadgeVariant(selectedAppointment.status)}>
                     {
                       APPOINTMENT_STATUS_LABELS[
                       selectedAppointment.status as keyof typeof APPOINTMENT_STATUS_LABELS
                       ]
                     }
-                  </span>
+                  </Badge>
                 </div>
               </div>
               {selectedAppointment.confirmedBy && (
@@ -398,7 +393,7 @@ export default function DoctorAppointmentsPage() {
             {typeof selectedAppointment.patientId === "object" &&
               selectedAppointment.patientId && (
                 <div className="mt-4 pt-4 border-t border-gray-200">
-                  <h4 className="font-medium mb-2 text-gray-800">
+                  <h4 className="font-medium mb-2 text-gray-700">
                     Thông tin bệnh nhân
                   </h4>
                   <div className="grid grid-cols-2 gap-4 text-sm">

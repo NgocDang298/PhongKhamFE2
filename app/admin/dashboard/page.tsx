@@ -121,7 +121,7 @@ export default function AdminDashboard() {
                 <IconCurrencyDollar size={20} />
               </div>
               <div>
-                <div className="text-2xl font-semibold text-gray-800">
+                <div className="text-2xl font-semibold text-gray-700">
                   {formatCurrency(stats.totalRevenue)}
                 </div>
                 <div className="text-sm text-gray-500">Tổng doanh thu</div>
@@ -143,7 +143,7 @@ export default function AdminDashboard() {
                 <IconPackage size={20} />
               </div>
               <div>
-                <div className="text-2xl font-semibold text-gray-800">
+                <div className="text-2xl font-semibold text-gray-700">
                   {stats.totalServices}
                 </div>
                 <div className="text-sm text-gray-500">Tổng dịch vụ</div>
@@ -165,7 +165,7 @@ export default function AdminDashboard() {
                 <IconCalendar size={20} />
               </div>
               <div>
-                <div className="text-2xl font-semibold text-gray-800">
+                <div className="text-2xl font-semibold text-gray-700">
                   {stats.pendingAppointments}
                 </div>
                 <div className="text-sm text-gray-500">
@@ -189,7 +189,7 @@ export default function AdminDashboard() {
                 <IconFileText size={20} />
               </div>
               <div>
-                <div className="text-2xl font-semibold text-gray-800">
+                <div className="text-2xl font-semibold text-gray-700">
                   {formatCurrency(stats.unpaidAmount)}
                 </div>
                 <div className="text-sm text-gray-500">Chưa thanh toán</div>
@@ -210,7 +210,7 @@ export default function AdminDashboard() {
                 <div className="text-sm font-medium text-gray-500 mb-2">
                   Tổng doanh thu
                 </div>
-                <div className="text-2xl font-semibold text-gray-800">
+                <div className="text-2xl font-semibold text-gray-700">
                   {formatCurrency(stats.totalRevenue)}
                 </div>
               </div>

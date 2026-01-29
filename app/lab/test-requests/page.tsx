@@ -26,6 +26,7 @@ import {
 import { LAB_NAV_ITEMS } from "@/lib/navigation";
 import Pagination from "@/components/ui/Pagination";
 import Modal from "@/components/ui/Modal";
+import Badge, { BadgeVariant } from "@/components/ui/Badge";
 
 const statusOptions = [
   { value: "", label: "Tất cả trạng thái" },
@@ -128,22 +129,26 @@ export default function LabTestRequestsPage() {
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    const badges = {
-      waiting: "bg-yellow-100 text-yellow-700 border-yellow-200",
-      processing: "bg-blue-100 text-blue-700 border-blue-200",
-      completed: "bg-green-100 text-green-700 border-green-200",
-    };
-    const labels = {
+  const getStatusBadgeVariant = (status: string): BadgeVariant => {
+    switch (status) {
+      case "waiting":
+        return "warning";
+      case "processing":
+        return "info";
+      case "completed":
+        return "success";
+      default:
+        return "gray";
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
       waiting: "Chờ xử lý",
       processing: "Đang xử lý",
       completed: "Hoàn thành",
     };
-    return (
-      <span className={`px-2 py-0.5 text-xs font-semibold rounded-md border ${badges[status as keyof typeof badges] || 'bg-gray-100 text-gray-600'}`}>
-        {labels[status as keyof typeof labels] || status}
-      </span>
-    );
+    return labels[status] || status;
   };
 
   if (authLoading || loading) {
@@ -197,7 +202,7 @@ export default function LabTestRequestsPage() {
                     <TableCell className="text-gray-500 font-medium">
                       {pagination.skip + index + 1}
                     </TableCell>
-                    <TableCell className="font-medium text-gray-800">
+                    <TableCell className="font-medium text-gray-700">
                       {request.examId?.patientId?.fullName || "Không xác định"}
                     </TableCell>
                     <TableCell>
@@ -207,7 +212,9 @@ export default function LabTestRequestsPage() {
                       {format(new Date(request.createdAt), "dd/MM/yyyy HH:mm", { locale: vi })}
                     </TableCell>
                     <TableCell>
-                      {getStatusBadge(request.status)}
+                      <Badge variant={getStatusBadgeVariant(request.status)}>
+                        {getStatusLabel(request.status)}
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -266,13 +273,13 @@ export default function LabTestRequestsPage() {
             <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
               <div className="space-y-1">
                 <span className="text-xs font-semibold text-primary uppercase tracking-widest">Bệnh nhân</span>
-                <div className="font-semibold text-gray-800">{selectedRequest.examId?.patientId?.fullName}</div>
+                <div className="font-semibold text-gray-700">{selectedRequest.examId?.patientId?.fullName}</div>
                 <div className="text-xs text-gray-500">SĐT: {selectedRequest.examId?.patientId?.phone || "-"}</div>
                 <div className="text-xs text-gray-500">Ngày sinh: {selectedRequest.examId?.patientId?.dateOfBirth ? format(new Date(selectedRequest.examId.patientId.dateOfBirth), "dd/MM/yyyy") : "-"}</div>
               </div>
               <div className="space-y-1">
                 <span className="text-xs font-semibold text-primary uppercase tracking-widest">Bác sĩ chỉ định</span>
-                <div className="font-semibold text-gray-800">{selectedRequest.examId?.doctorId?.fullName || "N/A"}</div>
+                <div className="font-semibold text-gray-700">{selectedRequest.examId?.doctorId?.fullName || "N/A"}</div>
                 <div className="text-xs text-secondary font-medium">{selectedRequest.examId?.doctorId?.specialty}</div>
               </div>
               <div className="space-y-1">
@@ -282,11 +289,15 @@ export default function LabTestRequestsPage() {
               </div>
               <div className="space-y-1">
                 <span className="text-xs font-semibold text-primary uppercase tracking-widest">Loại / Ghi chú</span>
-                <div className="font-semibold text-gray-800">{selectedRequest.testType || "-"}</div>
+                <div className="font-semibold text-gray-700">{selectedRequest.testType || "-"}</div>
               </div>
               <div className="space-y-1">
                 <span className="text-xs font-semibold text-primary uppercase tracking-widest">Trạng thái</span>
-                <div>{getStatusBadge(selectedRequest.status)}</div>
+                <div>
+                  <Badge variant={getStatusBadgeVariant(selectedRequest.status)}>
+                    {getStatusLabel(selectedRequest.status)}
+                  </Badge>
+                </div>
               </div>
               <div className="space-y-1">
                 <span className="text-xs font-semibold text-primary uppercase tracking-widest">Thời gian tạo</span>
