@@ -386,32 +386,29 @@ export default function DoctorExaminationsPage() {
 
   return (
     <DashboardLayout navItems={DOCTOR_NAV_ITEMS} title="Ca khám">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 text-gray-600">
-        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-          <div style={{ maxWidth: "300px" }}>
-            <Select
-              options={[
-                { value: "", label: "Lọc theo trạng thái" },
-                { value: "processing", label: "Đang khám" },
-                { value: "done", label: "Hoàn thành" },
-              ]}
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              fullWidth
-            />
-          </div>
-          <Button
-            onClick={() => setIsStartModalOpen(true)}
-            icon={<IconPlus size={16} />}
-          >
-            Bắt đầu ca khám
-          </Button>
-        </div>
-      </div>
-
       <Card>
         <CardHeader icon={<IconFileText size={20} />}>
           <CardTitle>Danh sách ca khám</CardTitle>
+          <div className="ml-auto flex items-center gap-3">
+            <div style={{ minWidth: "200px" }}>
+              <Select
+                options={[
+                  { value: "", label: "Tất cả trạng thái" },
+                  { value: "processing", label: "Đang khám" },
+                  { value: "done", label: "Hoàn thành" },
+                ]}
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                fullWidth
+              />
+            </div>
+            <Button
+              onClick={() => setIsStartModalOpen(true)}
+              icon={<IconPlus size={16} />}
+            >
+              Bắt đầu ca khám
+            </Button>
+          </div>
         </CardHeader>
         <CardBody>
           {examinations.length === 0 ? (

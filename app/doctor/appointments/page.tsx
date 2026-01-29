@@ -196,25 +196,22 @@ export default function DoctorAppointmentsPage() {
 
   return (
     <DashboardLayout navItems={DOCTOR_NAV_ITEMS} title="Lịch hẹn của tôi">
-      <div className="flex justify-between items-center mb-4">
-        <div style={{ maxWidth: "300px" }}>
-          <Select
-            options={[
-              { value: "", label: "Lọc theo trạng thái" },
-              { value: "pending", label: "Chờ xác nhận" },
-              { value: "confirmed", label: "Đã xác nhận" },
-              { value: "cancelled", label: "Đã hủy" },
-            ]}
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            fullWidth
-          />
-        </div>
-      </div>
-
       <Card>
         <CardHeader icon={<IconCalendar size={20} />}>
           <CardTitle>Danh sách lịch hẹn</CardTitle>
+          <div className="ml-auto" style={{ minWidth: "250px" }}>
+            <Select
+              options={[
+                { value: "", label: "Tất cả trạng thái" },
+                { value: "pending", label: "Chờ xác nhận" },
+                { value: "confirmed", label: "Đã xác nhận" },
+                { value: "cancelled", label: "Đã hủy" },
+              ]}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              fullWidth
+            />
+          </div>
         </CardHeader>
         <CardBody>
           {appointments.length === 0 ? (
