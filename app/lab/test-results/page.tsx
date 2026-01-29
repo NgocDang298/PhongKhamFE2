@@ -295,7 +295,7 @@ export default function LabTestResultsPage() {
   }
 
   const getPatientName = (request: any) => {
-    return request.examId?.patientId?.fullName || "Không xác định";
+    return request.examId?.patientId?.fullName || "Chưa cập nhật";
   };
 
   const getServiceName = (request: any) => {
@@ -412,11 +412,11 @@ export default function LabTestResultsPage() {
                     </TableCell>
                     <TableCell>
                       <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-md">
-                        {request.testType || "-"}
+                        {request.testType || "Không xác định"}
                       </span>
                     </TableCell>
                     <TableCell>
-                      {request.labNurseId?.fullName || "-"}
+                      {request.labNurseId?.fullName || "Chưa phân công"}
                     </TableCell>
                     <TableCell>
                       <Badge variant={getStatusBadgeVariant(request.status)}>
@@ -477,7 +477,7 @@ export default function LabTestResultsPage() {
         }
       >
         {selectedRequest && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Patient & Service Summary Card */}
             <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
               <div className="space-y-1">
@@ -487,7 +487,7 @@ export default function LabTestResultsPage() {
                 </span>
                 <div className="font-semibold text-gray-700 text-sm">{getPatientName(selectedRequest)}</div>
                 <div className="text-xs text-gray-500">
-                  NS: {selectedRequest.examId?.patientId?.dateOfBirth ? format(new Date(selectedRequest.examId.patientId.dateOfBirth), "dd/MM/yyyy") : "-"}
+                  NS: {selectedRequest.examId?.patientId?.dateOfBirth ? format(new Date(selectedRequest.examId.patientId.dateOfBirth), "dd/MM/yyyy") : "Chưa cập nhật"}
                 </div>
               </div>
               <div className="space-y-1">
@@ -503,7 +503,7 @@ export default function LabTestResultsPage() {
                   <IconNurse size={14} />
                   Người thực hiện
                 </span>
-                <div className="font-semibold text-gray-700 text-sm">{selectedRequest.labNurseId?.fullName || "Chưa xác định"}</div>
+                <div className="font-semibold text-gray-700 text-sm">{selectedRequest.labNurseId?.fullName || "Chưa cập nhật"}</div>
               </div>
               <div className="space-y-1">
                 <span className="text-xs font-semibold text-primary uppercase tracking-widest flex items-center gap-1.5">
@@ -514,10 +514,10 @@ export default function LabTestResultsPage() {
               </div>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-4">
               {existingResult && selectedRequest.status === 'completed' ? (
                 /* VIEW MODE: Professional Medical Report Style */
-                <div className="space-y-6">
+                <div className="space-y-4">
                   <div className="space-y-3">
                     <label className="text-sm font-semibold text-primary flex items-center gap-2">
                       <IconCircleCheck size={18} />

@@ -31,6 +31,8 @@ import {
   IconCalendar,
   IconPlus,
   IconTable,
+  IconX,
+  IconCheck,
 } from "@tabler/icons-react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -146,12 +148,12 @@ export default function StaffAppointmentsPage() {
       typeof apt.patientId === "object" && apt.patientId
         ? apt.patientId.fullName
         : patients.find((p) => p._id === apt.patientId)?.fullName ||
-        "Không xác định";
+        "Chưa cập nhật";
 
     const doctorName =
       typeof apt.doctorId === "object" && apt.doctorId
         ? apt.doctorId.fullName
-        : doctors.find((d) => d._id === apt.doctorId)?.fullName || "Chưa chọn";
+        : doctors.find((d) => d._id === apt.doctorId)?.fullName || "Chưa chọn bác sĩ";
 
     return {
       id: apt._id,
@@ -420,12 +422,12 @@ export default function StaffAppointmentsPage() {
                       {typeof apt.patientId === "object" && apt.patientId
                         ? apt.patientId.fullName
                         : patients.find((p) => p._id === apt.patientId)
-                          ?.fullName || "Không xác định"}
+                          ?.fullName || "Chưa cập nhật"}
                     </TableCell>
                     <TableCell>
                       {typeof apt.doctorId === "object" && apt.doctorId
                         ? apt.doctorId.fullName
-                        : apt.doctorId || "Chưa chọn"}
+                        : apt.doctorId || "Chưa chọn bác sĩ"}
                     </TableCell>
                     <TableCell>
                       {format(
@@ -443,7 +445,7 @@ export default function StaffAppointmentsPage() {
                         }
                       </Badge>
                     </TableCell>
-                    <TableCell>{apt.note || "-"}</TableCell>
+                    <TableCell>{apt.note || "Không có ghi chú"}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         {apt.status === "pending" && (
@@ -580,6 +582,7 @@ export default function StaffAppointmentsPage() {
           <>
             <Button
               variant="outline"
+              icon={<IconX size={20} />}
               onClick={() => {
                 setIsModalOpen(false);
                 setSelectedAppointment(null);
@@ -589,6 +592,7 @@ export default function StaffAppointmentsPage() {
             </Button>
             <Button
               variant="danger"
+              icon={<IconX size={20} />}
               onClick={() => {
                 if (selectedAppointment) {
                   handleReject(selectedAppointment._id);
@@ -618,7 +622,7 @@ export default function StaffAppointmentsPage() {
                 selectedAppointment.patientId
                 ? selectedAppointment.patientId.fullName
                 : patients.find((p) => p._id === selectedAppointment.patientId)
-                  ?.fullName || "Không xác định"}
+                  ?.fullName || "Chưa cập nhật"}
             </div>
             <div>
               <strong>Ngày giờ:</strong>{" "}
@@ -648,6 +652,7 @@ export default function StaffAppointmentsPage() {
                 <>
                   <Button
                     variant="outline"
+                    icon={<IconCheck size={20} />}
                     onClick={() => {
                       handleConfirm(selectedAppointment._id);
                       setIsDetailModalOpen(false);
@@ -657,6 +662,7 @@ export default function StaffAppointmentsPage() {
                   </Button>
                   <Button
                     variant="danger"
+                    icon={<IconX size={20} />}
                     onClick={() => {
                       setIsDetailModalOpen(false);
                       setIsModalOpen(true);
@@ -669,6 +675,7 @@ export default function StaffAppointmentsPage() {
             </div>
             <Button
               variant="outline"
+              icon={<IconX size={20} />}
               onClick={() => {
                 setIsDetailModalOpen(false);
                 setSelectedAppointment(null);
@@ -718,7 +725,7 @@ export default function StaffAppointmentsPage() {
                   ? selectedAppointment.patientId.fullName
                   : patients.find(
                     (p) => p._id === selectedAppointment.patientId
-                  )?.fullName || "Không xác định"}
+                  )?.fullName || "Chưa cập nhật"}
               </div>
               <div className="text-sm text-gray-600 mt-1">
                 SĐT:{" "}
@@ -727,7 +734,7 @@ export default function StaffAppointmentsPage() {
                   ? selectedAppointment.patientId.phone
                   : patients.find(
                     (p) => p._id === selectedAppointment.patientId
-                  )?.phone || "-"}
+                  )?.phone || "Chưa cập nhật"}
               </div>
             </div>
 
@@ -738,7 +745,7 @@ export default function StaffAppointmentsPage() {
                   selectedAppointment.doctorId
                   ? selectedAppointment.doctorId.fullName
                   : doctors.find((d) => d._id === selectedAppointment.doctorId)
-                    ?.fullName || "Chưa chọn"}
+                    ?.fullName || "Chưa chọn bác sĩ"}
               </div>
             </div>
 
@@ -774,6 +781,7 @@ export default function StaffAppointmentsPage() {
           <>
             <Button
               variant="outline"
+              icon={<IconX size={20} />}
               onClick={() => {
                 setIsCreateModalOpen(false);
                 setFormData({
@@ -786,7 +794,13 @@ export default function StaffAppointmentsPage() {
             >
               Hủy
             </Button>
-            <Button onClick={handleCreate}>Tạo lịch hẹn</Button>
+            <Button
+              variant="primary"
+              icon={<IconCheck size={20} />}
+              onClick={handleCreate}
+            >
+              Tạo lịch hẹn
+            </Button>
           </>
         }
       >
@@ -860,6 +874,7 @@ export default function StaffAppointmentsPage() {
           <>
             <Button
               variant="outline"
+              icon={<IconX size={20} />}
               onClick={() => {
                 setIsAutoAssignModalOpen(false);
                 setAutoAssignFormData({
@@ -871,7 +886,13 @@ export default function StaffAppointmentsPage() {
             >
               Hủy
             </Button>
-            <Button onClick={handleAutoAssign}>Đặt lịch</Button>
+            <Button
+              variant="primary"
+              icon={<IconCheck size={20} />}
+              onClick={handleAutoAssign}
+            >
+              Đặt lịch
+            </Button>
           </>
         }
       >

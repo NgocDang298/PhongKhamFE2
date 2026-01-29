@@ -177,9 +177,9 @@ export default function AdminDashboard() {
           <p className="text-gray-500 mt-2 text-lg">Theo dõi và quản lý toàn bộ hệ thống phòng khám của bạn.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Main Column - Left (8 cols) */}
-          <div className="lg:col-span-8 space-y-6">
+          <div className="lg:col-span-8 space-y-4">
             {/* Quick Actions Hub */}
             <section className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
               <h3 className="text-lg border-b border-b-gray-200 pb-4 font-semibold text-primary mb-4 flex items-center gap-2">
@@ -265,7 +265,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Sidebar Column - Right (4 cols) */}
-          <div className="lg:col-span-4 space-y-6">
+          <div className="lg:col-span-4 space-y-4">
             {/* Revenue Progress Widget */}
             <Card className="bg-gradient-to-br from-primary to-bubble text-white border-none shadow-xl overflow-hidden relative">
               <div className="absolute top-[-10%] right-[-10%] w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>

@@ -40,7 +40,7 @@ import {
   IconEye,
   IconX,
 } from "@tabler/icons-react";
-
+import { Badge } from "@/components/ui/Badge";
 
 export default function StaffInvoicesPage() {
   const router = useRouter();
@@ -448,7 +448,7 @@ export default function StaffInvoicesPage() {
                       <div className="font-medium text-gray-900">
                         {typeof invoice.patientId === "object" && invoice.patientId
                           ? invoice.patientId.fullName
-                          : "Không xác định"}
+                          : "Chưa cập nhật"}
                       </div>
                       <div className="text-xs text-gray-500">
                         {typeof invoice.patientId === "object" && invoice.patientId
@@ -466,23 +466,13 @@ export default function StaffInvoicesPage() {
                       {formatCurrency(invoice.totalAmount)}
                     </TableCell>
                     <TableCell>
-                      <span
-                        className="px-2 py-1 text-xs font-medium rounded-full"
-                        style={{
-                          backgroundColor:
-                            invoice.status === "paid"
-                              ? "#10b98120"
-                              : "#ef444420",
-                          color:
-                            invoice.status === "paid" ? "#10b981" : "#ef4444",
-                        }}
-                      >
+                      <Badge variant={invoice.status === "paid" ? "success" : "danger"}>
                         {
                           INVOICE_STATUS_LABELS[
                           invoice.status as keyof typeof INVOICE_STATUS_LABELS
                           ]
                         }
-                      </span>
+                      </Badge>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
@@ -790,7 +780,7 @@ export default function StaffInvoicesPage() {
                 <strong>Bệnh nhân:</strong>{" "}
                 {typeof selectedInvoice.patientId === "object"
                   ? selectedInvoice.patientId.fullName
-                  : "Không xác định"}
+                  : "Chưa cập nhật"}
               </div>
               <div>
                 <strong>Ngày tạo:</strong>{" "}
@@ -802,23 +792,13 @@ export default function StaffInvoicesPage() {
               </div>
               <div>
                 <strong>Trạng thái:</strong>{" "}
-                <span
-                  className="px-2 py-1 text-xs font-medium rounded-full"
-                  style={{
-                    backgroundColor:
-                      selectedInvoice.status === "paid"
-                        ? "#10b98120"
-                        : "#ef444420",
-                    color:
-                      selectedInvoice.status === "paid" ? "#10b981" : "#ef4444",
-                  }}
-                >
+                <Badge variant={selectedInvoice.status === "paid" ? "success" : "danger"}>
                   {
                     INVOICE_STATUS_LABELS[
                     selectedInvoice.status as keyof typeof INVOICE_STATUS_LABELS
                     ]
                   }
-                </span>
+                </Badge>
               </div>
             </div>
 

@@ -138,9 +138,9 @@ export default function PatientDashboard() {
           <p className="text-gray-500 mt-2 text-lg">Hôm nay bạn cảm thấy thế nào? Hãy theo dõi tình trạng sức khỏe của mình nhé.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Main Column - Left (8 cols) */}
-          <div className="lg:col-span-8 space-y-6">
+          <div className="lg:col-span-8 space-y-4">
             {/* Quick Actions Hub */}
             <section className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
               <h3 className="text-lg border-b border-b-gray-200 pb-4 font-semibold text-primary mb-4 flex items-center gap-2">
@@ -240,7 +240,7 @@ export default function PatientDashboard() {
           </div>
 
           {/* Sidebar Column - Right (4 cols) */}
-          <div className="lg:col-span-4 space-y-6">
+          <div className="lg:col-span-4 space-y-4">
 
             {/* Health Tip Widget */}
             <Card className="bg-gradient-to-br from-primary to-bubble text-white border-none shadow-xl overflow-hidden relative">

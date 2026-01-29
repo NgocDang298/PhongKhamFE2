@@ -34,6 +34,7 @@ import {
   IconCalendar,
 } from "@tabler/icons-react";
 import { ADMIN_NAV_ITEMS } from "@/lib/navigation";
+import Pagination from "@/components/ui/Pagination";
 
 interface ScheduleWithPerson extends WorkSchedule {
   personName?: string;
@@ -52,6 +53,8 @@ export default function AdminSchedulesPage() {
     name: string;
     type: "doctor" | "nurse";
   } | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isQuickCreateOpen, setIsQuickCreateOpen] = useState(false);
   const [editingSchedule, setEditingSchedule] =
@@ -529,51 +532,70 @@ export default function AdminSchedulesPage() {
                 Chưa có lịch làm việc
               </div>
             ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Thứ</TableHead>
-                    <TableHead>Giờ bắt đầu</TableHead>
-                    <TableHead>Giờ kết thúc</TableHead>
-                    <TableHead>Ghi chú</TableHead>
-                    <TableHead>Thao tác</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {schedules.map((schedule) => (
-                    <TableRow key={schedule._id}>
-                      <TableCell>
-                        {
-                          DAY_LABELS[
-                          schedule.dayOfWeek as keyof typeof DAY_LABELS
-                          ]
-                        }
-                      </TableCell>
-                      <TableCell>{schedule.shiftStart}</TableCell>
-                      <TableCell>{schedule.shiftEnd}</TableCell>
-                      <TableCell>{schedule.note || "-"}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleOpenModal(schedule)}
-                          >
-                            Sửa
-                          </Button>
-                          <Button
-                            variant="danger"
-                            size="sm"
-                            onClick={() => handleDelete(schedule._id)}
-                          >
-                            Xóa
-                          </Button>
-                        </div>
-                      </TableCell>
+              <>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-16">STT</TableHead>
+                      <TableHead>Thứ</TableHead>
+                      <TableHead>Giờ bắt đầu</TableHead>
+                      <TableHead>Giờ kết thúc</TableHead>
+                      <TableHead>Ghi chú</TableHead>
+                      <TableHead>Thao tác</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {schedules
+                      .slice((currentPage - 1) * limit, currentPage * limit)
+                      .map((schedule, index) => (
+                        <TableRow key={schedule._id}>
+                          <TableCell className="font-medium">
+                            {(currentPage - 1) * limit + index + 1}
+                          </TableCell>
+                          <TableCell>
+                            {
+                              DAY_LABELS[
+                              schedule.dayOfWeek as keyof typeof DAY_LABELS
+                              ]
+                            }
+                          </TableCell>
+                          <TableCell>{schedule.shiftStart}</TableCell>
+                          <TableCell>{schedule.shiftEnd}</TableCell>
+                          <TableCell>{schedule.note || "Không có ghi chú"}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleOpenModal(schedule)}
+                              >
+                                Sửa
+                              </Button>
+                              <Button
+                                variant="danger"
+                                size="sm"
+                                onClick={() => handleDelete(schedule._id)}
+                              >
+                                Xóa
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+
+                <Pagination
+                  total={schedules.length}
+                  limit={limit}
+                  skip={(currentPage - 1) * limit}
+                  onPageChange={setCurrentPage}
+                  onLimitChange={(newLimit) => {
+                    setLimit(newLimit);
+                    setCurrentPage(1);
+                  }}
+                />
+              </>
             )}
           </CardBody>
         </Card>

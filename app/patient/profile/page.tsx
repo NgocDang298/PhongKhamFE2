@@ -109,10 +109,10 @@ export default function PatientProfilePage() {
 
   return (
     <DashboardLayout navItems={PATIENT_NAV_ITEMS} title="Hồ sơ của tôi">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
         {/* Main Content - Personal Info */}
-        <div className="lg:col-span-8 space-y-6">
+        <div className="lg:col-span-8 space-y-4">
           <Card className="border border-gray-200">
             <CardHeader
               icon={<IconUserSquareRounded size={20} />}
@@ -121,8 +121,8 @@ export default function PatientProfilePage() {
 
             </CardHeader>
             <CardBody>
-              <form id="profile-form" onSubmit={handleUpdate} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <form id="profile-form" onSubmit={handleUpdate} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Input
                     label="Họ và tên"
                     name="fullName"
@@ -256,7 +256,7 @@ export default function PatientProfilePage() {
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-gray-50">
                   <span className="text-gray-500 font-medium">Ngày tạo tài khoản</span>
-                  <span className="text-gray-700 font-semibold">{userAccount?.createdAt ? format(new Date(userAccount.createdAt), "dd/MM/yyyy HH:mm", { locale: vi }) : "-"}</span>
+                  <span className="text-gray-700 font-semibold">{userAccount?.createdAt ? format(new Date(userAccount.createdAt), "dd/MM/yyyy HH:mm", { locale: vi }) : "Chưa cập nhật"}</span>
                 </div>
                 <div className="flex justify-between items-center py-2">
                   <span className="text-gray-500 font-medium">Vai trò người dùng</span>
@@ -268,7 +268,7 @@ export default function PatientProfilePage() {
         </div>
 
         {/* Sidebar - Stats & Summary */}
-        <div className="lg:col-span-4 space-y-6">
+        <div className="lg:col-span-4 space-y-4">
           <Card className="border border-gray-200 shadow-sm">
             <CardBody className="p-4">
               <div className="flex items-center gap-4 text-gray-700 mb-4 border-b border-gray-200 pb-4">
@@ -292,7 +292,7 @@ export default function PatientProfilePage() {
               </div>
               <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between text-sm">
                 <span className="text-gray-500">Ngày tham gia:</span>
-                <span className="font-semibold text-gray-700 uppercase text-sm">{profile?.registerDate ? format(new Date(profile.registerDate), "dd/MM/yyyy") : "-"}</span>
+                <span className="font-semibold text-gray-700 uppercase text-sm">{profile?.registerDate ? format(new Date(profile.registerDate), "dd/MM/yyyy") : "Chưa cập nhật"}</span>
               </div>
             </CardBody>
           </Card>

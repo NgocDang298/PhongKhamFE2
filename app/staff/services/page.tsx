@@ -98,7 +98,7 @@ export default function StaffServicesPage() {
                       }
                     </TableCell>
                     <TableCell>{formatCurrency(service.price)}</TableCell>
-                    <TableCell>{service.description || "-"}</TableCell>
+                    <TableCell>{service.description || "Không có mô tả"}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

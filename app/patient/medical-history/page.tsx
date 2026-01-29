@@ -21,12 +21,15 @@ import { PATIENT_NAV_ITEMS } from "@/lib/navigation";
 import {
   IconFileText,
 } from "@tabler/icons-react";
+import Pagination from "@/components/ui/Pagination";
 
 export default function PatientMedicalHistoryPage() {
   const router = useRouter();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [medicalHistory, setMedicalHistory] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(10);
 
   useEffect(() => {
     if (authLoading) return;
@@ -68,7 +71,7 @@ export default function PatientMedicalHistoryPage() {
         </CardHeader>
         <CardBody>
           {medicalHistory ? (
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div className="border-b border-gray-200 pb-4 last:border-0 last:pb-0">
                 <h3 className="text-lg font-semibold text-gray-700 mb-4">
                   Thông tin cơ bản
@@ -179,6 +182,7 @@ export default function PatientMedicalHistoryPage() {
                     <Table>
                       <TableHeader>
                         <TableRow>
+                          <TableHead className="w-16">STT</TableHead>
                           <TableHead>Ngày khám</TableHead>
                           <TableHead>Bác sĩ</TableHead>
                           <TableHead>Chẩn đoán</TableHead>
@@ -186,27 +190,42 @@ export default function PatientMedicalHistoryPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {medicalHistory.examinations.map((exam: any) => (
-                          <TableRow key={exam._id}>
-                            <TableCell>
-                              {format(
-                                new Date(exam.examDate),
-                                "dd/MM/yyyy HH:mm",
-                                { locale: vi }
-                              )}
-                            </TableCell>
-                            <TableCell>
-                              {typeof exam.doctorId === "object" &&
-                                exam.doctorId
-                                ? exam.doctorId.fullName
-                                : "Không xác định"}
-                            </TableCell>
-                            <TableCell>{exam.diagnosis || "-"}</TableCell>
-                            <TableCell>{exam.treatment || "-"}</TableCell>
-                          </TableRow>
-                        ))}
+                        {medicalHistory.examinations
+                          .slice((currentPage - 1) * limit, currentPage * limit)
+                          .map((exam: any, index: number) => (
+                            <TableRow key={exam._id}>
+                              <TableCell className="font-medium">
+                                {(currentPage - 1) * limit + index + 1}
+                              </TableCell>
+                              <TableCell>
+                                {format(
+                                  new Date(exam.examDate),
+                                  "dd/MM/yyyy HH:mm",
+                                  { locale: vi }
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                {typeof exam.doctorId === "object" &&
+                                  exam.doctorId
+                                  ? exam.doctorId.fullName
+                                  : "Chưa cập nhật"}
+                              </TableCell>
+                              <TableCell>{exam.diagnosis || "Chưa có chẩn đoán"}</TableCell>
+                              <TableCell>{exam.treatment || "Chưa cập nhật"}</TableCell>
+                            </TableRow>
+                          ))}
                       </TableBody>
                     </Table>
+                    <Pagination
+                      total={medicalHistory.examinations.length}
+                      limit={limit}
+                      skip={(currentPage - 1) * limit}
+                      onPageChange={setCurrentPage}
+                      onLimitChange={(newLimit) => {
+                        setLimit(newLimit);
+                        setCurrentPage(1);
+                      }}
+                    />
                   </div>
                 )}
             </div>

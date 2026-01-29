@@ -35,6 +35,8 @@ import {
   IconPlus,
 } from "@tabler/icons-react";
 import { ADMIN_NAV_ITEMS } from "@/lib/navigation";
+import { Badge } from "@/components/ui/Badge";
+import Pagination from "@/components/ui/Pagination";
 
 
 export default function AdminServicesPage() {
@@ -42,6 +44,8 @@ export default function AdminServicesPage() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<any>(null);
@@ -184,65 +188,74 @@ export default function AdminServicesPage() {
               Chưa có dịch vụ nào
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Tên dịch vụ</TableHead>
-                  <TableHead>Loại</TableHead>
-                  <TableHead>Giá</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead>Thao tác</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {services.map((service) => (
-                  <TableRow key={service._id}>
-                    <TableCell>{service.name}</TableCell>
-                    <TableCell>
-                      {
-                        SERVICE_TYPE_LABELS[
-                        service.serviceType as keyof typeof SERVICE_TYPE_LABELS
-                        ]
-                      }
-                    </TableCell>
-                    <TableCell>{formatCurrency(service.price)}</TableCell>
-                    <TableCell>
-                      <span
-                        className="px-2 py-1 text-xs font-medium rounded-full"
-                        style={{
-                          backgroundColor:
-                            service.isActive !== false
-                              ? "#10b98120"
-                              : "#ef444420",
-                          color:
-                            service.isActive !== false ? "#10b981" : "#ef4444",
-                        }}
-                      >
-                        {service.isActive !== false ? "Hoạt động" : "Vô hiệu"}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleOpenEditModal(service)}
-                        >
-                          Sửa
-                        </Button>
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          onClick={() => handleDelete(service._id)}
-                        >
-                          Xóa
-                        </Button>
-                      </div>
-                    </TableCell>
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-16">STT</TableHead>
+                    <TableHead>Tên dịch vụ</TableHead>
+                    <TableHead>Loại</TableHead>
+                    <TableHead>Giá</TableHead>
+                    <TableHead>Trạng thái</TableHead>
+                    <TableHead>Thao tác</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {services
+                    .slice((currentPage - 1) * limit, currentPage * limit)
+                    .map((service, index) => (
+                      <TableRow key={service._id}>
+                        <TableCell className="font-medium">
+                          {(currentPage - 1) * limit + index + 1}
+                        </TableCell>
+                        <TableCell>{service.name}</TableCell>
+                        <TableCell>
+                          {
+                            SERVICE_TYPE_LABELS[
+                            service.serviceType as keyof typeof SERVICE_TYPE_LABELS
+                            ]
+                          }
+                        </TableCell>
+                        <TableCell>{formatCurrency(service.price)}</TableCell>
+                        <TableCell>
+                          <Badge variant={service.isActive !== false ? "success" : "danger"}>
+                            {service.isActive !== false ? "Hoạt động" : "Vô hiệu"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleOpenEditModal(service)}
+                            >
+                              Sửa
+                            </Button>
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => handleDelete(service._id)}
+                            >
+                              Xóa
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+
+              <Pagination
+                total={services.length}
+                limit={limit}
+                skip={(currentPage - 1) * limit}
+                onPageChange={setCurrentPage}
+                onLimitChange={(newLimit) => {
+                  setLimit(newLimit);
+                  setCurrentPage(1);
+                }}
+              />
+            </>
           )}
         </CardBody>
       </Card>

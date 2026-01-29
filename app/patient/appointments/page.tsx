@@ -24,6 +24,7 @@ import * as profileService from "@/lib/services/profile";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
+import Pagination from "@/components/ui/Pagination";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -36,6 +37,8 @@ import {
   IconPlus,
   IconAlertCircle,
   IconTable,
+  IconX,
+  IconTrash,
 } from "@tabler/icons-react";
 
 export default function PatientAppointments() {
@@ -46,6 +49,8 @@ export default function PatientAppointments() {
   const [error, setError] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [viewMode, setViewMode] = useState<"calendar" | "table">("calendar");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
@@ -293,63 +298,82 @@ export default function PatientAppointments() {
               />
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Bác sĩ</TableHead>
-                  <TableHead>Chuyên khoa</TableHead>
-                  <TableHead>Ngày giờ</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead>Ghi chú</TableHead>
-                  <TableHead>Thao tác</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {appointments.map((apt) => (
-                  <TableRow key={apt._id}>
-                    <TableCell>
-                      {typeof apt.doctorId === "object" && apt.doctorId
-                        ? apt.doctorId.fullName
-                        : "Chưa chọn"}
-                    </TableCell>
-                    <TableCell>
-                      {typeof apt.doctorId === "object" && apt.doctorId
-                        ? apt.doctorId.specialty || "-"
-                        : "-"}
-                    </TableCell>
-                    <TableCell>
-                      {format(
-                        new Date(apt.appointmentDate),
-                        "dd/MM/yyyy HH:mm",
-                        { locale: vi }
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={getStatusBadgeVariant(apt.status)}>
-                        {
-                          APPOINTMENT_STATUS_LABELS[
-                          apt.status as keyof typeof APPOINTMENT_STATUS_LABELS
-                          ]
-                        }
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{apt.note || "-"}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedAppointment(apt);
-                          setDetailModalOpen(true);
-                        }}
-                      >
-                        Chi tiết
-                      </Button>
-                    </TableCell>
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-16">STT</TableHead>
+                    <TableHead>Bác sĩ</TableHead>
+                    <TableHead>Chuyên khoa</TableHead>
+                    <TableHead>Ngày giờ</TableHead>
+                    <TableHead>Trạng thái</TableHead>
+                    <TableHead>Ghi chú</TableHead>
+                    <TableHead>Thao tác</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {appointments
+                    .slice((currentPage - 1) * limit, currentPage * limit)
+                    .map((apt, index) => (
+                      <TableRow key={apt._id}>
+                        <TableCell className="font-medium">
+                          {(currentPage - 1) * limit + index + 1}
+                        </TableCell>
+                        <TableCell>
+                          {typeof apt.doctorId === "object" && apt.doctorId
+                            ? apt.doctorId.fullName
+                            : "Chưa chọn"}
+                        </TableCell>
+                        <TableCell>
+                          {typeof apt.doctorId === "object" && apt.doctorId
+                            ? apt.doctorId.specialty || "Chưa cập nhật"
+                            : "Chưa cập nhật"}
+                        </TableCell>
+                        <TableCell>
+                          {format(
+                            new Date(apt.appointmentDate),
+                            "dd/MM/yyyy HH:mm",
+                            { locale: vi }
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={getStatusBadgeVariant(apt.status)}>
+                            {
+                              APPOINTMENT_STATUS_LABELS[
+                              apt.status as keyof typeof APPOINTMENT_STATUS_LABELS
+                              ]
+                            }
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{apt.note || "Không có ghi chú"}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setSelectedAppointment(apt);
+                              setDetailModalOpen(true);
+                            }}
+                          >
+                            Chi tiết
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+
+              <Pagination
+                total={appointments.length}
+                limit={limit}
+                skip={(currentPage - 1) * limit}
+                onPageChange={setCurrentPage}
+                onLimitChange={(newLimit) => {
+                  setLimit(newLimit);
+                  setCurrentPage(1);
+                }}
+              />
+            </>
           )}
         </CardBody>
       </Card>
@@ -367,6 +391,7 @@ export default function PatientAppointments() {
           <>
             <Button
               variant="outline"
+              icon={<IconX size={20} />}
               onClick={() => {
                 setDetailModalOpen(false);
                 setSelectedAppointment(null);
@@ -379,6 +404,7 @@ export default function PatientAppointments() {
                 selectedAppointment.status === "confirmed") && (
                 <Button
                   variant="danger"
+                  icon={<IconTrash size={20} />}
                   onClick={() => {
                     setDetailModalOpen(false);
                     setCancelModalOpen(true);
@@ -430,7 +456,7 @@ export default function PatientAppointments() {
               {typeof selectedAppointment.doctorId === "object" &&
                 selectedAppointment.doctorId?.specialty && (
                   <div className="text-sm text-gray-600 mt-1">
-                    Chuyên khoa: {selectedAppointment.doctorId.specialty}
+                    Chuyên khoa: {selectedAppointment.doctorId.specialty || "Chưa cập nhật"}
                   </div>
                 )}
             </div>
@@ -461,6 +487,7 @@ export default function PatientAppointments() {
           <>
             <Button
               variant="outline"
+              icon={<IconX size={20} />}
               onClick={() => {
                 setCancelModalOpen(false);
                 setSelectedAppointment(null);
@@ -468,7 +495,11 @@ export default function PatientAppointments() {
             >
               Đóng
             </Button>
-            <Button variant="danger" onClick={handleCancel}>
+            <Button
+              variant="danger"
+              icon={<IconTrash size={20} />}
+              onClick={handleCancel}
+            >
               Xác nhận hủy
             </Button>
           </>

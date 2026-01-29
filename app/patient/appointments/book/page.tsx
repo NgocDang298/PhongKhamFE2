@@ -11,29 +11,50 @@ import Select from "@/components/ui/Select";
 import Textarea from "@/components/ui/Textarea";
 import { ROUTES } from "@/lib/constants";
 import * as appointmentService from "@/lib/services/appointments";
-import { format } from "date-fns";
+import { format, isSameDay, parseISO } from "date-fns";
+import { vi } from "date-fns/locale";
 import { PATIENT_NAV_ITEMS } from "@/lib/navigation";
 import {
   IconCalendarPlus,
   IconAlertCircle,
+  IconUserCheck,
+  IconBolt,
+  IconCheck,
+  IconClock,
+  IconUserSquareRounded,
+  IconCalendar,
+  IconCalendarCheck,
+  IconX,
 } from "@tabler/icons-react";
+import { toast } from "react-toastify";
+
+type BookingMode = "by-doctor" | "auto-assign";
 
 export default function BookAppointmentPage() {
   const router = useRouter();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+
+  // States
+  const [bookingMode, setBookingMode] = useState<BookingMode>("by-doctor");
   const [doctors, setDoctors] = useState<any[]>([]);
-  const [selectedDoctor, setSelectedDoctor] = useState("");
+  const [selectedDoctorId, setSelectedDoctorId] = useState("");
+  const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState("");
   const [availableSlots, setAvailableSlots] = useState<any[]>([]);
   const [selectedSlot, setSelectedSlot] = useState("");
   const [note, setNote] = useState("");
+
+  // Loading & Error
   const [loading, setLoading] = useState(false);
+  const [doctorsLoading, setDoctorsLoading] = useState(false);
+  const [datesLoading, setDatesLoading] = useState(false);
+  const [slotsLoading, setSlotsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    // Đợi auth loading hoàn tất trước khi check
-    if (authLoading) return;
+  const today = format(new Date(), "yyyy-MM-dd");
 
+  useEffect(() => {
+    if (authLoading) return;
     if (!isAuthenticated || user?.role !== "patient") {
       router.push("/login");
       return;
@@ -41,41 +62,93 @@ export default function BookAppointmentPage() {
     loadDoctors();
   }, [user, isAuthenticated, authLoading, router]);
 
+  // Load available dates when doctor changes
   useEffect(() => {
-    if (selectedDoctor && selectedDate) {
+    if (bookingMode === "by-doctor") {
+      if (selectedDoctorId) {
+        loadAvailableDates(selectedDoctorId);
+      } else {
+        setAvailableDates([]);
+      }
+    } else {
+      // auto-assign mode: generate next 14 days
+      const dates = [];
+      const start = new Date();
+      for (let i = 0; i < 14; i++) {
+        const d = new Date(start);
+        d.setDate(d.getDate() + i);
+        dates.push(format(d, "yyyy-MM-dd"));
+      }
+      setAvailableDates(dates);
+    }
+    setSelectedDate("");
+    setSelectedSlot("");
+    setAvailableSlots([]);
+  }, [selectedDoctorId, bookingMode]);
+
+  // Load slots when date/doctor changes
+  useEffect(() => {
+    if (selectedDate) {
       loadAvailableSlots();
+      setSelectedSlot("");
     } else {
       setAvailableSlots([]);
     }
-  }, [selectedDoctor, selectedDate]);
+  }, [selectedDate, selectedDoctorId, bookingMode]);
 
   const loadDoctors = async () => {
     try {
+      setDoctorsLoading(true);
       const response: any = await appointmentService.getDoctors();
-      const doctors = response.data || response || [];
-      if (doctors) {
-        setDoctors(
-          doctors.map((d: any) => ({ value: d._id, label: d.fullName }))
-        );
-      }
+      const docs = response.data || response || [];
+      setDoctors(docs);
     } catch (error) {
       console.error("Error loading doctors:", error);
+      toast.error("Không thể tải danh sách bác sĩ");
+    } finally {
+      setDoctorsLoading(false);
+    }
+  };
+
+  const loadAvailableDates = async (doctorId: string) => {
+    try {
+      setDatesLoading(true);
+      const response: any = await appointmentService.getAvailableDates(doctorId);
+      const dates = response.data || response || [];
+      setAvailableDates(dates);
+    } catch (error) {
+      console.error("Error loading available dates:", error);
+    } finally {
+      setDatesLoading(false);
     }
   };
 
   const loadAvailableSlots = async () => {
-    if (!selectedDoctor || !selectedDate) return;
+    if (!selectedDate) return;
     try {
-      const response: any = await appointmentService.getAllSlotsWithStatus({
-        doctorId: selectedDoctor,
-        date: selectedDate,
-      });
-      const slots = response.data || response || [];
-      if (slots) {
-        setAvailableSlots(slots);
+      setSlotsLoading(true);
+      let response: any;
+
+      if (bookingMode === "by-doctor") {
+        if (!selectedDoctorId) return;
+        response = await appointmentService.getDoctorAvailableSlots({
+          doctorId: selectedDoctorId,
+          date: selectedDate,
+        });
+      } else {
+        response = await appointmentService.getAvailableSlots({
+          date: selectedDate,
+        });
       }
+
+      const slots = response.data || response || [];
+      // If auto-assign, slots might not have "isBooked" flag from backend, 
+      // but usually availableSlots logic only returns free ones anyway.
+      setAvailableSlots(slots);
     } catch (error) {
       console.error("Error loading slots:", error);
+    } finally {
+      setSlotsLoading(false);
     }
   };
 
@@ -83,124 +156,277 @@ export default function BookAppointmentPage() {
     e.preventDefault();
     setError("");
 
-    if (!selectedDoctor || !selectedSlot) {
-      setError("Vui lòng chọn bác sĩ và thời gian");
+    if (!selectedDate || !selectedSlot) {
+      setError("Vui lòng chọn ngày và giờ khám");
+      return;
+    }
+
+    if (bookingMode === "by-doctor" && !selectedDoctorId) {
+      setError("Vui lòng chọn bác sĩ");
       return;
     }
 
     setLoading(true);
     try {
-      await appointmentService.createDoctorAppointment({
-        patientId: user?._id,
-        doctorId: selectedDoctor,
-        appointmentDate: selectedSlot,
-        note,
-      });
+      let response: any;
+      if (bookingMode === "by-doctor") {
+        response = await appointmentService.createDoctorAppointment({
+          doctorId: selectedDoctorId,
+          appointmentDate: selectedSlot,
+          note,
+        });
+        const doctorName = response.data?.doctorId?.fullName || "Bác sĩ";
+        toast.success(`Đặt lịch thành công với ${doctorName}. Đang chờ xác nhận.`);
+      } else {
+        response = await appointmentService.autoAssignAppointment({
+          appointmentDate: selectedSlot,
+          note,
+        });
+        const assignedDoctor = response.data?.doctorId?.fullName;
+        toast.success(
+          assignedDoctor
+            ? `Hệ thống đã xếp bác sĩ: ${assignedDoctor}`
+            : "Đặt lịch nhanh thành công! Hệ thống đang sắp xếp bác sĩ."
+        );
+      }
+
       router.push(ROUTES.PATIENT_APPOINTMENTS);
     } catch (err: any) {
-      setError(err.message || "Đặt lịch thất bại");
+      setError(err.message || "Đặt lịch thất bại. Vui lòng thử lại.");
     } finally {
       setLoading(false);
     }
   };
 
-  const today = new Date().toISOString().split("T")[0];
+  const selectedDoctor = doctors.find(d => d._id === selectedDoctorId);
 
   return (
     <DashboardLayout navItems={PATIENT_NAV_ITEMS} title="Đặt lịch hẹn">
-      <Card>
-        <CardHeader icon={<IconCalendarPlus size={20} />}>
-          <CardTitle>Đặt lịch hẹn mới</CardTitle>
-        </CardHeader>
-        <CardBody>
-          <form onSubmit={handleSubmit} className="space-y-4 max-w-xl">
-            {error && (
-              <div className="flex items-center gap-2 p-4 mb-4 text-red-800 bg-red-50 border border-red-200 rounded-lg">
-                <IconAlertCircle size={20} />
-                {error}
-              </div>
-            )}
+      <div className="w-full space-y-4">
+        {/* Selection Mode */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <button
+            onClick={() => setBookingMode("by-doctor")}
+            className={`p-6 rounded-2xl border-2 transition-all text-left flex items-start gap-4 ${bookingMode === "by-doctor"
+              ? "border-primary bg-primary/5 shadow-md"
+              : "border-gray-200 bg-white hover:border-primary/40"
+              }`}
+          >
+            <div className={`p-3 rounded-xl ${bookingMode === "by-doctor" ? "bg-primary text-white" : "bg-gray-100 text-gray-500"}`}>
+              <IconUserCheck size={28} />
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-900 text-lg">Đặt theo yêu cầu</h3>
+              <p className="text-sm text-gray-500 mt-1">
+                Tự chọn bác sĩ bạn tin tưởng. Xem trước lịch làm việc của từng người.
+              </p>
+            </div>
+            {bookingMode === "by-doctor" && <IconCheck className="ml-auto text-primary" size={24} />}
+          </button>
 
-            <Select
-              label="Chọn bác sĩ"
-              options={[{ value: "", label: "Chọn bác sĩ" }, ...doctors]}
-              value={selectedDoctor}
-              onChange={(e) => {
-                setSelectedDoctor(e.target.value);
-                setSelectedSlot("");
-              }}
-              required
-              fullWidth
-            />
+          <button
+            onClick={() => setBookingMode("auto-assign")}
+            className={`p-6 rounded-2xl border-2 transition-all text-left flex items-start gap-4 ${bookingMode === "auto-assign"
+              ? "border-tertiary bg-tertiary/5 shadow-md"
+              : "border-gray-200 bg-white hover:border-tertiary/40"
+              }`}
+          >
+            <div className={`p-3 rounded-xl ${bookingMode === "auto-assign" ? "bg-tertiary text-white" : "bg-gray-100 text-gray-500"}`}>
+              <IconBolt size={28} />
+            </div>
+            <div>
+              <h3 className="font-bold text-gray-900 text-lg">Đặt lịch nhanh</h3>
+              <p className="text-sm text-gray-500 mt-1">
+                Hệ thống tự động sắp xếp bác sĩ còn rảnh cho bạn. Tiết kiệm thời gian.
+              </p>
+            </div>
+            {bookingMode === "auto-assign" && <IconCheck className="ml-auto text-tertiary" size={24} />}
+          </button>
+        </div>
 
-            <Input
-              label="Chọn ngày"
-              type="date"
-              value={selectedDate}
-              onChange={(e) => {
-                setSelectedDate(e.target.value);
-                setSelectedSlot("");
-              }}
-              min={today}
-              required
-              fullWidth
-            />
+        <Card className="border-none shadow-xl overflow-visible">
+          <CardHeader icon={<IconCalendarPlus size={24} className="text-primary" />}>
+            <CardTitle>Chi tiết đăng ký</CardTitle>
+          </CardHeader>
+          <CardBody className="p-0">
+            <form onSubmit={handleSubmit} className="divide-y divide-gray-100">
+              {error && (
+                <div className="p-4 mx-6 mt-4 flex items-center gap-3 text-red-600 bg-red-50 border border-red-100 rounded-xl">
+                  <IconAlertCircle size={20} />
+                  <span className="text-sm font-medium">{error}</span>
+                </div>
+              )}
 
-            {availableSlots.length > 0 && (
-              <div className="space-y-3">
-                <label className="block text-sm font-medium text-gray-700">
-                  Chọn giờ
-                </label>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-                  {availableSlots.map((slot: any) => (
-                    <button
-                      key={slot.time}
-                      type="button"
-                      className={`flex flex-col items-center justify-center p-3 text-sm font-medium border rounded-lg transition-all ${selectedSlot === slot.time
-                        ? "!border-primary bg-primary/10 text-primary"
-                        : "border-gray-200 text-gray-700 hover:border-primary/50"
-                        } ${slot.isBooked
-                          ? "bg-gray-100 text-gray-500 cursor-not-allowed border-gray-200"
-                          : ""
-                        }`}
-                      onClick={() =>
-                        !slot.isBooked && setSelectedSlot(slot.time)
-                      }
-                      disabled={slot.isBooked}
-                    >
-                      {format(new Date(slot.time), "HH:mm")}
-                      {slot.isBooked && (
-                        <span className="text-xs font-normal">Đã đặt</span>
-                      )}
-                    </button>
-                  ))}
+              {/* Step 1: Doctor Selection (Only for By Doctor mode) */}
+              {bookingMode === "by-doctor" && (
+                <div className="p-4 space-y-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">1</div>
+                    <label className="text-base font-semibold text-gray-800">Chọn bác sĩ chuyên khoa</label>
+                  </div>
+
+                  {doctorsLoading ? (
+                    <div className="h-10 bg-gray-100 animate-pulse rounded-lg w-full"></div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {doctors.map((doc) => (
+                        <div
+                          key={doc._id}
+                          onClick={() => setSelectedDoctorId(doc._id)}
+                          className={`p-4 rounded-xl border transition-all cursor-pointer flex items-center gap-3 ${selectedDoctorId === doc._id
+                            ? "border-primary bg-primary/5 ring-1 ring-primary"
+                            : "border-gray-200 hover:border-primary/50"
+                            }`}
+                        >
+                          <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
+                            <IconUserSquareRounded size={20} />
+                          </div>
+                          <div>
+                            <div className="font-semibold text-gray-900 leading-tight">{doc.fullName}</div>
+                            <div className="text-xs text-primary font-medium mt-0.5 uppercase tracking-wider">{doc.specialty}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Step 2: Date Selection */}
+              <div className="p-4 space-y-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
+                    {bookingMode === "by-doctor" ? "2" : "1"}
+                  </div>
+                  <label className="text-base font-semibold text-gray-800">Chọn ngày khám</label>
+                </div>
+
+                <div className="space-y-3">
+                  {bookingMode === "by-doctor" && !selectedDoctorId ? (
+                    <div className="text-sm text-gray-400 italic">Vui lòng chọn bác sĩ trước</div>
+                  ) : datesLoading ? (
+                    <div className="flex gap-2">
+                      {[1, 2, 3].map(i => <div key={i} className="h-20 w-16 bg-gray-100 animate-pulse rounded-xl"></div>)}
+                    </div>
+                  ) : availableDates.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {availableDates.map((dateStr) => {
+                        const date = parseISO(dateStr);
+                        const isSelected = selectedDate === dateStr;
+                        return (
+                          <button
+                            key={dateStr}
+                            type="button"
+                            onClick={() => setSelectedDate(dateStr)}
+                            className={`flex flex-col items-center justify-center min-w-[70px] p-3 rounded-xl border transition-all ${isSelected
+                              ? "border-primary bg-primary text-white shadow-lg shadow-primary/30"
+                              : "border-gray-200 bg-white text-gray-700 hover:border-primary/50"
+                              }`}
+                          >
+                            <span className={`text-[10px] uppercase font-bold tracking-widest ${isSelected ? "text-white/80" : "text-gray-400"}`}>
+                              {format(date, "EEE", { locale: vi })}
+                            </span>
+                            <span className="text-lg font-bold">{format(date, "dd")}</span>
+                            <span className="text-[10px] font-medium">{format(date, "MM/yyyy")}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="p-4 bg-yellow-50 text-yellow-700 rounded-xl text-sm italic">
+                      {bookingMode === "by-doctor"
+                        ? "Bác sĩ này hiện chưa có lịch trống. Vui lòng chọn bác sĩ khác hoặc chọn 'Đặt lịch nhanh'."
+                        : "Hiện tại không có ngày trống nào khả dụng."}
+                    </div>
+                  )}
                 </div>
               </div>
-            )}
 
-            <Textarea
-              label="Ghi chú (tùy chọn)"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="Nhập ghi chú nếu có..."
-              fullWidth
-            />
+              {/* Step 3: Slot Selection */}
+              <div className="p-4 space-y-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
+                    {bookingMode === "by-doctor" ? "3" : "2"}
+                  </div>
+                  <label className="text-base font-semibold text-gray-800">Khung giờ rảnh</label>
+                </div>
 
-            <div className="flex gap-4 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.push(ROUTES.PATIENT_APPOINTMENTS)}
-              >
-                Hủy
-              </Button>
-              <Button type="submit" loading={loading}>
-                Đặt lịch
-              </Button>
-            </div>
-          </form>
-        </CardBody>
-      </Card>
+                {!selectedDate ? (
+                  <div className="text-sm text-gray-400 italic">Vui lòng chọn ngày trước</div>
+                ) : slotsLoading ? (
+                  <div className="grid grid-cols-4 gap-3">
+                    {[1, 2, 3, 4].map(i => <div key={i} className="h-10 bg-gray-100 animate-pulse rounded-lg"></div>)}
+                  </div>
+                ) : availableSlots.length > 0 ? (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                    {availableSlots.map((slot: any) => {
+                      const isSelected = selectedSlot === slot.time;
+                      return (
+                        <button
+                          key={slot.time}
+                          type="button"
+                          className={`flex flex-col items-center justify-center p-3 text-sm font-bold border rounded-xl transition-all ${isSelected
+                            ? "border-primary bg-primary text-white shadow-lg shadow-primary/20"
+                            : "border-gray-200 bg-white text-gray-700 hover:border-primary/50"
+                            } ${slot.isBooked ? "opacity-50 grayscale cursor-not-allowed bg-gray-50" : ""}`}
+                          onClick={() => !slot.isBooked && setSelectedSlot(slot.time)}
+                          disabled={slot.isBooked}
+                        >
+                          <div className="flex items-center gap-1">
+                            <IconClock size={14} className={isSelected ? "text-white/70" : "text-gray-400"} />
+                            {format(new Date(slot.time), "HH:mm")}
+                          </div>
+                          {slot.isBooked && <span className="text-[10px] font-normal mt-1">Đã hết</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="p-4 bg-gray-50 text-gray-500 rounded-xl text-sm italic">
+                    Không có khung giờ nào khả dụng cho ngày này.
+                  </div>
+                )}
+              </div>
+
+              {/* Final: Note & Submit */}
+              <div className="p-4 space-y-4">
+                <Textarea
+                  label="Ghi chú thêm về sức khỏe"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="Ví dụ: Tôi muốn khám sức khỏe định kỳ, tôi đang bị đau dạ dày..."
+                  fullWidth
+                  rows={3}
+                />
+
+                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                  <Button
+                    type="submit"
+                    size="sm"
+                    loading={loading}
+                    className="flex-1"
+                    icon={<IconCalendarCheck size={20} />}
+                  >
+                    Xác nhận đặt lịch
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => router.push(ROUTES.PATIENT_APPOINTMENTS)}
+                    icon={<IconX size={20} />}
+                    size="sm"
+                  >
+                    Hủy bỏ
+                  </Button>
+                </div>
+                <p className="text-center text-xs text-gray-400 mt-2 italic">
+                  * Lịch hẹn sau khi đặt sẽ ở trạng thái Chờ xác nhận từ bệnh viện.
+                </p>
+              </div>
+            </form>
+          </CardBody>
+        </Card>
+      </div>
     </DashboardLayout>
   );
 }

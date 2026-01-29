@@ -203,10 +203,10 @@ export default function LabTestRequestsPage() {
                       {pagination.skip + index + 1}
                     </TableCell>
                     <TableCell className="font-medium text-gray-700">
-                      {request.examId?.patientId?.fullName || "Không xác định"}
+                      {request.examId?.patientId?.fullName || "Chưa cập nhật"}
                     </TableCell>
                     <TableCell>
-                      {request.serviceId?.name || request.testType || "Không xác định"}
+                      {request.serviceId?.name || request.testType || "Chưa xác định"}
                     </TableCell>
                     <TableCell>
                       {format(new Date(request.createdAt), "dd/MM/yyyy HH:mm", { locale: vi })}
@@ -269,17 +269,17 @@ export default function LabTestRequestsPage() {
         size="lg"
       >
         {selectedRequest && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
               <div className="space-y-1">
                 <span className="text-xs font-semibold text-primary uppercase tracking-widest">Bệnh nhân</span>
                 <div className="font-semibold text-gray-700">{selectedRequest.examId?.patientId?.fullName}</div>
-                <div className="text-xs text-gray-500">SĐT: {selectedRequest.examId?.patientId?.phone || "-"}</div>
-                <div className="text-xs text-gray-500">Ngày sinh: {selectedRequest.examId?.patientId?.dateOfBirth ? format(new Date(selectedRequest.examId.patientId.dateOfBirth), "dd/MM/yyyy") : "-"}</div>
+                <div className="text-xs text-gray-500">SĐT: {selectedRequest.examId?.patientId?.phone || "Chưa cập nhật"}</div>
+                <div className="text-xs text-gray-500">Ngày sinh: {selectedRequest.examId?.patientId?.dateOfBirth ? format(new Date(selectedRequest.examId.patientId.dateOfBirth), "dd/MM/yyyy") : "Chưa cập nhật"}</div>
               </div>
               <div className="space-y-1">
                 <span className="text-xs font-semibold text-primary uppercase tracking-widest">Bác sĩ chỉ định</span>
-                <div className="font-semibold text-gray-700">{selectedRequest.examId?.doctorId?.fullName || "N/A"}</div>
+                <div className="font-semibold text-gray-700">{selectedRequest.examId?.doctorId?.fullName || "Chưa cập nhật"}</div>
                 <div className="text-xs text-secondary font-medium">{selectedRequest.examId?.doctorId?.specialty}</div>
               </div>
               <div className="space-y-1">
@@ -289,7 +289,7 @@ export default function LabTestRequestsPage() {
               </div>
               <div className="space-y-1">
                 <span className="text-xs font-semibold text-primary uppercase tracking-widest">Loại / Ghi chú</span>
-                <div className="font-semibold text-gray-700">{selectedRequest.testType || "-"}</div>
+                <div className="font-semibold text-gray-700">{selectedRequest.testType || "Không có ghi chú"}</div>
               </div>
               <div className="space-y-1">
                 <span className="text-xs font-semibold text-primary uppercase tracking-widest">Trạng thái</span>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { getPatients } from "@/lib/services/patients";
+import { getPatients, updatePatient } from "@/lib/services/patients";
 import { useAuth } from "@/contexts/AuthContext";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -32,15 +32,31 @@ import {
   IconRefresh,
   IconEye,
   IconAlertCircle,
+  IconInfoCircle,
+  IconStethoscope,
+  IconX,
+  IconCheck,
+  IconPencil,
 } from "@tabler/icons-react";
 import Pagination from "@/components/ui/Pagination";
 import { ADMIN_NAV_ITEMS } from "@/lib/navigation";
+import { Badge } from "@/components/ui/Badge";
 
 const ROLE_OPTIONS = [
   { value: "doctor", label: "Bác sĩ" },
   { value: "staff", label: "Nhân viên" },
   { value: "lab_nurse", label: "Y tá xét nghiệm" },
   { value: "patient", label: "Bệnh nhân" },
+];
+
+const DEGREE_OPTIONS = [
+  { value: "Bác sĩ", label: "Bác sĩ (BS)" },
+  { value: "Bác sĩ Chuyên khoa I", label: "Bác sĩ Chuyên khoa I (BSCKI)" },
+  { value: "Bác sĩ Chuyên khoa II", label: "Bác sĩ Chuyên khoa II (BSCKII)" },
+  { value: "Thạc sĩ", label: "Thạc sĩ (ThS)" },
+  { value: "Tiến sĩ", label: "Tiến sĩ (TS)" },
+  { value: "Phó giáo sư", label: "Phó giáo sư (PGS)" },
+  { value: "Giáo sư", label: "Giáo sư (GS)" },
 ];
 
 interface UserWithRole {
@@ -66,8 +82,23 @@ export default function AdminUsersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserWithRole | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [loading, setLoading] = useState(false); // Used for create form
+  const [updateLoading, setUpdateLoading] = useState(false);
   const [error, setError] = useState("");
+  const [editFormData, setEditFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    gender: "male" as "male" | "female" | "other",
+    dateOfBirth: "",
+    address: "",
+    cccd: "",
+    specialty: "",
+    degree: "",
+    birthYear: "",
+    workExperience: "",
+  });
   const [users, setUsers] = useState<UserWithRole[]>([]);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [fetchError, setFetchError] = useState("");
@@ -122,6 +153,20 @@ export default function AdminUsersPage() {
 
   const handleViewUser = (user: UserWithRole) => {
     setSelectedUser(user);
+    setIsEditMode(false);
+    setEditFormData({
+      fullName: user.fullName || "",
+      email: user.email || "",
+      phone: user.phone || "",
+      gender: user.gender || "male",
+      dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split('T')[0] : "",
+      address: user.address || "",
+      cccd: user.cccd || "",
+      specialty: user.specialty || "",
+      degree: user.degree || "",
+      birthYear: user.birthYear ? user.birthYear.toString() : "",
+      workExperience: user.workExperience ? user.workExperience.toString() : "",
+    });
     setIsDetailModalOpen(true);
   };
 
@@ -299,6 +344,62 @@ export default function AdminUsersPage() {
     }
   };
 
+  const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setEditFormData({
+      ...editFormData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleUpdateUser = async () => {
+    if (!selectedUser) return;
+
+    setUpdateLoading(true);
+    setError("");
+
+    try {
+      const updateData: any = {
+        fullName: editFormData.fullName,
+        email: editFormData.email,
+        phone: editFormData.phone,
+        gender: editFormData.gender,
+        dateOfBirth: editFormData.dateOfBirth,
+        address: editFormData.address,
+      };
+
+      if (editFormData.cccd) {
+        updateData.cccd = editFormData.cccd;
+      }
+
+      if (selectedUser.role === "doctor") {
+        updateData.specialty = editFormData.specialty;
+        if (editFormData.degree) updateData.degree = editFormData.degree;
+        if (editFormData.birthYear) updateData.birthYear = parseInt(editFormData.birthYear);
+        if (editFormData.workExperience) updateData.workExperience = parseInt(editFormData.workExperience);
+      }
+
+      // Gọi API dựa trên vai trò
+      if (selectedUser.role === "doctor") {
+        await directoryService.updateDoctor(selectedUser._id, updateData);
+      } else if (selectedUser.role === "staff") {
+        await directoryService.updateStaff(selectedUser._id, updateData);
+      } else if (selectedUser.role === "lab_nurse") {
+        await directoryService.updateNurse(selectedUser._id, updateData);
+      } else if (selectedUser.role === "patient") {
+        await updatePatient(selectedUser._id, updateData);
+      }
+
+      toast.success("Cập nhật thông tin thành công!");
+      setIsEditMode(false);
+      setIsDetailModalOpen(false);
+      fetchUsers();
+    } catch (err: any) {
+      toast.error(err.message || "Cập nhật thông tin thất bại");
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+
   return (
     <DashboardLayout navItems={ADMIN_NAV_ITEMS} title="Quản lý tài khoản">
       <Card>
@@ -383,15 +484,16 @@ export default function AdminUsersPage() {
                         {startIndex + index + 1}
                       </TableCell>
                       <TableCell>
-                        <span
-                          className={`px-2 py-1 text-xs font-medium rounded-full ${user.role === "doctor"
-                            ? "bg-blue-100 text-blue-800"
-                            : user.role === "staff"
-                              ? "bg-purple-100 text-purple-800"
-                              : user.role === "lab_nurse"
-                                ? "bg-amber-100 text-amber-800"
-                                : "bg-green-100 text-green-800"
-                            }`}
+                        <Badge
+                          variant={
+                            user.role === "doctor"
+                              ? "info"
+                              : user.role === "staff"
+                                ? "purple"
+                                : user.role === "lab_nurse"
+                                  ? "warning"
+                                  : "success"
+                          }
                         >
                           {user.role === "doctor"
                             ? "Bác sĩ"
@@ -400,11 +502,11 @@ export default function AdminUsersPage() {
                               : user.role === "lab_nurse"
                                 ? "Y tá xét nghiệm"
                                 : "Bệnh nhân"}
-                        </span>
+                        </Badge>
                       </TableCell>
                       <TableCell>{user.fullName}</TableCell>
-                      <TableCell>{user.email || "-"}</TableCell>
-                      <TableCell>{user.phone || "-"}</TableCell>
+                      <TableCell>{user.email || "Chưa cập nhật"}</TableCell>
+                      <TableCell>{user.phone || "Chưa cập nhật"}</TableCell>
                       <TableCell>
                         {user.role === "doctor" && user.specialty ? (
                           <span className="text-sm text-blue-600 font-medium">
@@ -415,7 +517,7 @@ export default function AdminUsersPage() {
                             CCCD: {user.cccd}
                           </span>
                         ) : (
-                          "-"
+                          "Chưa cập nhật"
                         )}
                       </TableCell>
                       <TableCell>
@@ -451,155 +553,345 @@ export default function AdminUsersPage() {
       </Card>
       <Modal
         isOpen={isDetailModalOpen}
-        onClose={() => setIsDetailModalOpen(false)}
-        title="Chi tiết tài khoản"
+        onClose={() => {
+          setIsDetailModalOpen(false);
+          setIsEditMode(false);
+          setError("");
+        }}
+        title={isEditMode ? "Chỉnh sửa tài khoản" : "Chi tiết tài khoản"}
         size="lg"
         footer={
-          <Button onClick={() => setIsDetailModalOpen(false)}>Đóng</Button>
+          isEditMode ? (
+            <>
+              <Button
+                variant="outline"
+                icon={<IconX size={20} />}
+                onClick={() => {
+                  setIsEditMode(false);
+                  setError("");
+                }}
+              >
+                Hủy
+              </Button>
+              <Button
+                onClick={handleUpdateUser}
+                loading={updateLoading}
+                icon={<IconCheck size={20} />}
+              >
+                Cập nhật
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="outline"
+                icon={<IconX size={20} />}
+                onClick={() => setIsDetailModalOpen(false)}
+              >
+                Đóng
+              </Button>
+              <Button
+                onClick={() => setIsEditMode(true)}
+                icon={<IconPencil size={20} />}
+              >
+                Chỉnh sửa
+              </Button>
+            </>
+          )
         }
       >
         {selectedUser && (
-          <div className="space-y-6">
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">
-                Thông tin chung
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm text-gray-500">
-                    {getProfileIdLabel(selectedUser.role)}
-                  </span>
-                  <span
-                    className="text-base font-medium text-gray-700 break-all"
-                    title={selectedUser._id}
-                  >
-                    {selectedUser._id}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm text-gray-500">
-                    Mã tài khoản (User ID)
-                  </span>
-                  <span
-                    className="text-base font-medium text-gray-700 break-all"
-                    title={getAccountId(selectedUser)}
-                  >
-                    {getAccountId(selectedUser)}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm text-gray-500">Họ và tên</span>
-                  <span className="text-base font-medium text-gray-700 break-all">
-                    {selectedUser.fullName}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm text-gray-500">Vai trò</span>
-                  <div className="text-base font-medium text-gray-700 break-all">
-                    <span
-                      className={`px-2 py-1 text-xs font-medium rounded-full ${selectedUser.role === "doctor"
-                        ? "bg-blue-100 text-blue-800"
-                        : selectedUser.role === "staff"
-                          ? "bg-purple-100 text-purple-800"
-                          : selectedUser.role === "patient"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-amber-100 text-amber-800"
-                        }`}
-                    >
-                      {selectedUser.role === "doctor"
-                        ? "Bác sĩ"
-                        : selectedUser.role === "staff"
-                          ? "Nhân viên"
-                          : selectedUser.role === "patient"
-                            ? "Bệnh nhân"
-                            : "Y tá xét nghiệm"}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm text-gray-500">Email</span>
-                  <span className="text-base font-medium text-gray-700 break-all">
-                    {selectedUser.email || "-"}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm text-gray-500">Số điện thoại</span>
-                  <span className="text-base font-medium text-gray-700 break-all">
-                    {selectedUser.phone || "-"}
-                  </span>
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm text-gray-500">Giới tính</span>
-                  <span className="text-base font-medium text-gray-700 break-all">
-                    {selectedUser.gender === "male"
-                      ? "Nam"
-                      : selectedUser.gender === "female"
-                        ? "Nữ"
-                        : selectedUser.gender === "other"
-                          ? "Khác"
-                          : "-"}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm text-gray-500">Ngày sinh</span>
-                  <span className="text-base font-medium text-gray-700 break-all">
-                    {selectedUser.dateOfBirth
-                      ? new Date(selectedUser.dateOfBirth).toLocaleDateString(
-                        "vi-VN"
-                      )
-                      : "-"}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm text-gray-500">CCCD</span>
-                  <span className="text-base font-medium text-gray-700 break-all">
-                    {selectedUser.cccd || "-"}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-sm text-gray-500">Địa chỉ</span>
-                  <span className="text-base font-medium text-gray-700 break-all">
-                    {selectedUser.address || "-"}
-                  </span>
-                </div>
+          <div className="space-y-4">
+            {error && (
+              <div className="flex items-center gap-2 p-4 text-red-800 bg-red-50 border border-red-200 rounded-lg text-sm">
+                <IconAlertCircle size={20} />
+                {error}
               </div>
-            </div>
+            )}
 
-            {selectedUser.role === "doctor" && (
+            {!isEditMode ? (
+              // View Mode
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">
-                  Thông tin bác sĩ
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-sm text-gray-500">Chuyên khoa</span>
-                    <span className="text-base font-medium text-gray-700 break-all">
-                      {selectedUser.specialty || "-"}
-                    </span>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-sm text-gray-500">Bằng cấp</span>
-                    <span className="text-base font-medium text-gray-700 break-all">
-                      {selectedUser.degree || "-"}
-                    </span>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-sm text-gray-500">Năm sinh</span>
-                    <span className="text-base font-medium text-gray-700 break-all">
-                      {selectedUser.birthYear || "-"}
-                    </span>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="text-sm text-gray-500">Kinh nghiệm</span>
-                    <span className="text-base font-medium text-gray-700 break-all">
-                      {selectedUser.workExperience
-                        ? `${selectedUser.workExperience} năm`
-                        : "-"}
-                    </span>
+                <div>
+                  <h3 className="text-lg font-semibold text-primary mb-3 flex items-center gap-2">
+                    <IconInfoCircle size={20} />
+                    Thông tin chung
+                  </h3>
+                  <div className="border border-gray-200 rounded-xl overflow-hidden">
+                    <Table>
+                      <TableBody>
+                        <TableRow className="hover:bg-transparent border-b border-gray-100">
+                          <TableCell className="bg-gray-50/50 w-1/3 font-medium text-gray-500 py-3">
+                            {getProfileIdLabel(selectedUser.role)}
+                          </TableCell>
+                          <TableCell className="font-semibold text-gray-700 py-3">
+                            {selectedUser._id}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="hover:bg-transparent border-b border-gray-100">
+                          <TableCell className="bg-gray-50/50 font-medium text-gray-500 py-3">
+                            Mã tài khoản (User ID)
+                          </TableCell>
+                          <TableCell className="font-semibold text-gray-700 py-3">
+                            {getAccountId(selectedUser)}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="hover:bg-transparent border-b border-gray-100">
+                          <TableCell className="bg-gray-50/50 font-medium text-gray-500 py-3">
+                            Họ và tên
+                          </TableCell>
+                          <TableCell className="font-semibold text-gray-700 py-3 uppercase">
+                            {selectedUser.fullName}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="hover:bg-transparent border-b border-gray-100">
+                          <TableCell className="bg-gray-50/50 font-medium text-gray-500 py-3">
+                            Vai trò
+                          </TableCell>
+                          <TableCell className="py-3">
+                            <Badge
+                              variant={
+                                selectedUser.role === "doctor"
+                                  ? "info"
+                                  : selectedUser.role === "staff"
+                                    ? "purple"
+                                    : selectedUser.role === "patient"
+                                      ? "success"
+                                      : "warning"
+                              }
+                            >
+                              {selectedUser.role === "doctor"
+                                ? "Bác sĩ"
+                                : selectedUser.role === "staff"
+                                  ? "Nhân viên"
+                                  : selectedUser.role === "patient"
+                                    ? "Bệnh nhân"
+                                    : "Y tá xét nghiệm"}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="hover:bg-transparent border-b border-gray-100">
+                          <TableCell className="bg-gray-50/50 font-medium text-gray-500 py-3">
+                            Email
+                          </TableCell>
+                          <TableCell className="text-gray-700 py-3 italic">
+                            {selectedUser.email || "Chưa cập nhật"}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="hover:bg-transparent border-b border-gray-100">
+                          <TableCell className="bg-gray-50/50 font-medium text-gray-500 py-3">
+                            Số điện thoại
+                          </TableCell>
+                          <TableCell className="font-semibold text-primary py-3">
+                            {selectedUser.phone || "Chưa cập nhật"}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="hover:bg-transparent border-b border-gray-100">
+                          <TableCell className="bg-gray-50/50 font-medium text-gray-500 py-3">
+                            Giới tính / Ngày sinh
+                          </TableCell>
+                          <TableCell className="text-gray-700 py-3">
+                            {`${selectedUser.gender === "male" ? "Nam" : selectedUser.gender === "female" ? "Nữ" : "Khác"} - ${selectedUser.dateOfBirth ? new Date(selectedUser.dateOfBirth).toLocaleDateString("vi-VN") : "Chưa cập nhật"}`}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="hover:bg-transparent border-b border-gray-100">
+                          <TableCell className="bg-gray-50/50 font-medium text-gray-500 py-3">
+                            Số CCCD
+                          </TableCell>
+                          <TableCell className="text-gray-700 py-3 font-mono">
+                            {selectedUser.cccd || "Chưa cập nhật"}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow className="hover:bg-transparent">
+                          <TableCell className="bg-gray-50/50 font-medium text-gray-500 py-3">
+                            Địa chỉ
+                          </TableCell>
+                          <TableCell className="text-gray-700 py-3 leading-relaxed">
+                            {selectedUser.address || "Chưa cập nhật"}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
                   </div>
                 </div>
+
+                {selectedUser.role === "doctor" && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-secondary mb-3 flex items-center gap-2">
+                      <IconStethoscope size={20} />
+                      Thông tin chuyên môn
+                    </h3>
+                    <div className="border border-gray-200 rounded-xl overflow-hidden">
+                      <Table>
+                        <TableBody>
+                          <TableRow className="hover:bg-transparent border-b border-gray-100">
+                            <TableCell className="bg-gray-50/50 w-1/3 font-medium text-gray-500 py-3">
+                              Chuyên khoa
+                            </TableCell>
+                            <TableCell className="font-semibold text-blue-600 py-3">
+                              {selectedUser.specialty || "Chưa cập nhật"}
+                            </TableCell>
+                          </TableRow>
+                          <TableRow className="hover:bg-transparent border-b border-gray-100">
+                            <TableCell className="bg-gray-50/50 font-medium text-gray-500 py-3">
+                              Bằng cấp
+                            </TableCell>
+                            <TableCell className="text-gray-700 py-3 font-medium">
+                              {selectedUser.degree || "Chưa cập nhật"}
+                            </TableCell>
+                          </TableRow>
+                          <TableRow className="hover:bg-transparent border-b border-gray-100">
+                            <TableCell className="bg-gray-50/50 font-medium text-gray-500 py-3">
+                              Năm sinh
+                            </TableCell>
+                            <TableCell className="text-gray-700 py-3">
+                              {selectedUser.birthYear || "Chưa cập nhật"}
+                            </TableCell>
+                          </TableRow>
+                          <TableRow className="hover:bg-transparent">
+                            <TableCell className="bg-gray-50/50 font-medium text-gray-500 py-3">
+                              Kinh nghiệm
+                            </TableCell>
+                            <TableCell className="text-gray-700 py-3 font-semibold">
+                              {selectedUser.workExperience
+                                ? `${selectedUser.workExperience} năm`
+                                : "Chưa cập nhật"}
+                            </TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+                )}
               </div>
+            ) : (
+              // Edit Mode
+              <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <h3 className="text-lg font-semibold text-primary flex items-center gap-2">
+                    <IconInfoCircle size={20} />
+                    Thông tin chung
+                  </h3>
+                </div>
+
+                <Input
+                  label="Họ và tên"
+                  name="fullName"
+                  type="text"
+                  value={editFormData.fullName}
+                  onChange={handleEditFormChange}
+                  required
+                  fullWidth
+                />
+
+                <Input
+                  label="Email"
+                  name="email"
+                  type="email"
+                  value={editFormData.email}
+                  onChange={handleEditFormChange}
+                  required
+                  fullWidth
+                />
+
+                <Input
+                  label="Số điện thoại"
+                  name="phone"
+                  type="tel"
+                  value={editFormData.phone}
+                  onChange={handleEditFormChange}
+                  required
+                  fullWidth
+                />
+
+                <Select
+                  label="Giới tính"
+                  name="gender"
+                  options={GENDER_OPTIONS}
+                  value={editFormData.gender}
+                  onChange={handleEditFormChange}
+                  required
+                  fullWidth
+                />
+
+                <Input
+                  label="Ngày sinh"
+                  name="dateOfBirth"
+                  type="date"
+                  value={editFormData.dateOfBirth}
+                  onChange={handleEditFormChange}
+                  required
+                  fullWidth
+                />
+
+                <Input
+                  label="Số CCCD"
+                  name="cccd"
+                  type="text"
+                  value={editFormData.cccd}
+                  onChange={handleEditFormChange}
+                  fullWidth
+                />
+
+                <Input
+                  label="Địa chỉ"
+                  name="address"
+                  type="text"
+                  value={editFormData.address}
+                  onChange={handleEditFormChange}
+                  required
+                  fullWidth
+                  className="md:col-span-2"
+                />
+
+                {selectedUser.role === "doctor" && (
+                  <>
+                    <div className="md:col-span-2 mt-4">
+                      <h3 className="text-lg font-semibold text-secondary flex items-center gap-2">
+                        <IconStethoscope size={20} />
+                        Thông tin chuyên môn
+                      </h3>
+                    </div>
+
+                    <Input
+                      label="Chuyên khoa"
+                      name="specialty"
+                      type="text"
+                      value={editFormData.specialty}
+                      onChange={handleEditFormChange}
+                      required
+                      fullWidth
+                    />
+
+                    <Select
+                      label="Bằng cấp"
+                      name="degree"
+                      options={DEGREE_OPTIONS}
+                      value={editFormData.degree}
+                      onChange={handleEditFormChange}
+                      fullWidth
+                    />
+
+                    <Input
+                      label="Năm sinh"
+                      name="birthYear"
+                      type="number"
+                      value={editFormData.birthYear}
+                      onChange={handleEditFormChange}
+                      fullWidth
+                    />
+
+                    <Input
+                      label="Số năm kinh nghiệm"
+                      name="workExperience"
+                      type="number"
+                      value={editFormData.workExperience}
+                      onChange={handleEditFormChange}
+                      fullWidth
+                    />
+                  </>
+                )}
+              </form>
             )}
           </div>
         )}
@@ -617,6 +909,7 @@ export default function AdminUsersPage() {
           <>
             <Button
               variant="outline"
+              icon={<IconX size={20} />}
               onClick={() => {
                 setIsModalOpen(false);
                 resetForm();
@@ -624,7 +917,11 @@ export default function AdminUsersPage() {
             >
               Hủy
             </Button>
-            <Button onClick={handleSubmit} loading={loading}>
+            <Button
+              onClick={handleSubmit}
+              loading={loading}
+              icon={<IconCheck size={20} />}
+            >
               Tạo tài khoản
             </Button>
           </>
@@ -738,11 +1035,10 @@ export default function AdminUsersPage() {
                 required
                 fullWidth
               />
-              <Input
+              <Select
                 label="Bằng cấp"
                 name="degree"
-                type="text"
-                placeholder="Bác sĩ, Thạc sĩ, Tiến sĩ..."
+                options={DEGREE_OPTIONS}
                 value={formData.degree}
                 onChange={handleChange}
                 fullWidth

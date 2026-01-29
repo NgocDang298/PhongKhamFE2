@@ -26,6 +26,8 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import Button from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import Pagination from "@/components/ui/Pagination";
 
 export default function PatientInvoicesPage() {
   const router = useRouter();
@@ -33,6 +35,8 @@ export default function PatientInvoicesPage() {
   const [invoices, setInvoices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -109,64 +113,73 @@ export default function PatientInvoicesPage() {
               Chưa có hóa đơn nào
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Mã hóa đơn</TableHead>
-                  <TableHead>Ngày tạo</TableHead>
-                  <TableHead>Số lượng dịch vụ</TableHead>
-                  <TableHead>Tổng tiền</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead>Thao tác</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {invoices.map((invoice) => (
-                  <TableRow key={invoice._id}>
-                    <TableCell>
-                      #{invoice.invoiceNumber || invoice._id.slice(-8)}
-                    </TableCell>
-                    <TableCell>
-                      {format(new Date(invoice.createdAt || ""), "dd/MM/yyyy", {
-                        locale: vi,
-                      })}
-                    </TableCell>
-                    <TableCell>{invoice.items?.length || 0}</TableCell>
-                    <TableCell>{formatCurrency(invoice.totalAmount)}</TableCell>
-                    <TableCell>
-                      <span
-                        className="px-2 py-1 text-xs font-medium rounded-full"
-                        style={{
-                          backgroundColor:
-                            invoice.status === "paid"
-                              ? "#10b98120"
-                              : "#ef444420",
-                          color:
-                            invoice.status === "paid" ? "#10b981" : "#ef4444",
-                        }}
-                      >
-                        {
-                          INVOICE_STATUS_LABELS[
-                          invoice.status as keyof typeof INVOICE_STATUS_LABELS
-                          ]
-                        }
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <button
-                        className="text-primary hover:text-primary-600 font-medium"
-                        onClick={() => {
-                          setSelectedInvoice(invoice);
-                          setIsModalOpen(true);
-                        }}
-                      >
-                        Xem chi tiết
-                      </button>
-                    </TableCell>
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-16">STT</TableHead>
+                    <TableHead>Mã hóa đơn</TableHead>
+                    <TableHead>Ngày tạo</TableHead>
+                    <TableHead>Số lượng dịch vụ</TableHead>
+                    <TableHead>Tổng tiền</TableHead>
+                    <TableHead>Trạng thái</TableHead>
+                    <TableHead>Thao tác</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {invoices
+                    .slice((currentPage - 1) * limit, currentPage * limit)
+                    .map((invoice, index) => (
+                      <TableRow key={invoice._id}>
+                        <TableCell className="font-medium">
+                          {(currentPage - 1) * limit + index + 1}
+                        </TableCell>
+                        <TableCell>
+                          #{invoice.invoiceNumber || invoice._id.slice(-8)}
+                        </TableCell>
+                        <TableCell>
+                          {format(new Date(invoice.createdAt || ""), "dd/MM/yyyy", {
+                            locale: vi,
+                          })}
+                        </TableCell>
+                        <TableCell>{invoice.items?.length || 0}</TableCell>
+                        <TableCell>{formatCurrency(invoice.totalAmount)}</TableCell>
+                        <TableCell>
+                          <Badge variant={invoice.status === "paid" ? "success" : "danger"}>
+                            {
+                              INVOICE_STATUS_LABELS[
+                              invoice.status as keyof typeof INVOICE_STATUS_LABELS
+                              ]
+                            }
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <button
+                            className="text-primary hover:text-primary-600 font-medium"
+                            onClick={() => {
+                              setSelectedInvoice(invoice);
+                              setIsModalOpen(true);
+                            }}
+                          >
+                            Xem chi tiết
+                          </button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+
+              <Pagination
+                total={invoices.length}
+                limit={limit}
+                skip={(currentPage - 1) * limit}
+                onPageChange={setCurrentPage}
+                onLimitChange={(newLimit) => {
+                  setLimit(newLimit);
+                  setCurrentPage(1);
+                }}
+              />
+            </>
           )}
         </CardBody>
       </Card>
@@ -210,23 +223,13 @@ export default function PatientInvoicesPage() {
               </div>
               <div>
                 <strong>Trạng thái:</strong>{" "}
-                <span
-                  className="px-2 py-1 text-xs font-medium rounded-full"
-                  style={{
-                    backgroundColor:
-                      selectedInvoice.status === "paid"
-                        ? "#10b98120"
-                        : "#ef444420",
-                    color:
-                      selectedInvoice.status === "paid" ? "#10b981" : "#ef4444",
-                  }}
-                >
+                <Badge variant={selectedInvoice.status === "paid" ? "success" : "danger"}>
                   {
                     INVOICE_STATUS_LABELS[
                     selectedInvoice.status as keyof typeof INVOICE_STATUS_LABELS
                     ]
                   }
-                </span>
+                </Badge>
               </div>
             </div>
             {selectedInvoice.items && selectedInvoice.items.length > 0 && (
@@ -249,7 +252,7 @@ export default function PatientInvoicesPage() {
                         <TableCell>
                           {typeof item.serviceId === "object" && item.serviceId
                             ? item.serviceId.name
-                            : item.serviceName || "Không xác định"}
+                            : item.serviceName || "Chưa cập nhật"}
                         </TableCell>
                         <TableCell>{item.quantity || 1}</TableCell>
                         <TableCell>{formatCurrency(item.price)}</TableCell>

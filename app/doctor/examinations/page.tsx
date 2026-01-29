@@ -35,6 +35,8 @@ import {
   IconPlus,
 } from "@tabler/icons-react";
 import { DOCTOR_NAV_ITEMS } from "@/lib/navigation";
+import { Badge } from "@/components/ui/Badge";
+import Pagination from "@/components/ui/Pagination";
 
 export default function DoctorExaminationsPage() {
   const router = useRouter();
@@ -46,6 +48,8 @@ export default function DoctorExaminationsPage() {
   const [labNurses, setLabNurses] = useState<any[]>([]);
   const [testRequests, setTestRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [isStartModalOpen, setIsStartModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -414,59 +418,71 @@ export default function DoctorExaminationsPage() {
               Chưa có ca khám nào
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Bệnh nhân</TableHead>
-                  <TableHead>Ngày khám</TableHead>
-                  <TableHead>Chẩn đoán</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead>Thao tác</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {examinations.map((exam) => (
-                  <TableRow key={exam._id}>
-                    <TableCell>
-                      {typeof exam.patientId === "object" && exam.patientId
-                        ? exam.patientId.fullName
-                        : "Không xác định"}
-                    </TableCell>
-                    <TableCell>
-                      {format(new Date(exam.examDate), "dd/MM/yyyy HH:mm", {
-                        locale: vi,
-                      })}
-                    </TableCell>
-                    <TableCell>{exam.diagnosis || "-"}</TableCell>
-                    <TableCell>
-                      <span
-                        className="px-2 py-1 text-xs font-semibold rounded-full"
-                        style={{
-                          backgroundColor:
-                            exam.status === "done" ? "#10b98120" : "#3b82f620",
-                          color: exam.status === "done" ? "#10b981" : "#3b82f6",
-                        }}
-                      >
-                        {
-                          EXAMINATION_STATUS_LABELS[
-                          exam.status as keyof typeof EXAMINATION_STATUS_LABELS
-                          ]
-                        }
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleOpenUpdateModal(exam)}
-                      >
-                        {exam.status === "processing" ? "Cập nhật" : "Xem/Sửa"}
-                      </Button>
-                    </TableCell>
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-16">STT</TableHead>
+                    <TableHead>Bệnh nhân</TableHead>
+                    <TableHead>Ngày khám</TableHead>
+                    <TableHead>Chẩn đoán</TableHead>
+                    <TableHead>Trạng thái</TableHead>
+                    <TableHead>Thao tác</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {examinations
+                    .slice((currentPage - 1) * limit, currentPage * limit)
+                    .map((exam, index) => (
+                      <TableRow key={exam._id}>
+                        <TableCell className="font-medium">
+                          {(currentPage - 1) * limit + index + 1}
+                        </TableCell>
+                        <TableCell>
+                          {typeof exam.patientId === "object" && exam.patientId
+                            ? exam.patientId.fullName
+                            : "Chưa cập nhật"}
+                        </TableCell>
+                        <TableCell>
+                          {format(new Date(exam.examDate), "dd/MM/yyyy HH:mm", {
+                            locale: vi,
+                          })}
+                        </TableCell>
+                        <TableCell>{exam.diagnosis || "Chưa có chẩn đoán"}</TableCell>
+                        <TableCell>
+                          <Badge variant={exam.status === "done" ? "success" : "info"}>
+                            {
+                              EXAMINATION_STATUS_LABELS[
+                              exam.status as keyof typeof EXAMINATION_STATUS_LABELS
+                              ]
+                            }
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleOpenUpdateModal(exam)}
+                          >
+                            {exam.status === "processing" ? "Cập nhật" : "Xem/Sửa"}
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+
+              <Pagination
+                total={examinations.length}
+                limit={limit}
+                skip={(currentPage - 1) * limit}
+                onPageChange={setCurrentPage}
+                onLimitChange={(newLimit) => {
+                  setLimit(newLimit);
+                  setCurrentPage(1);
+                }}
+              />
+            </>
           )}
         </CardBody>
       </Card>
@@ -513,7 +529,7 @@ export default function DoctorExaminationsPage() {
                   value: apt._id,
                   label: `${typeof apt.patientId === "object" && apt.patientId
                     ? apt.patientId.fullName
-                    : "Không xác định"
+                    : "Chưa cập nhật"
                     } - ${format(
                       new Date(apt.appointmentDate),
                       "dd/MM/yyyy HH:mm",
@@ -701,19 +717,21 @@ export default function DoctorExaminationsPage() {
                             : "Chưa phân công"}
                         </div>
                       </div>
-                      <span
-                        className="px-2 py-1 rounded text-xs font-medium"
-                        style={{
-                          backgroundColor: statusStyle.bg,
-                          color: statusStyle.color,
-                        }}
+                      <Badge
+                        variant={
+                          req.status === "waiting"
+                            ? "warning"
+                            : req.status === "processing"
+                              ? "info"
+                              : "success"
+                        }
                       >
                         {req.status === "waiting"
                           ? "Chờ xử lý"
                           : req.status === "processing"
                             ? "Đang thực hiện"
                             : "Hoàn thành"}
-                      </span>
+                      </Badge>
                     </div>
                   );
                 })}
