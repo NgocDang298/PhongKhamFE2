@@ -9,8 +9,10 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import Textarea from "@/components/ui/Textarea";
+import Modal from "@/components/ui/Modal";
 import { ROUTES } from "@/lib/constants";
 import * as appointmentService from "@/lib/services/appointments";
+import * as profileService from "@/lib/services/profile";
 import { format, isSameDay, parseISO } from "date-fns";
 import { vi } from "date-fns/locale";
 import { PATIENT_NAV_ITEMS } from "@/lib/navigation";
@@ -26,6 +28,7 @@ import {
   IconCalendarCheck,
   IconX,
   IconStethoscope,
+  IconFileText,
 } from "@tabler/icons-react";
 import { toast } from "react-toastify";
 
@@ -47,6 +50,11 @@ export default function BookAppointmentPage() {
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
   const [note, setNote] = useState("");
 
+  // Profile check
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [profileData, setProfileData] = useState<any>(null);
+  const [hasCheckedProfile, setHasCheckedProfile] = useState(false);
+
   // Loading & Error
   const [loading, setLoading] = useState(false);
   const [doctorsLoading, setDoctorsLoading] = useState(false);
@@ -65,7 +73,31 @@ export default function BookAppointmentPage() {
     }
     loadDoctors();
     loadSpecialties();
+    checkMedicalProfile();
   }, [user, isAuthenticated, authLoading, router]);
+
+  const checkMedicalProfile = async () => {
+    if (hasCheckedProfile) return;
+
+    try {
+      const response = await profileService.getProfile();
+      const profile = (response as any).data?.profile || (response as any).profile || response;
+      setProfileData(profile);
+
+      const isIncomplete = !profile?.dateOfBirth ||
+        !profile?.gender ||
+        !profile?.address ||
+        !profile?.phoneNumber;
+
+      if (isIncomplete) {
+        setIsProfileModalOpen(true);
+      }
+      setHasCheckedProfile(true);
+    } catch (error) {
+      console.error("Error checking profile:", error);
+      setHasCheckedProfile(true);
+    }
+  };
 
   // Load available dates when doctor changes
   useEffect(() => {
@@ -500,6 +532,89 @@ export default function BookAppointmentPage() {
           </CardBody>
         </Card>
       </div>
+
+      {/* Medical Profile Reminder Modal */}
+      <Modal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        title="Cập nhật hồ sơ y tế"
+        size="md"
+        footer={
+          <>
+            <Button
+              variant="outline"
+              icon={<IconX size={20} />}
+              onClick={() => setIsProfileModalOpen(false)}
+            >
+              Để sau
+            </Button>
+            <Button
+              variant="primary"
+              icon={<IconFileText size={20} />}
+              onClick={() => {
+                setIsProfileModalOpen(false);
+                router.push(ROUTES.PATIENT_MEDICAL_PROFILE);
+              }}
+            >
+              Cập nhật ngay
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <div className="flex items-start gap-4 p-4 bg-tertiary/10 rounded-xl border border-tertiary/20">
+            <div className="flex-shrink-0 w-12 h-12 rounded-full bg-tertiary text-white flex items-center justify-center">
+              <IconAlertCircle size={24} />
+            </div>
+            <div className="flex-1">
+              <h4 className="font-semibold text-tertiary mb-2">
+                Hồ sơ y tế chưa đầy đủ
+              </h4>
+              <p className="text-sm text-gray-600 leading-relaxed">
+                Để đảm bảo quá trình khám bệnh diễn ra thuận lợi và bác sĩ có thể tư vấn chính xác nhất,
+                chúng tôi khuyến nghị bạn nên cập nhật đầy đủ thông tin hồ sơ y tế trước khi đặt lịch khám.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <h5 className="font-medium text-gray-700">Thông tin cần cập nhật:</h5>
+            <div className="space-y-2">
+              {!profileData?.dateOfBirth && (
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <IconX size={16} className="text-secondary" />
+                  <span>Ngày sinh</span>
+                </div>
+              )}
+              {!profileData?.gender && (
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <IconX size={16} className="text-secondary" />
+                  <span>Giới tính</span>
+                </div>
+              )}
+              {!profileData?.phoneNumber && (
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <IconX size={16} className="text-secondary" />
+                  <span>Số điện thoại</span>
+                </div>
+              )}
+              {!profileData?.address && (
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <IconX size={16} className="text-secondary" />
+                  <span>Địa chỉ</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
+            <p className="text-xs text-gray-600">
+              <strong className="text-primary">Lưu ý:</strong> Bạn vẫn có thể đặt lịch khám mà không cần cập nhật ngay,
+              tuy nhiên việc có đầy đủ thông tin sẽ giúp bác sĩ phục vụ bạn tốt hơn.
+            </p>
+          </div>
+        </div>
+      </Modal>
     </DashboardLayout>
   );
 }
