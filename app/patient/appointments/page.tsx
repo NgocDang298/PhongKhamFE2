@@ -182,21 +182,6 @@ export default function PatientAppointments() {
             {viewMode === "calendar" ? "Lịch hẹn" : "Danh sách lịch hẹn"}
           </CardTitle>
           <div className="ml-auto flex flex-col md:flex-row items-center gap-3">
-            <div className="w-full md:w-56">
-              <Select
-                options={[
-                  { value: "", label: "Lọc theo trạng thái" },
-                  { value: "pending", label: "Chờ xác nhận" },
-                  { value: "confirmed", label: "Đã xác nhận" },
-                  { value: "in-progress", label: "Đang khám" },
-                  { value: "completed", label: "Hoàn thành" },
-                  { value: "cancelled", label: "Đã hủy" },
-                ]}
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                fullWidth
-              />
-            </div>
             <div className="flex items-center bg-gray-100 p-1 h-10 rounded-lg border">
               <button
                 type="button"
@@ -220,6 +205,21 @@ export default function PatientAppointments() {
                 <IconTable size={18} />
                 D.Sách
               </button>
+            </div>
+            <div className="w-full md:w-56">
+              <Select
+                options={[
+                  { value: "", label: "Lọc theo trạng thái" },
+                  { value: "pending", label: "Chờ xác nhận" },
+                  { value: "confirmed", label: "Đã xác nhận" },
+                  { value: "in-progress", label: "Đang khám" },
+                  { value: "completed", label: "Hoàn thành" },
+                  { value: "cancelled", label: "Đã hủy" },
+                ]}
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                fullWidth
+              />
             </div>
             <Button
               onClick={() => router.push(ROUTES.PATIENT_BOOK_APPOINTMENT)}

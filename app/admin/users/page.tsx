@@ -33,24 +33,8 @@ import {
   IconEye,
   IconAlertCircle,
 } from "@tabler/icons-react";
-
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.ADMIN_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Quản lý tài khoản",
-    path: ROUTES.ADMIN_USERS,
-    icon: <IconUserSquareRounded size={20} />,
-  },
-  {
-    label: "Lịch làm việc",
-    path: ROUTES.ADMIN_SCHEDULES,
-    icon: <IconClock size={20} />,
-  },
-];
+import Pagination from "@/components/ui/Pagination";
+import { ADMIN_NAV_ITEMS } from "@/lib/navigation";
 
 const ROLE_OPTIONS = [
   { value: "doctor", label: "Bác sĩ" },
@@ -104,6 +88,38 @@ export default function AdminUsersPage() {
     workExperience: "",
   });
 
+  // Filter states
+  const [searchQuery, setSearchQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState<string>("all");
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  // Filtered users based on search and role
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      searchQuery === "" ||
+      user.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.phone?.includes(searchQuery);
+
+    const matchesRole = roleFilter === "all" || user.role === roleFilter;
+
+    return matchesSearch && matchesRole;
+  });
+
+  // Paginated users
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, roleFilter]);
+
   const handleViewUser = (user: UserWithRole) => {
     setSelectedUser(user);
     setIsDetailModalOpen(true);
@@ -136,11 +152,6 @@ export default function AdminUsersPage() {
         ]
       );
 
-      console.log("Doctors:", doctorsRes);
-      console.log("Staffs:", staffsRes);
-      console.log("Nurses:", nursesRes);
-      console.log("Patients:", patientsRes);
-
       const mapUserWithRole = (item: any, role: UserRole): UserWithRole => {
         const account = typeof item.userId === "object" ? item.userId : {};
         return {
@@ -170,8 +181,6 @@ export default function AdminUsersPage() {
           mapUserWithRole(patient, "patient")
         ),
       ];
-
-      console.log("Processed Users:", allUsers);
 
       setUsers(allUsers);
     } catch (err: any) {
@@ -221,12 +230,10 @@ export default function AdminUsersPage() {
         role: formData.role,
       };
 
-      // Add CCCD for all roles
       if (formData.cccd) {
         registerData.cccd = formData.cccd;
       }
 
-      // Add doctor-specific fields
       if (formData.role === "doctor") {
         registerData.specialty = formData.specialty;
         if (formData.degree) registerData.degree = formData.degree;
@@ -293,19 +300,45 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <DashboardLayout navItems={navItems} title="Quản lý tài khoản">
-      <div className="flex justify-end mb-4">
-        <Button
-          onClick={() => setIsModalOpen(true)}
-          icon={<IconPlus size={16} />}
-        >
-          Tạo tài khoản mới
-        </Button>
-      </div>
-
+    <DashboardLayout navItems={ADMIN_NAV_ITEMS} title="Quản lý tài khoản">
       <Card>
         <CardHeader icon={<IconUserSquareRounded size={20} />}>
-          <CardTitle>Danh sách tài khoản</CardTitle>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
+            <CardTitle>Danh sách tài khoản</CardTitle>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <Input
+                type="text"
+                placeholder="Tìm theo tên, email, SĐT..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full sm:w-64"
+              />
+              <Select
+                options={[
+                  { value: "all", label: "Tất cả vai trò" },
+                  ...ROLE_OPTIONS,
+                ]}
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="w-full sm:w-48"
+              />
+              <Button
+                onClick={fetchUsers}
+                variant="outline"
+                size="sm"
+                icon={<IconRefresh size={16} />}
+              >
+                Làm mới
+              </Button>
+              <Button
+                onClick={() => setIsModalOpen(true)}
+                icon={<IconPlus size={16} />}
+                size="sm"
+              >
+                Tạo tài khoản mới
+              </Button>
+            </div>
+          </div>
         </CardHeader>
         <CardBody>
           {fetchLoading ? (
@@ -331,24 +364,10 @@ export default function AdminUsersPage() {
             </div>
           ) : (
             <>
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-4">
-                  <span className="px-2 py-1 text-xs font-semibold rounded-full bg-primary/10 text-primary">
-                    {users.length} tài khoản
-                  </span>
-                </div>
-                <Button
-                  onClick={fetchUsers}
-                  variant="outline"
-                  size="sm"
-                  icon={<IconRefresh size={16} />}
-                >
-                  Làm mới
-                </Button>
-              </div>
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>STT</TableHead>
                     <TableHead>Vai trò</TableHead>
                     <TableHead>Họ và tên</TableHead>
                     <TableHead>Email</TableHead>
@@ -358,8 +377,11 @@ export default function AdminUsersPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {users.map((user) => (
+                  {paginatedUsers.map((user, index) => (
                     <TableRow key={user._id}>
+                      <TableCell className="text-gray-500 font-medium">
+                        {startIndex + index + 1}
+                      </TableCell>
                       <TableCell>
                         <span
                           className={`px-2 py-1 text-xs font-medium rounded-full ${user.role === "doctor"
@@ -398,7 +420,6 @@ export default function AdminUsersPage() {
                       </TableCell>
                       <TableCell>
                         <Button
-                          variant="ghost"
                           size="sm"
                           onClick={() => handleViewUser(user)}
                           icon={<IconEye size={16} />}
@@ -410,6 +431,20 @@ export default function AdminUsersPage() {
                   ))}
                 </TableBody>
               </Table>
+
+              {filteredUsers.length > 0 && (
+                <Pagination
+                  total={filteredUsers.length}
+                  limit={itemsPerPage}
+                  skip={(currentPage - 1) * itemsPerPage}
+                  onPageChange={(page) => setCurrentPage(page)}
+                  onLimitChange={(newLimit) => {
+                    setItemsPerPage(newLimit);
+                    setCurrentPage(1);
+                  }}
+                  pageSizeOptions={[10, 20, 50, 100]}
+                />
+              )}
             </>
           )}
         </CardBody>

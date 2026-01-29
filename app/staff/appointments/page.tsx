@@ -88,14 +88,6 @@ export default function StaffAppointmentsPage() {
         patientService.getPatients(),
         appointmentService.getDoctors(),
       ]);
-
-      console.log("Staff Appointments - Raw responses:", {
-        appointmentsRes,
-        patientsRes,
-        doctorsRes,
-      });
-
-      // Handle different response formats - API interceptor may unwrap differently
       const appointmentsData = appointmentsRes?.data || appointmentsRes || [];
       const patientsData = patientsRes?.data || patientsRes || [];
       const doctorsData = doctorsRes?.data || doctorsRes || [];
@@ -105,15 +97,6 @@ export default function StaffAppointmentsPage() {
         : [];
       const patients = Array.isArray(patientsData) ? patientsData : [];
       const doctors = Array.isArray(doctorsData) ? doctorsData : [];
-
-      console.log("Staff Appointments - Processed data:", {
-        appointments: appointments.length,
-        patients: patients.length,
-        doctors: doctors.length,
-        sampleAppointment: appointments[0],
-        samplePatient: patients[0],
-      });
-
       setAppointments(appointments);
       setPatients(patients);
       setDoctors(doctors);
@@ -312,21 +295,6 @@ export default function StaffAppointmentsPage() {
             {viewMode === "calendar" ? "Lịch khám bệnh" : "Danh sách lịch hẹn"}
           </CardTitle>
           <div className="ml-auto flex flex-col md:flex-row items-center gap-3">
-            <div className="w-full md:w-56">
-              <Select
-                options={[
-                  { value: "", label: "Lọc theo trạng thái" },
-                  { value: "pending", label: "Chờ xác nhận" },
-                  { value: "confirmed", label: "Đã xác nhận" },
-                  { value: "in-progress", label: "Đang khám" },
-                  { value: "completed", label: "Hoàn thành" },
-                  { value: "cancelled", label: "Đã hủy" },
-                ]}
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                fullWidth
-              />
-            </div>
             <div className="flex items-center bg-gray-100 p-1 h-10 rounded-lg border">
               <button
                 type="button"
@@ -350,6 +318,21 @@ export default function StaffAppointmentsPage() {
                 <IconTable size={18} />
                 D.Sách
               </button>
+            </div>
+            <div className="w-full md:w-56">
+              <Select
+                options={[
+                  { value: "", label: "Lọc theo trạng thái" },
+                  { value: "pending", label: "Chờ xác nhận" },
+                  { value: "confirmed", label: "Đã xác nhận" },
+                  { value: "in-progress", label: "Đang khám" },
+                  { value: "completed", label: "Hoàn thành" },
+                  { value: "cancelled", label: "Đã hủy" },
+                ]}
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                fullWidth
+              />
             </div>
             <div className="flex gap-2">
               <Button

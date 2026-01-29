@@ -29,24 +29,8 @@ import {
   IconCalendar,
   IconFileText,
 } from "@tabler/icons-react";
+import { DOCTOR_NAV_ITEMS } from "@/lib/navigation";
 
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.DOCTOR_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Lịch hẹn",
-    path: ROUTES.DOCTOR_APPOINTMENTS,
-    icon: <IconCalendar size={20} />,
-  },
-  {
-    label: "Ca khám",
-    path: ROUTES.DOCTOR_EXAMINATIONS,
-    icon: <IconFileText size={20} />,
-  },
-];
 
 export default function DoctorAppointmentsPage() {
   const router = useRouter();
@@ -80,8 +64,6 @@ export default function DoctorAppointmentsPage() {
         params
       )) as any;
 
-      console.log("Raw appointments response:", appointmentsResponse);
-
       let appointmentsData: any[] = [];
       if (Array.isArray(appointmentsResponse)) {
         appointmentsData = appointmentsResponse;
@@ -98,13 +80,8 @@ export default function DoctorAppointmentsPage() {
         }
       }
 
-      console.log("Processed appointments:", appointmentsData);
-      console.log("Sample appointment:", appointmentsData[0]);
-
-      // Backend API already filters by current doctor, no need to filter again
       setAppointments(appointmentsData);
 
-      // Load services for start examination feature
       try {
         const servicesRes = (await serviceService.getServices({
           serviceType: "examination",
@@ -203,7 +180,7 @@ export default function DoctorAppointmentsPage() {
 
   if (authLoading || loading) {
     return (
-      <DashboardLayout navItems={navItems} title="Lịch hẹn của tôi">
+      <DashboardLayout navItems={DOCTOR_NAV_ITEMS} title="Lịch hẹn của tôi">
         <div className="flex items-center justify-center h-64 text-gray-500">
           Đang tải...
         </div>
@@ -212,7 +189,7 @@ export default function DoctorAppointmentsPage() {
   }
 
   return (
-    <DashboardLayout navItems={navItems} title="Lịch hẹn của tôi">
+    <DashboardLayout navItems={DOCTOR_NAV_ITEMS} title="Lịch hẹn của tôi">
       <div className="flex justify-between items-center mb-4">
         <div style={{ maxWidth: "300px" }}>
           <Select

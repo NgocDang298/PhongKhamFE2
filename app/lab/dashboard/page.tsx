@@ -13,24 +13,7 @@ import {
   IconCircleCheck,
   IconClock,
 } from "@tabler/icons-react";
-
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.LAB_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Yêu cầu xét nghiệm",
-    path: ROUTES.LAB_TEST_REQUESTS,
-    icon: <IconFileText size={20} />,
-  },
-  {
-    label: "Kết quả xét nghiệm",
-    path: ROUTES.LAB_TEST_RESULTS,
-    icon: <IconCircleCheck size={20} />,
-  },
-];
+import { LAB_NAV_ITEMS } from "@/lib/navigation";
 
 export default function LabDashboard() {
   const router = useRouter();
@@ -76,7 +59,7 @@ export default function LabDashboard() {
 
   if (authLoading || loading) {
     return (
-      <DashboardLayout navItems={navItems} title="Tổng quan">
+      <DashboardLayout navItems={LAB_NAV_ITEMS} title="Tổng quan">
         <div className="flex items-center justify-center h-64 text-gray-500">
           Đang tải...
         </div>
@@ -85,7 +68,7 @@ export default function LabDashboard() {
   }
 
   return (
-    <DashboardLayout navItems={navItems} title="Tổng quan">
+    <DashboardLayout navItems={LAB_NAV_ITEMS} title="Tổng quan">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="hover:shadow-lg transition-shadow">
           <CardBody>

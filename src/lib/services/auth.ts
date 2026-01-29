@@ -28,11 +28,6 @@ export async function changePassword(data: {
 export async function logout(): Promise<ApiResponse<{ message: string }>> {
     return post('/auth/logout');
 }
-// 1.5. Lấy danh sách tài khoản (Admin)
-// ...existing code...
-
-// ============= Token Management =============
-
 export function getToken(): string | null {
     if (typeof window === 'undefined') return null;
     return localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);

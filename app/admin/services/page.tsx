@@ -34,34 +34,8 @@ import {
   IconChartBar,
   IconPlus,
 } from "@tabler/icons-react";
+import { ADMIN_NAV_ITEMS } from "@/lib/navigation";
 
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.ADMIN_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Quản lý tài khoản",
-    path: ROUTES.ADMIN_USERS,
-    icon: <IconUserSquareRounded size={20} />,
-  },
-  {
-    label: "Quản lý dịch vụ",
-    path: ROUTES.ADMIN_SERVICES,
-    icon: <IconSettings size={20} />,
-  },
-  {
-    label: "Quản lý lịch làm việc",
-    path: ROUTES.ADMIN_SCHEDULES,
-    icon: <IconCalendar size={20} />,
-  },
-  {
-    label: "Thống kê",
-    path: ROUTES.ADMIN_STATISTICS,
-    icon: <IconChartBar size={20} />,
-  },
-];
 
 export default function AdminServicesPage() {
   const router = useRouter();
@@ -181,7 +155,7 @@ export default function AdminServicesPage() {
 
   if (authLoading || loading) {
     return (
-      <DashboardLayout navItems={navItems} title="Quản lý dịch vụ">
+      <DashboardLayout navItems={ADMIN_NAV_ITEMS} title="Quản lý dịch vụ">
         <div className="flex items-center justify-center h-64 text-gray-500">
           Đang tải...
         </div>
@@ -190,7 +164,7 @@ export default function AdminServicesPage() {
   }
 
   return (
-    <DashboardLayout navItems={navItems} title="Quản lý dịch vụ">
+    <DashboardLayout navItems={ADMIN_NAV_ITEMS} title="Quản lý dịch vụ">
       <div className="flex justify-end mb-4">
         <Button
           onClick={() => setIsModalOpen(true)}

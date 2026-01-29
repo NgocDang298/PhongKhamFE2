@@ -6,46 +6,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/Card";
 import Select from "@/components/ui/Select";
-import { ROUTES } from "@/lib/constants";
 import * as invoiceService from "@/lib/services/invoices";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
-import {
-  IconLayoutGrid,
-  IconUserSquareRounded,
-  IconSettings,
-  IconCalendar,
-  IconChartBar,
-} from "@tabler/icons-react";
-
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.ADMIN_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Quản lý tài khoản",
-    path: ROUTES.ADMIN_USERS,
-    icon: <IconUserSquareRounded size={20} />,
-  },
-  {
-    label: "Quản lý dịch vụ",
-    path: ROUTES.ADMIN_SERVICES,
-    icon: <IconSettings size={20} />,
-  },
-  {
-    label: "Quản lý lịch làm việc",
-    path: ROUTES.ADMIN_SCHEDULES,
-    icon: <IconCalendar size={20} />,
-  },
-  {
-    label: "Thống kê",
-    path: ROUTES.ADMIN_STATISTICS,
-    icon: <IconChartBar size={20} />,
-  },
-];
+import { ADMIN_NAV_ITEMS } from "@/lib/navigation";
 
 export default function AdminStatisticsPage() {
   const router = useRouter();
@@ -80,7 +45,7 @@ export default function AdminStatisticsPage() {
 
   if (authLoading || loading) {
     return (
-      <DashboardLayout navItems={navItems} title="Thống kê doanh thu">
+      <DashboardLayout navItems={ADMIN_NAV_ITEMS} title="Thống kê doanh thu">
         <div className="flex items-center justify-center h-64 text-gray-500">
           Đang tải...
         </div>
@@ -89,7 +54,7 @@ export default function AdminStatisticsPage() {
   }
 
   return (
-    <DashboardLayout navItems={navItems} title="Thống kê doanh thu">
+    <DashboardLayout navItems={ADMIN_NAV_ITEMS} title="Thống kê doanh thu">
       <div className="flex justify-between items-center mb-4">
         <div style={{ maxWidth: "300px" }}>
           <Select

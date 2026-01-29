@@ -15,24 +15,7 @@ import {
   IconClock,
   IconCircleCheck,
 } from "@tabler/icons-react";
-
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.DOCTOR_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Lịch hẹn",
-    path: ROUTES.DOCTOR_APPOINTMENTS,
-    icon: <IconCalendar size={20} />,
-  },
-  {
-    label: "Ca khám",
-    path: ROUTES.DOCTOR_EXAMINATIONS,
-    icon: <IconFileText size={20} />,
-  },
-];
+import { DOCTOR_NAV_ITEMS } from "@/lib/navigation";
 
 export default function DoctorDashboard() {
   const router = useRouter();
@@ -60,8 +43,6 @@ export default function DoctorDashboard() {
       setLoading(true);
       const today = new Date().toISOString().split("T")[0];
 
-      console.log("Loading dashboard stats for doctor:", user?._id);
-
       const [appointmentsRes, processingRes, completedRes] = (await Promise.all(
         [
           appointmentService.getAppointments({ status: "confirmed" }),
@@ -76,13 +57,6 @@ export default function DoctorDashboard() {
           }),
         ]
       )) as [any, any, any];
-
-      console.log("Dashboard raw responses:", {
-        appointmentsRes,
-        processingRes,
-        completedRes,
-      });
-
       // Handle unwrapped responses with multiple possible structures
       let appointments: any[] = [];
       if (Array.isArray(appointmentsRes)) {
@@ -116,13 +90,6 @@ export default function DoctorDashboard() {
 
       const completedCount =
         completedRes?.total || completedRes?.data?.total || 0;
-
-      console.log("Dashboard stats:", {
-        todayAppointments: todayApts.length,
-        processingExaminations: processingCount,
-        completedExaminations: completedCount,
-      });
-
       setStats({
         todayAppointments: todayApts.length,
         processingExaminations: processingCount,
@@ -137,7 +104,7 @@ export default function DoctorDashboard() {
 
   if (authLoading || loading) {
     return (
-      <DashboardLayout navItems={navItems} title="Tổng quan">
+      <DashboardLayout navItems={DOCTOR_NAV_ITEMS} title="Tổng quan">
         <div className="flex items-center justify-center h-64 text-gray-500">
           Đang tải...
         </div>
@@ -146,7 +113,7 @@ export default function DoctorDashboard() {
   }
 
   return (
-    <DashboardLayout navItems={navItems} title="Tổng quan">
+    <DashboardLayout navItems={DOCTOR_NAV_ITEMS} title="Tổng quan">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card className="hover:shadow-lg transition-all duration-300 border-none bg-gradient-to-br from-white to-gray-50">
           <CardBody>

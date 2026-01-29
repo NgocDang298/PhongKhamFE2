@@ -33,24 +33,7 @@ import {
   IconX,
   IconCalendar,
 } from "@tabler/icons-react";
-
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.ADMIN_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Quản lý tài khoản",
-    path: ROUTES.ADMIN_USERS,
-    icon: <IconUserSquareRounded size={20} />,
-  },
-  {
-    label: "Lịch làm việc",
-    path: ROUTES.ADMIN_SCHEDULES,
-    icon: <IconClock size={20} />,
-  },
-];
+import { ADMIN_NAV_ITEMS } from "@/lib/navigation";
 
 interface ScheduleWithPerson extends WorkSchedule {
   personName?: string;
@@ -413,7 +396,7 @@ export default function AdminSchedulesPage() {
 
   if (authLoading || loading) {
     return (
-      <DashboardLayout navItems={navItems} title="Quản lý lịch làm việc">
+      <DashboardLayout navItems={ADMIN_NAV_ITEMS} title="Quản lý lịch làm việc">
         <div className="flex items-center justify-center h-64 text-gray-500">
           Đang tải...
         </div>
@@ -422,7 +405,7 @@ export default function AdminSchedulesPage() {
   }
 
   return (
-    <DashboardLayout navItems={navItems} title="Quản lý lịch làm việc">
+    <DashboardLayout navItems={ADMIN_NAV_ITEMS} title="Quản lý lịch làm việc">
       <div className="flex justify-end mb-4">
         <div className="flex gap-4">
           <Button

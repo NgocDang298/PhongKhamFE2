@@ -34,24 +34,7 @@ import {
   IconFileText,
   IconPlus,
 } from "@tabler/icons-react";
-
-const navItems = [
-  {
-    label: "Tổng quan",
-    path: ROUTES.DOCTOR_DASHBOARD,
-    icon: <IconLayoutGrid size={20} />,
-  },
-  {
-    label: "Lịch hẹn",
-    path: ROUTES.DOCTOR_APPOINTMENTS,
-    icon: <IconCalendar size={20} />,
-  },
-  {
-    label: "Ca khám",
-    path: ROUTES.DOCTOR_EXAMINATIONS,
-    icon: <IconFileText size={20} />,
-  },
-];
+import { DOCTOR_NAV_ITEMS } from "@/lib/navigation";
 
 export default function DoctorExaminationsPage() {
   const router = useRouter();
@@ -105,11 +88,6 @@ export default function DoctorExaminationsPage() {
         appointmentService.getAppointments({ status: "confirmed" }),
       ]);
 
-      console.log("Raw examinations response:", examsRes);
-      console.log("Raw appointments response:", appointmentsRes);
-
-      // Handle response structure - API interceptor already unwraps response.data
-      // Response could be: { examinations: [], total: number } or direct array or { data: { examinations: [] } }
       let examinationsRes: any = examsRes;
       let examinationsData: any[] = [];
       if (Array.isArray(examinationsRes)) {
@@ -181,7 +159,6 @@ export default function DoctorExaminationsPage() {
             serviceType: "test",
             isActive: true,
           });
-          console.log("Test Services Response:", testServicesRes);
 
           let testServicesData: any[] = [];
           if (Array.isArray(testServicesRes)) {
@@ -204,8 +181,6 @@ export default function DoctorExaminationsPage() {
         // Load Lab Nurses
         try {
           const labNursesRes = await directoryService.getNurses();
-          console.log("Lab Nurses Response:", labNursesRes);
-
           let labNursesData: any[] = [];
           if (Array.isArray(labNursesRes)) {
             labNursesData = labNursesRes;
@@ -396,7 +371,7 @@ export default function DoctorExaminationsPage() {
 
   if (authLoading || loading) {
     return (
-      <DashboardLayout navItems={navItems} title="Ca khám">
+      <DashboardLayout navItems={DOCTOR_NAV_ITEMS} title="Ca khám">
         <div className="flex items-center justify-center h-64 text-gray-500">
           Đang tải...
         </div>
@@ -405,7 +380,7 @@ export default function DoctorExaminationsPage() {
   }
 
   return (
-    <DashboardLayout navItems={navItems} title="Ca khám">
+    <DashboardLayout navItems={DOCTOR_NAV_ITEMS} title="Ca khám">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 text-gray-600">
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <div style={{ maxWidth: "300px" }}>
