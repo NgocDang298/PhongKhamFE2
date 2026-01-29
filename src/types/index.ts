@@ -225,7 +225,7 @@ export interface CreateServiceRequest {
 }
 
 // ============= Invoices =============
-export type InvoiceStatus = 'paid' | 'unpaid';
+export type InvoiceStatus = 'paid' | 'unpaid' | 'cancelled';
 
 export interface InvoiceItem {
   type: 'service' | 'test';

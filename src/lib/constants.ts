@@ -65,16 +65,19 @@ export const TEST_REQUEST_STATUS_LABELS = {
 export const INVOICE_STATUS = {
     PAID: 'paid',
     UNPAID: 'unpaid',
+    CANCELLED: 'cancelled',
 } as const;
 
 export const INVOICE_STATUS_LABELS = {
     paid: 'Đã thanh toán',
     unpaid: 'Chưa thanh toán',
+    cancelled: 'Đã hủy',
 } as const;
 
 export const INVOICE_STATUS_COLORS = {
     paid: '#10b981',
     unpaid: '#ef4444',
+    cancelled: '#6b7280',
 } as const;
 
 // ============= Gender =============

@@ -100,6 +100,7 @@ export default function PatientInvoicesPage() {
                     { value: "", label: "Tất cả trạng thái" },
                     { value: "paid", label: "Đã thanh toán" },
                     { value: "unpaid", label: "Chưa thanh toán" },
+                    { value: "cancelled", label: "Đã hủy" },
                   ]}
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
@@ -147,7 +148,15 @@ export default function PatientInvoicesPage() {
                         <TableCell>{invoice.items?.length || 0}</TableCell>
                         <TableCell>{formatCurrency(invoice.totalAmount)}</TableCell>
                         <TableCell>
-                          <Badge variant={invoice.status === "paid" ? "success" : "danger"}>
+                          <Badge
+                            variant={
+                              invoice.status === "paid"
+                                ? "success"
+                                : invoice.status === "cancelled"
+                                  ? "gray"
+                                  : "danger"
+                            }
+                          >
                             {
                               INVOICE_STATUS_LABELS[
                               invoice.status as keyof typeof INVOICE_STATUS_LABELS
