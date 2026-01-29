@@ -17,6 +17,7 @@ import { SERVICE_TYPE_LABELS } from "@/lib/constants";
 import { STAFF_NAV_ITEMS } from "@/lib/navigation";
 import * as serviceService from "@/lib/services/services";
 import { formatCurrency } from "@/lib/utils";
+import Pagination from "@/components/ui/Pagination";
 import {
   IconSettings,
 } from "@tabler/icons-react";
@@ -27,6 +28,8 @@ export default function StaffServicesPage() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(10);
 
   useEffect(() => {
     if (authLoading) return;
@@ -77,32 +80,51 @@ export default function StaffServicesPage() {
               Chưa có dịch vụ nào
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Tên dịch vụ</TableHead>
-                  <TableHead>Loại</TableHead>
-                  <TableHead>Giá</TableHead>
-                  <TableHead>Mô tả</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {services.map((service) => (
-                  <TableRow key={service._id}>
-                    <TableCell>{service.name}</TableCell>
-                    <TableCell>
-                      {
-                        SERVICE_TYPE_LABELS[
-                        service.serviceType as keyof typeof SERVICE_TYPE_LABELS
-                        ]
-                      }
-                    </TableCell>
-                    <TableCell>{formatCurrency(service.price)}</TableCell>
-                    <TableCell>{service.description || "Không có mô tả"}</TableCell>
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-16">STT</TableHead>
+                    <TableHead>Tên dịch vụ</TableHead>
+                    <TableHead>Loại</TableHead>
+                    <TableHead>Giá</TableHead>
+                    <TableHead>Mô tả</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {services
+                    .slice((currentPage - 1) * limit, currentPage * limit)
+                    .map((service, index) => (
+                      <TableRow key={service._id}>
+                        <TableCell className="font-medium">
+                          {(currentPage - 1) * limit + index + 1}
+                        </TableCell>
+                        <TableCell>{service.name}</TableCell>
+                        <TableCell>
+                          {
+                            SERVICE_TYPE_LABELS[
+                            service.serviceType as keyof typeof SERVICE_TYPE_LABELS
+                            ]
+                          }
+                        </TableCell>
+                        <TableCell>{formatCurrency(service.price)}</TableCell>
+                        <TableCell>{service.description || "Không có mô tả"}</TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+
+              <Pagination
+                total={services.length}
+                limit={limit}
+                skip={(currentPage - 1) * limit}
+                onPageChange={setCurrentPage}
+                onLimitChange={(newLimit) => {
+                  setLimit(newLimit);
+                  setCurrentPage(1);
+                }}
+              />
+            </>
           )}
         </CardBody>
       </Card>

@@ -41,6 +41,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import { Badge } from "@/components/ui/Badge";
+import Pagination from "@/components/ui/Pagination";
 
 export default function StaffInvoicesPage() {
   const router = useRouter();
@@ -52,6 +53,8 @@ export default function StaffInvoicesPage() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [patientFilter, setPatientFilter] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(10);
 
   // Modals
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -340,6 +343,7 @@ export default function StaffInvoicesPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-16">STT</TableHead>
                   <TableHead>Mã HĐ</TableHead>
                   <TableHead>Bệnh nhân</TableHead>
                   <TableHead>Ngày tạo</TableHead>
@@ -352,6 +356,7 @@ export default function StaffInvoicesPage() {
               <TableBody>
                 {[...Array(5)].map((_, i) => (
                   <TableRow key={i}>
+                    <TableCell><Skeleton className="h-4 w-8" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-16" /></TableCell>
                     <TableCell>
                       <div className="space-y-2">
@@ -426,98 +431,117 @@ export default function StaffInvoicesPage() {
               Chưa có hóa đơn nào
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Mã HĐ</TableHead>
-                  <TableHead>Bệnh nhân</TableHead>
-                  <TableHead>Ngày tạo</TableHead>
-                  <TableHead>Số DV</TableHead>
-                  <TableHead>Tổng tiền</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead>Thao tác</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {invoices.map((invoice) => (
-                  <TableRow key={invoice._id}>
-                    <TableCell>
-                      #{invoice.invoiceNumber || invoice._id.slice(-6)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="font-medium text-gray-900">
-                        {typeof invoice.patientId === "object" && invoice.patientId
-                          ? invoice.patientId.fullName
-                          : "Chưa cập nhật"}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {typeof invoice.patientId === "object" && invoice.patientId
-                          ? invoice.patientId.phone || invoice.patientId.phoneNumber
-                          : ""}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {format(new Date(invoice.createdAt || ""), "dd/MM/yyyy", {
-                        locale: vi,
-                      })}
-                    </TableCell>
-                    <TableCell>{invoice.items?.length || 0}</TableCell>
-                    <TableCell className="font-semibold">
-                      {formatCurrency(invoice.totalAmount)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={invoice.status === "paid" ? "success" : "danger"}>
-                        {
-                          INVOICE_STATUS_LABELS[
-                          invoice.status as keyof typeof INVOICE_STATUS_LABELS
-                          ]
-                        }
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleViewDetails(invoice)}
-                          icon={<IconEye size={14} />}
-                        >
-                          Xem
-                        </Button>
-                        {invoice.status === "unpaid" && (
-                          <>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleOpenUpdateModal(invoice)}
-                              icon={<IconEdit size={14} />}
-                            >
-                              Sửa
-                            </Button>
-                            <Button
-                              variant="primary"
-                              size="sm"
-                              onClick={() => handlePayInvoice(invoice._id)}
-                            >
-                              Thanh toán
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDeleteInvoice(invoice._id)}
-                              icon={<IconTrash size={14} />}
-                              style={{ color: "#ef4444" }}
-                            >
-                              Xóa
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    </TableCell>
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-16">STT</TableHead>
+                    <TableHead>Mã HĐ</TableHead>
+                    <TableHead>Bệnh nhân</TableHead>
+                    <TableHead>Ngày tạo</TableHead>
+                    <TableHead>Số DV</TableHead>
+                    <TableHead>Tổng tiền</TableHead>
+                    <TableHead>Trạng thái</TableHead>
+                    <TableHead>Thao tác</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {invoices
+                    .slice((currentPage - 1) * limit, currentPage * limit)
+                    .map((invoice, index) => (
+                      <TableRow key={invoice._id}>
+                        <TableCell className="font-medium">
+                          {(currentPage - 1) * limit + index + 1}
+                        </TableCell>
+                        <TableCell>
+                          #{invoice.invoiceNumber || invoice._id.slice(-6)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="font-medium text-gray-900">
+                            {typeof invoice.patientId === "object" && invoice.patientId
+                              ? invoice.patientId.fullName
+                              : "Chưa cập nhật"}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {typeof invoice.patientId === "object" && invoice.patientId
+                              ? invoice.patientId.phone || invoice.patientId.phoneNumber
+                              : ""}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {format(new Date(invoice.createdAt || ""), "dd/MM/yyyy", {
+                            locale: vi,
+                          })}
+                        </TableCell>
+                        <TableCell>{invoice.items?.length || 0}</TableCell>
+                        <TableCell className="font-semibold">
+                          {formatCurrency(invoice.totalAmount)}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={invoice.status === "paid" ? "success" : "danger"}>
+                            {
+                              INVOICE_STATUS_LABELS[
+                              invoice.status as keyof typeof INVOICE_STATUS_LABELS
+                              ]
+                            }
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleViewDetails(invoice)}
+                              icon={<IconEye size={14} />}
+                            >
+                              Xem
+                            </Button>
+                            {invoice.status === "unpaid" && (
+                              <>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleOpenUpdateModal(invoice)}
+                                  icon={<IconEdit size={14} />}
+                                >
+                                  Sửa
+                                </Button>
+                                <Button
+                                  variant="primary"
+                                  size="sm"
+                                  onClick={() => handlePayInvoice(invoice._id)}
+                                >
+                                  Thanh toán
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleDeleteInvoice(invoice._id)}
+                                  icon={<IconTrash size={14} />}
+                                  style={{ color: "#ef4444" }}
+                                >
+                                  Xóa
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+
+              <Pagination
+                total={invoices.length}
+                limit={limit}
+                skip={(currentPage - 1) * limit}
+                onPageChange={setCurrentPage}
+                onLimitChange={(newLimit) => {
+                  setLimit(newLimit);
+                  setCurrentPage(1);
+                }}
+              />
+            </>
           )}
         </CardBody>
       </Card>

@@ -24,6 +24,7 @@ import { STAFF_NAV_ITEMS } from "@/lib/navigation";
 import * as patientService from "@/lib/services/patients";
 import { format } from "date-fns";
 import { vi } from "date-fns/locale";
+import Pagination from "@/components/ui/Pagination";
 import {
   IconUserSquareRounded,
   IconSearch,
@@ -37,6 +38,8 @@ export default function StaffPatientsPage() {
   const [patients, setPatients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -125,6 +128,7 @@ export default function StaffPatientsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-16">STT</TableHead>
                   <TableHead>Họ tên</TableHead>
                   <TableHead>SĐT</TableHead>
                   <TableHead>CCCD</TableHead>
@@ -136,6 +140,7 @@ export default function StaffPatientsPage() {
               <TableBody>
                 {[...Array(5)].map((_, i) => (
                   <TableRow key={i}>
+                    <TableCell><Skeleton className="h-4 w-8" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                     <TableCell><Skeleton className="h-4 w-24" /></TableCell>
@@ -183,40 +188,59 @@ export default function StaffPatientsPage() {
               Không tìm thấy bệnh nhân nào
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Họ tên</TableHead>
-                  <TableHead>SĐT</TableHead>
-                  <TableHead>CCCD</TableHead>
-                  <TableHead>Giới tính</TableHead>
-                  <TableHead>Ngày sinh</TableHead>
-                  <TableHead>Địa chỉ</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {patients.map((patient) => (
-                  <TableRow key={patient._id}>
-                    <TableCell>{patient.fullName}</TableCell>
-                    <TableCell>{patient.phone}</TableCell>
-                    <TableCell>{patient.cccd}</TableCell>
-                    <TableCell>
-                      {patient.gender === "male"
-                        ? "Nam"
-                        : patient.gender === "female"
-                          ? "Nữ"
-                          : "Khác"}
-                    </TableCell>
-                    <TableCell>
-                      {format(new Date(patient.dateOfBirth), "dd/MM/yyyy", {
-                        locale: vi,
-                      })}
-                    </TableCell>
-                    <TableCell>{patient.address}</TableCell>
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-16">STT</TableHead>
+                    <TableHead>Họ tên</TableHead>
+                    <TableHead>SĐT</TableHead>
+                    <TableHead>CCCD</TableHead>
+                    <TableHead>Giới tính</TableHead>
+                    <TableHead>Ngày sinh</TableHead>
+                    <TableHead>Địa chỉ</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {patients
+                    .slice((currentPage - 1) * limit, currentPage * limit)
+                    .map((patient, index) => (
+                      <TableRow key={patient._id}>
+                        <TableCell className="font-medium">
+                          {(currentPage - 1) * limit + index + 1}
+                        </TableCell>
+                        <TableCell>{patient.fullName}</TableCell>
+                        <TableCell>{patient.phone}</TableCell>
+                        <TableCell>{patient.cccd}</TableCell>
+                        <TableCell>
+                          {patient.gender === "male"
+                            ? "Nam"
+                            : patient.gender === "female"
+                              ? "Nữ"
+                              : "Khác"}
+                        </TableCell>
+                        <TableCell>
+                          {format(new Date(patient.dateOfBirth), "dd/MM/yyyy", {
+                            locale: vi,
+                          })}
+                        </TableCell>
+                        <TableCell>{patient.address}</TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+
+              <Pagination
+                total={patients.length}
+                limit={limit}
+                skip={(currentPage - 1) * limit}
+                onPageChange={setCurrentPage}
+                onLimitChange={(newLimit) => {
+                  setLimit(newLimit);
+                  setCurrentPage(1);
+                }}
+              />
+            </>
           )}
         </CardBody>
       </Card>
